@@ -1,0 +1,26 @@
+{
+  "name": "live-nuts",
+  "version": "0.0.1",
+  "description": "Live HTML template engine using NUTS syntax",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jacoborus/live-nuts.git"
+  },
+  "keywords": [
+    "NUTS",
+    "html",
+    "live-templates",
+    "templates",
+    "engine"
+  ],
+  "author": "Jacobo Tabernero - jacobo@xarope.eu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jacoborus/live-nuts/issues"
+  },
+  "homepage": "https://github.com/jacoborus/live-nuts"
+}
