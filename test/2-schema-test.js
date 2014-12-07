@@ -96,26 +96,4 @@ describe( 'Template schema', function () {
 			});
 		});
 	});
-
-	describe( 'Layout', function () {
-
-		it('generate a different schema for layouts', function (done) {
-			var tmpl = '<html nut="tagLayout">' +
-				'<body nu-block="body">hello</body>' +
-				'</html>';
-			var layout = '<template nu-layout="tagLayout" nut="layoutSchema">' +
-					'<template nu-block="head" nu-extend="headTitle"></template>' +
-				'</template>';
-			nuts.addTemplate( tmpl, function () {
-				nuts.addTemplate( layout, function (err) {
-					expect( err ).to.equal( null );
-					expect( nuts.getTemplate('layoutSchema').schema.extend ).to.equal( 'tagLayout' );
-					expect( nuts.getTemplate('layoutSchema').schema.blocks.head ).to.be.a( 'object' );
-					expect( nuts.getTemplate('layoutSchema').schema.blocks.head.extend ).to.equal( 'headTitle' );
-					done();
-				});
-			});
-
-		});
-	});
 });

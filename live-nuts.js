@@ -60,21 +60,20 @@ var hasProp = function (name, list) {
 };
 
 // move attributes with nu- prefix to nuAtts property
-var separateNamesakes = function (atts) {
+var separateNamesakes = function (atts, nuAtts) {
 	var names = {},
 		sakes = {},
 		i;
 
 	for (i in atts) {
-		if (hasProp( i, this.nuAtts )) {
+		if (hasProp( i, nuAtts )) {
 			names[i] = atts[i];
-			sakes[i] = this.nuAtts[i];
+			sakes[i] = nuAtts[i];
 			delete atts[i];
-			delete this.nuAtts[i];
+			delete nuAtts[i];
 		}
 	}
-	this.namesakes = names;
-	this.nuSakes = sakes;
+	return [names, sakes];
 };
 
 // move attributes with nu- prefix to nuAtts property
@@ -183,7 +182,9 @@ var TagSchema = function (attributes, dom) {
 
 	// separate nuAttributes from the regular ones
 	this.nuAtts = separateNuAtts( atts );
-	separateNamesakes.call( dom, atts );
+	var sakes = separateNamesakes( atts, this.nuAtts );
+	this.namesakes = sakes[0];
+	this.nuSakes = sakes[1];
 
 
 	// assign children dom elements
@@ -202,8 +203,6 @@ var TagSchema = function (attributes, dom) {
 	// assign attributes
 	delete atts.nut;
 	this.attribs = atts || {};
-	this.namesakes = dom.namesakes || {};
-	this.nuSakes = dom.nuSakes || {};
 };
 
 
