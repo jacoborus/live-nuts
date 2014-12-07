@@ -1,9 +1,60 @@
 'use strict';
 (function (window) {
-var templates = {};
 
-var Nuts = function () {
+
+
+var templates = {},
+	allCompiled = false;
+
+var nuProps = [
+	'type',
+	'name',
+	'class',
+	'nuClass',
+	'scope',
+	'model',
+	'repeat',
+	'pipe',
+	'if',
+	'unless',
+	'checked',
+	'doctype',
+	'children',
+	'namesakes',
+	'nuSakes'
+];
+
+var nuObjs = [
+	'attribs',
+	'nuAtts',
+	'namesakes',
+	'nuSakes'
+];
+
+
+var partial = function (target, obj) {
+
+	var i, j;
+
+	for (i in nuProps) {
+		if (obj[nuProps[i]] || obj[nuProps[i]] === '') {
+			target[nuProps[i]] = obj[nuProps[i]];
+		}
+	}
+	if (obj.children.length > 0) {
+		if (obj.children.length !== 1 || obj.children[0].schema.data !== ' ') {
+			target.children = obj.children;
+		}
+	}
+	for (i in nuObjs) {
+		for (j in obj[nuObjs[i]]) {
+			target[nuObjs[i]][j] = obj[nuObjs[i]][j];
+		}
+	}
+	return target;
 };
+
+
 
 var getNutName = function (atts) {
 	var len = atts.length,
@@ -110,13 +161,11 @@ var TagSchema = function (attributes, dom) {
 		case 10:
 			this.type = 'directive';
 			break;
-		default:
-			this.type = 'tag';
-			break;
 	}
 
+	this.data = dom.data;
+
 	this.name = dom.localName;
-	this.data = dom.innertext;
 
 	// assign attributes
 
@@ -188,15 +237,18 @@ var TagSchema = function (attributes, dom) {
 
 
 	// assign children dom elements
-	if (dom.children && dom.children.length) {
+	if (dom.childNodes && dom.childNodes.length) {
 		this.children = [];
 		nuChildren = this.children;
-		domChildren = dom.children;
-		for (i in domChildren) {
+		domChildren = dom.childNodes;
+		var len = domChildren.length;
+		i = 0;
+		while (i < len) {
 			nuChildren[i] = {
 				src : null,
-				schema: new TagSchema( domChildren[i].attributes, domChildren[i] )
+				schema: new TagSchema( domChildren[i].attributes || [], domChildren[i] )
 			};
+			i++
 		}
 	}
 
@@ -205,9 +257,18 @@ var TagSchema = function (attributes, dom) {
 	this.attribs = atts || {};
 };
 
+/**
+ * Nuts constructor
+ */
+var Nuts = function () {
+};
 
 
-
+/**
+ * Add a templates and generate its model
+ * @param {String}   source html templates
+ * @param {Function} callback    Signature: error
+ */
 Nuts.prototype.addTemplate = function (src, callback) {
 	var div = document.createElement('div');
 	div.innerHTML = src;
@@ -220,6 +281,7 @@ Nuts.prototype.addTemplate = function (src, callback) {
 		el = elems[i];
 		atts = el.attributes;
 		name = getNutName( atts );
+		allCompiled = false;
 		if (name) {
 			templates[name] = {
 				src: el.outerHTML,
@@ -233,10 +295,242 @@ Nuts.prototype.addTemplate = function (src, callback) {
 };
 
 
+
+/**
+ * Get a template object from templates
+ * @param  {String} name template keyname
+ * @return {Object}      template object
+ */
 Nuts.prototype.getTemplate = function (name) {
 	return templates[name];
 };
 
-window.nuts = new Nuts();
 
+
+
+var printChildren = function (children, x) {
+	var i = 0,
+		len = children.length;
+	var fragment = document.createDocumentFragment();
+	while (i < len) {
+		fragment.appendChild( children[i].render( x ));
+		i++;
+	}
+	return fragment;
+};
+
+
+var direct = function (t, el) {
+	var pipe = t.pipe,
+		scope = t.scope,
+		model = t.model,
+		nuSakes = t.nuSakes,
+		children = t.children,
+		namesakes = t.namesakes,
+		nuAtts = t.nuAtts,
+		nuClass = t.nuClass,
+		checked = t.checked,
+		each = t.each;
+
+	return function (x) {
+		var props = [],
+			preX = {},
+			len, i, j, z;
+
+		if (pipe === '') {
+			for (i in x) {
+				preX[i] = x[i];
+			}
+		}
+		if (pipe) {
+			props = pipe.split(' ');
+			for (i in props) {
+				preX[props[i]] = x[props[i]];
+			}
+		}
+		// set scope
+		if (scope) {
+			if (x[scope]) {
+				x = x[scope];
+			} else {
+				x = {};
+			}
+		}
+		// pipe properties from parent
+		if (pipe || pipe === '') {
+			for (i in preX) {
+				x[i] = preX[i];
+			}
+		}
+
+		// render nuClass
+		if (nuClass) {
+			el.classList.add(nuClass);
+		}
+
+		// render namesakes
+		for (i in namesakes) {
+			el.setAttribute( i, nuSakes[i] || namesakes[i] );
+		}
+
+		// render nuAttributes
+		for (i in nuAtts) {
+			el.setAttribute( i, x[nuAtts[i]] || '' );
+		}
+
+		// print checked attribute
+		if (checked === '') {
+			if (x) {
+				el.checked = true;
+			}
+		} else if (checked) {
+			if (x[checked]) {
+				el.checked = true;
+			}
+		}
+
+
+		if (each || each === '') {
+			if (each === '') {
+				z = x;
+			} else if (x[each]) {
+				z = x[each];
+			}
+			if (z) {
+				i = 0;
+				len = z.length;
+				while (i < len) {
+					j = z[i];
+					if (children) {
+						el.appendChild( printChildren( children, j ).cloneNode(true) );
+					}
+					i++;
+				}
+			}
+		} else {
+			// compile content
+			if (model && x[model]) {
+				el.innerHTML = x[model];
+			} else if (model === '') {
+				el.innerHTML = x;
+			} else {
+				if (children) {
+					el.appendChild( printChildren( children, x ).cloneNode(true) );
+				}
+			}
+		}
+		return el;
+	};
+};
+
+
+
+
+
+/* - Generate compiled tags - */
+var compileTag;
+
+var newCompiledText = function (tmp) {
+	var out = document.createTextNode(tmp.data);
+	return function () {
+		return out;
+	};
+};
+
+
+var newCompiledComment = function (tmp) {
+	var out = document.createComment( tmp.data );
+	return function () {
+		return out;
+	};
+};
+
+
+var newCompiledDirective = function (tmp) {
+	var out = '<' + tmp.data + '>';
+	return function () {
+		return out;
+	};
+};
+
+
+var newCompiledTag = function (tmp) {
+	var nuas;
+	if (tmp.as) {
+		nuas = tmp.as;
+		delete tmp.as;
+		tmp = partial( tmp, templates[nuas].schema );
+	}
+
+	// crete element
+	var el = document.createElement( tmp.name ),
+		atts = tmp.attribs;
+
+	var i;
+
+	// preprint doctype
+	/*
+	if (tmp.doctype) {
+		preTag = '<!DOCTYPE html>' + preTag;
+	}
+	*/
+	// render regular attributes
+	for (i in atts) {
+		el.setAttribute( i, atts[i] );
+	}
+
+	// prepare className tag
+	if (tmp.class) {
+		el.classList.add(tmp.class);
+	}
+
+	var	children = tmp.children;
+	for (i in children) {
+		children[i].render = compileTag( children[i] );
+	}
+	return direct( tmp, el );
+};
+
+compileTag = function (template) {
+	var schema = template.schema;
+	switch (schema.type) {
+		case 'tag':
+			return newCompiledTag( schema );
+		case 'text':
+			return newCompiledText( schema );
+		case 'comment':
+			return newCompiledComment( schema );
+		case 'directive':
+			return newCompiledDirective( schema );
+	}
+};
+
+
+
+
+/**
+ * Get a rendered template
+ * @param  {String} tmplName template keyname
+ * @param  {Object} data     locals
+ * @return {String}          rendered html
+ */
+Nuts.prototype.render = function (tmplName, data) {
+	var i;
+	data = data || {};
+	if (!allCompiled) {
+		for (i in templates) {
+			templates[i].render = compileTag( templates[i] );
+		}
+		allCompiled = true;
+	}
+	if (templates[tmplName]) {
+		return templates[tmplName].render( data );
+	}
+	return '';
+};
+
+
+
+
+window.nuts = new Nuts();
 })(window);
