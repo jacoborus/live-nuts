@@ -200,6 +200,7 @@ var TagSchema = function (attributes, dom) {
 	}
 
 	// assign attributes
+	delete atts.nut;
 	this.attribs = atts || {};
 	this.namesakes = dom.namesakes || {};
 	this.nuSakes = dom.nuSakes || {};
@@ -223,7 +224,8 @@ Nuts.prototype.addTemplate = function (src, callback) {
 		if (name) {
 			templates[name] = {
 				src: el.outerHTML,
-				schema: new TagSchema( el.attributes, el )
+				schema: new TagSchema( el.attributes, el ),
+				nut: name
 			};
 		}
 		i++;
