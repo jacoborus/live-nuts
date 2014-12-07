@@ -1,15 +1,17 @@
 'use strict';
-(function () {
 
-var expect = chai.expect;
+var expect,
+	require = require || function () {},
+	nuts = nuts || require('../live-nuts.js');
 
-var bulkElem = function () {
-	var el = document.createElement( 'div' );
-	el.setAttribute( 'name', 'bulkElem');
-	return el;
-};
+if (typeof chai !== 'undefined' && chai !== null) {
+	expect = chai.expect;
+} else {
+	expect = require('chai').expect;
+}
 
-describe( 'nuts.addTemplate', function () {
+
+describe( 'nuts.addTemplate:', function () {
 
 	it('add src to a new template in templates archive', function (done) {
 		var tmpl = '<span nut="one">hello</span>';
@@ -30,6 +32,3 @@ describe( 'nuts.addTemplate', function () {
 		});
 	});
 });
-
-
-})();

@@ -1,9 +1,21 @@
 'use strict';
 
-var expect = chai.expect;
+
+var expect,
+	require = require || function () {},
+	nuts = nuts || require('../live-nuts.js');
 
 
-describe( 'nuts.render', function () {
+if (typeof chai !== 'undefined' && chai !== null) {
+	expect = chai.expect;
+} else {
+	expect = require('chai').expect;
+}
+
+var nuts = nuts || require('../live-nuts.js');
+
+
+describe( 'nuts.render:', function () {
 
 	it('render simple tags', function (done) {
 		var tmpl = '<span nut="simpleTag"></span>';

@@ -1,3 +1,7 @@
+'use strict';
+(function (window) {
+
+
 var templates = {},
 	allCompiled = false;
 
@@ -526,4 +530,6 @@ Nuts.prototype.render = function (tmplName, data) {
 
 
 var nuts = new Nuts();
-module.exports = nuts;
+window.nuts = nuts;
+})(window);
+

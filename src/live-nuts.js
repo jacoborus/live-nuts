@@ -526,4 +526,3 @@ Nuts.prototype.render = function (tmplName, data) {
 
 
 var nuts = new Nuts();
-module.exports = nuts;
