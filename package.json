@@ -4,7 +4,7 @@
   "description": "Live HTML template engine using NUTS syntax",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha"
+    "test": "sensible-browser ./test/test.html"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/jacoborus/live-nuts/issues"
   },
-  "homepage": "https://github.com/jacoborus/live-nuts"
+  "homepage": "https://github.com/jacoborus/live-nuts",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.0.1"
+  }
 }
