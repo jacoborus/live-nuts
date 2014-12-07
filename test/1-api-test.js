@@ -1,4 +1,5 @@
 'use strict';
+(function () {
 
 var expect = chai.expect;
 
@@ -13,7 +14,6 @@ describe( 'nuts.addTemplate', function () {
 	it('add src to a new template in templates archive', function (done) {
 		var tmpl = '<span nut="one">hello</span>';
 		nuts.addTemplate( tmpl, function (err) {
-			//console.log(err);
 			expect( err ).to.equal( null );
 			expect( nuts.getTemplate('one').src ).to.equal( '<span nut="one">hello</span>' );
 			done();
@@ -30,3 +30,6 @@ describe( 'nuts.addTemplate', function () {
 		});
 	});
 });
+
+
+})();
