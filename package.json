@@ -4,7 +4,7 @@
   "description": "Live HTML template engine using NUTS syntax",
   "main": "index.js",
   "scripts": {
-    "test": "npm run build && node ./node_modules/zuul/bin/zuul --local 8080 --ui mocha-bdd -- test/*.js",
+    "test": "npm run build && node ./node_modules/zuul/bin/zuul --ui mocha-bdd -- test/*.js",
     "mtest": "npm run build && sensible-browser ./test/test.html",
     "build-dist": "cat build_assets/start.txt src/live-nuts.js build_assets/end.txt> dist/live-nuts.js",
     "build-node": "cat src/live-nuts.js build_assets/module.txt> live-nuts.js",
