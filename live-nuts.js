@@ -22,15 +22,12 @@ var getNutName = function (atts) {
 
 
 var getAttributes = function (atts) {
-	//console.log('atts')
-	//console.log(atts)
 	var len = atts.length,
 		obj = {},
-		att,
-		i;
+		i = 0,
+		att;
 
 	while (i < len) {
-		console.log(i);
 		if (atts.hasOwnProperty( i )) {
 			att = atts[i];
 			obj[att.nodeName] = att.value;
@@ -63,10 +60,9 @@ var hasProp = function (name, list) {
 };
 
 // move attributes with nu- prefix to nuAtts property
-var separateNamesakes = function () {
+var separateNamesakes = function (atts) {
 	var names = {},
 		sakes = {},
-		atts = this.attribs,
 		i;
 
 	for (i in atts) {
@@ -82,9 +78,8 @@ var separateNamesakes = function () {
 };
 
 // move attributes with nu- prefix to nuAtts property
-var separateNuAtts = function () {
+var separateNuAtts = function (atts) {
 	var nuAtts = {},
-		atts = this.attribs,
 		i;
 
 	for (i in atts) {
@@ -93,7 +88,7 @@ var separateNuAtts = function () {
 			delete atts[i];
 		}
 	}
-	this.nuAtts = nuAtts;
+	return nuAtts;
 };
 
 
@@ -121,75 +116,75 @@ var TagSchema = function (attributes, dom) {
 			break;
 	}
 
-	this.data = dom.data;
 	this.name = dom.localName;
+	this.data = dom.innertext;
 
 	// assign attributes
-	if (atts) {
-		// separate special attributes
-		if (atts.class) {
-			this.class = atts.class;
-			delete atts.class;
-		}
-		if (atts['nu-class']) {
-			this.nuClass = atts['nu-class'];
-			delete atts['nu-class'];
-		}
-		if (atts['nu-scope']) {
-			this.scope = atts['nu-scope'];
-			delete atts['nu-scope'];
-		}
-		if (atts['nu-model'] || atts['nu-model'] === '') {
-			this.model = atts['nu-model'];
-			delete atts['nu-model'];
-		}
-		if (atts['nu-repeat'] || atts['nu-repeat'] === '') {
-			this.repeat = atts['nu-repeat'];
-			delete atts['nu-repeat'];
-		}
-		if (atts['nu-each'] || atts['nu-each'] === '') {
-			this.each = atts['nu-each'];
-			delete atts['nu-each'];
-		}
-		if (atts['nu-pipe'] || atts['nu-pipe'] === '') {
-			this.pipe = atts['nu-pipe'];
-			delete atts['nu-pipe'];
-		}
-		if (atts['nu-block'] || atts['nu-block'] === '') {
-			this.block = atts['nu-block'];
-			delete atts['nu-block'];
-		}
-		if (atts['nu-if'] || atts['nu-if'] === '') {
-			if (atts['nu-if']) {
-				this.nuif = atts['nu-if'];
-			}
-			delete atts['nu-if'];
-		}
-		if (atts['nu-unless'] || atts['nu-unless'] === '') {
-			if (atts['nu-unless']) {
-				this.unless = atts['nu-unless'];
-			}
-			delete atts['nu-unless'];
-		}
-		if (atts['nu-checked'] || atts['nu-checked'] === '') {
-			this.checked = atts['nu-checked'];
-			delete atts['nu-checked'];
-		}
-		if (atts['nu-doctype'] === '') {
-			this.doctype = true;
-			delete atts['nu-doctype'];
-		}
-		if (atts['nu-as'] || atts['nu-as'] === '') {
-			if (atts['nu-as']) {
-				this.as = atts['nu-as'];
-			}
-			delete atts['nu-as'];
-		}
 
-		// separate nuAttributes from the regular ones
-		separateNuAtts.call( dom );
-		separateNamesakes.call( dom );
+	// separate special attributes
+	if (atts.class) {
+		this.class = atts.class;
+		delete atts.class;
 	}
+	if (atts['nu-class']) {
+		this.nuClass = atts['nu-class'];
+		delete atts['nu-class'];
+	}
+	if (atts['nu-scope']) {
+		this.scope = atts['nu-scope'];
+		delete atts['nu-scope'];
+	}
+	if (atts['nu-model'] || atts['nu-model'] === '') {
+		this.model = atts['nu-model'];
+		delete atts['nu-model'];
+	}
+	if (atts['nu-repeat'] || atts['nu-repeat'] === '') {
+		this.repeat = atts['nu-repeat'];
+		delete atts['nu-repeat'];
+	}
+	if (atts['nu-each'] || atts['nu-each'] === '') {
+		this.each = atts['nu-each'];
+		delete atts['nu-each'];
+	}
+	if (atts['nu-pipe'] || atts['nu-pipe'] === '') {
+		this.pipe = atts['nu-pipe'];
+		delete atts['nu-pipe'];
+	}
+	if (atts['nu-block'] || atts['nu-block'] === '') {
+		this.block = atts['nu-block'];
+		delete atts['nu-block'];
+	}
+	if (atts['nu-if'] || atts['nu-if'] === '') {
+		if (atts['nu-if']) {
+			this.nuif = atts['nu-if'];
+		}
+		delete atts['nu-if'];
+	}
+	if (atts['nu-unless'] || atts['nu-unless'] === '') {
+		if (atts['nu-unless']) {
+			this.unless = atts['nu-unless'];
+		}
+		delete atts['nu-unless'];
+	}
+	if (atts['nu-checked'] || atts['nu-checked'] === '') {
+		this.checked = atts['nu-checked'];
+		delete atts['nu-checked'];
+	}
+	if (atts['nu-doctype'] === '') {
+		this.doctype = true;
+		delete atts['nu-doctype'];
+	}
+	if (atts['nu-as'] || atts['nu-as'] === '') {
+		if (atts['nu-as']) {
+			this.as = atts['nu-as'];
+		}
+		delete atts['nu-as'];
+	}
+
+	// separate nuAttributes from the regular ones
+	this.nuAtts = separateNuAtts( atts );
+	separateNamesakes.call( dom, atts );
+
 
 	// assign children dom elements
 	if (dom.children && dom.children.length) {
@@ -206,7 +201,6 @@ var TagSchema = function (attributes, dom) {
 
 	// assign attributes
 	this.attribs = atts || {};
-	this.nuAtts = dom.nuAtts || {};
 	this.namesakes = dom.namesakes || {};
 	this.nuSakes = dom.nuSakes || {};
 };
