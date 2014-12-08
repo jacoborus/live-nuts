@@ -1,7 +1,4 @@
-'use strict';
-(function (window) {
-
-
+(function (window) {'use strict';
 var templates = {},
 	allCompiled = false;
 
@@ -247,7 +244,7 @@ var TagSchema = function (attributes, dom) {
 				src : null,
 				schema: new TagSchema( domChildren[i].attributes || [], domChildren[i] )
 			};
-			i++
+			i++;
 		}
 	}
 
@@ -364,7 +361,7 @@ var direct = function (t, el) {
 
 		// render nuClass
 		if (nuClass) {
-			el.classList.add(nuClass);
+			el.classList.add(x[nuClass]);
 		}
 
 		// render namesakes
@@ -530,6 +527,7 @@ Nuts.prototype.render = function (tmplName, data) {
 
 
 var nuts = new Nuts();
+nuts.version = '0.0.1';
 window.nuts = nuts;
 })(window);
 
