@@ -100,16 +100,4 @@ describe( 'Scope', function () {
 			).to.equal( '' );
 		});
 	});
-
-	it('Inserts the loop only when the value evaluates to true', function () {
-		var tmpl = '<span nut="ifloop" nu-if="color" nu-repeat="colors">hi</span>';
-		nuts.addTemplate( tmpl, function () {
-			expect(
-				nuts.render('ifloop', {color: true, colors:[1,2]}).outerHTML
-			).to.equal( '<span>hi</span><span>hi</span>' );
-			expect(
-				nuts.render('ifloop')
-			).to.equal( '' );
-		});
-	});
 });

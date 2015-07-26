@@ -308,7 +308,8 @@ var direct = function (t, el) {
     nuAtts = t.nuAtts,
     nuClass = t.nuClass,
     checked = t.checked,
-    each = t.each
+    each = t.each,
+    nuif = t.nuif
 
   return function (x) {
     var props = [],
@@ -482,7 +483,7 @@ compileTag = function (template) {
  * @return {String}          rendered html
  */
 Nuts.prototype.render = function (tmplName, data) {
-  var i
+  var tmpl, i
   data = data || {}
   if (!allCompiled) {
     for (i in templates) {
@@ -490,8 +491,15 @@ Nuts.prototype.render = function (tmplName, data) {
     }
     allCompiled = true
   }
-  if (templates[tmplName]) {
-    return templates[tmplName].render(data)
+  tmpl = templates[tmplName]
+  if (tmpl) {
+    if (typeof tmpl.schema.nuif === 'undefined') {
+      return tmpl.render(data)
+    }
+    if (tmpl.schema.nuif === '') {
+      return data ? tmpl.render(data) : ''
+    }
+    return data[tmpl.schema.nuif] ? tmpl.render(data) : ''
   }
   return ''
 }
