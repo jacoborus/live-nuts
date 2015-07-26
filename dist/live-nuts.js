@@ -1,4 +1,6 @@
-(function (window) {'use strict'
+(function (window) {
+
+'use strict'
 var templates = {},
   allCompiled = false
 
@@ -497,7 +499,12 @@ Nuts.prototype.render = function (tmplName, data) {
 }
 
 var nuts = new Nuts()
-nuts.version = '0.0.1'
-window.nuts = nuts;
-})(window);
 
+nuts.version = '0.0.1'
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = nuts
+} else {
+  window.nuts = nuts
+}
+
+})(window)

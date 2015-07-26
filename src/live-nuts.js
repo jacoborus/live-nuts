@@ -497,4 +497,10 @@ Nuts.prototype.render = function (tmplName, data) {
 }
 
 var nuts = new Nuts()
+
 nuts.version = '0.0.1'
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = nuts
+} else {
+  window.nuts = nuts
+}

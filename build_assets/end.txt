@@ -1,3 +1,2 @@
-window.nuts = nuts;
-})(window);
 
+})(window)

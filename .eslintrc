@@ -3,6 +3,9 @@
         "browser": true,
         "node": false
     },
+    "globals": {
+      "module": "true"
+    },
     "rules": {
       "global-strict": [0, "never"],
         "block-scoped-var": 0,
