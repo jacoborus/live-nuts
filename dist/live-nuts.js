@@ -30,43 +30,35 @@ var nuObjs = [
   'nuSakes'
 ]
 
+// TODO: test this
 var partial = function (target, obj) {
-  var i, j
-
-  for (i in nuProps) {
-    if (obj[nuProps[i]] !== undefined) {
-      target[nuProps[i]] = obj[nuProps[i]]
+  nuProps.forEach(function (p) {
+    if (obj[p] !== undefined) {
+      target[p] = obj[p]
     }
-  }
+  })
+
   // assign children schemas to tag if has children
   if (obj.children.length) {
     if (obj.children.length !== 1 || obj.children[0].schema.data !== ' ') {
       target.children = obj.children
     }
   }
-  console.log('nuObjs')
-  console.log(nuObjs)
-  for (i in nuObjs) {
-    for (j in obj[nuObjs[i]]) {
-      target[nuObjs[i]][j] = obj[nuObjs[i]][j]
-    }
-  }
+
+  nuObjs.forEach(function (o) {
+    obj[o].forEach(function (el, i) {
+      target[o][i] = obj[o][i]
+    })
+  })
   return target
 }
 
 var getNutName = function (atts) {
-  var len = atts.length,
-    i = 0,
-    att
-
-  while (i < len) {
-    att = atts[i]
-    if (att.nodeName === 'nut') {
-      return att.value
-    }
-    i++
+  if (atts.nut) {
+    return atts.nut.value
+  } else {
+    return false
   }
-  return false
 }
 
 var getAttributes = function (atts) {
@@ -96,13 +88,11 @@ var getNuProp = function (prop) {
 }
 
 var hasProp = function (name, list) {
-  var i
-  for (i in list) {
-    if (i === name) {
-      return true
-    }
+  if (list[name] !== undefined && list[name]) {
+    return true
+  } else {
+    return false
   }
-  return false
 }
 
 // move attributes with nu- prefix to nuAtts property

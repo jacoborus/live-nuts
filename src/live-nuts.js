@@ -52,18 +52,11 @@ var partial = function (target, obj) {
 }
 
 var getNutName = function (atts) {
-  var len = atts.length,
-    i = 0,
-    att
-
-  while (i < len) {
-    att = atts[i]
-    if (att.nodeName === 'nut') {
-      return att.value
-    }
-    i++
+  if (atts.nut) {
+    return atts.nut.value
+  } else {
+    return false
   }
-  return false
 }
 
 var getAttributes = function (atts) {
@@ -93,13 +86,11 @@ var getNuProp = function (prop) {
 }
 
 var hasProp = function (name, list) {
-  var i
-  for (i in list) {
-    if (i === name) {
-      return true
-    }
+  if (list[name] !== undefined && list[name]) {
+    return true
+  } else {
+    return false
   }
-  return false
 }
 
 // move attributes with nu- prefix to nuAtts property
