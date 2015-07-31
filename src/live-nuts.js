@@ -2,6 +2,7 @@
 var templates = {},
   allCompiled = false
 
+// list of attributes to extract from tags
 var nuProps = [
   'type',
   'name',
@@ -27,24 +28,26 @@ var nuObjs = [
   'nuSakes'
 ]
 
+// TODO: test this
 var partial = function (target, obj) {
-  var i, j
-
-  for (i in nuProps) {
-    if (obj[nuProps[i]] || obj[nuProps[i]] === '') {
-      target[nuProps[i]] = obj[nuProps[i]]
+  nuProps.forEach(function (p) {
+    if (obj[p] !== undefined) {
+      target[p] = obj[p]
     }
-  }
-  if (obj.children.length > 0) {
+  })
+
+  // assign children schemas to tag if has children
+  if (obj.children.length) {
     if (obj.children.length !== 1 || obj.children[0].schema.data !== ' ') {
       target.children = obj.children
     }
   }
-  for (i in nuObjs) {
-    for (j in obj[nuObjs[i]]) {
-      target[nuObjs[i]][j] = obj[nuObjs[i]][j]
-    }
-  }
+
+  nuObjs.forEach(function (o) {
+    obj[o].forEach(function (el, i) {
+      target[o][i] = obj[o][i]
+    })
+  })
   return target
 }
 
@@ -308,8 +311,7 @@ var direct = function (t, el) {
     nuAtts = t.nuAtts,
     nuClass = t.nuClass,
     checked = t.checked,
-    each = t.each,
-    nuif = t.nuif
+    each = t.each
 
   return function (x) {
     var props = [],
