@@ -1,5 +1,7 @@
 'use strict'
 
+const forEach = Array.prototype.forEach
+
 let templates = {},
     allCompiled = false
 
@@ -61,51 +63,37 @@ const getNutName = function (atts) {
 }
 
 const getAttributes = function (atts) {
-  let len = atts.length,
-      obj = {},
-      i = 0,
-      att
-
-  while (i < len) {
-    if (atts.hasOwnProperty(i)) {
-      att = atts[i]
-      obj[att.nodeName] = att.value
-    }
-    i++
-  }
+  let obj = {}
+  forEach.call(atts, att => obj[att.nodeName] = att.value)
   return obj
 }
 
 /* - Utils */
 // detect if an attribute name is prefixed with nu-
-const startsWithNu = function (str) {
+const hasNuPrefix = function (str) {
   return str.indexOf('nu-') === 0
 }
+
 // remove nu- prefix from attribute
 const getNuProp = function (prop) {
   return prop.substr(3, prop.length)
 }
 
 const hasProp = function (name, list) {
-  if (list[name] !== undefined && list[name]) {
-    return true
-  } else {
-    return false
-  }
+  return list[name] !== undefined && list[name]
 }
 
 // move attributes with nu- prefix to nuAtts property
 const separateNamesakes = function (atts, nuAtts) {
   let names = {},
-      sakes = {},
-      i
+      sakes = {}
 
-  for (i in atts) {
-    if (hasProp(i, nuAtts)) {
-      names[i] = atts[i]
-      sakes[i] = nuAtts[i]
-      delete atts[i]
-      delete nuAtts[i]
+  for (let att in atts) {
+    if (hasProp(att, nuAtts)) {
+      names[att] = atts[att]
+      sakes[att] = nuAtts[att]
+      delete atts[att]
+      delete nuAtts[att]
     }
   }
   return [names, sakes]
@@ -113,13 +101,12 @@ const separateNamesakes = function (atts, nuAtts) {
 
 // move attributes with nu- prefix to nuAtts property
 const separateNuAtts = function (atts) {
-  let nuAtts = {},
-    i
+  let nuAtts = {}
 
-  for (i in atts) {
-    if (startsWithNu(i)) {
-      nuAtts[ getNuProp(i)] = atts[i]
-      delete atts[i]
+  for (let att in atts) {
+    if (hasNuPrefix(att)) {
+      nuAtts[ getNuProp(att)] = atts[att]
+      delete atts[att]
     }
   }
   return nuAtts
@@ -221,15 +208,12 @@ const TagSchema = function (attributes, dom) {
     this.children = []
     nuChildren = this.children
     domChildren = dom.childNodes
-    let len = domChildren.length
-    i = 0
-    while (i < len) {
+    forEach.call(domChildren, (child, i) => {
       nuChildren[i] = {
         src: null,
-        schema: new TagSchema(domChildren[i].attributes || [], domChildren[i])
+        schema: new TagSchema(child.attributes || [], child)
       }
-      i++
-    }
+    })
   }
 
   // assign attributes
@@ -240,56 +224,78 @@ const TagSchema = function (attributes, dom) {
 /**
  * Nuts constructor
  */
-const Nuts = function () {
-}
+class Nuts {
+  /**
+   * Add a templates and generate its model
+   * @param {String}   source html templates
+   * @param {Function} callback    Signature: error
+   */
+  addTemplate (src, callback) {
+    let div = document.createElement('div')
+    div.innerHTML = src
+    let elems = div.childNodes
 
-/**
- * Add a templates and generate its model
- * @param {String}   source html templates
- * @param {Function} callback    Signature: error
- */
-Nuts.prototype.addTemplate = function (src, callback) {
-  let div = document.createElement('div')
-  div.innerHTML = src
-  let elems = div.childNodes
+    let i = 0,
+        el, name, atts
 
-  let i = 0,
-      el, name, atts
-
-  while (i < elems.length) {
-    el = elems[i]
-    atts = el.attributes
-    name = getNutName(atts)
-    allCompiled = false
-    if (name) {
-      templates[name] = {
-        src: el.outerHTML,
-        schema: new TagSchema(el.attributes, el),
-        nut: name
+    while (i < elems.length) {
+      el = elems[i]
+      atts = el.attributes
+      name = getNutName(atts)
+      allCompiled = false
+      if (name) {
+        templates[name] = {
+          src: el.outerHTML,
+          schema: new TagSchema(el.attributes, el),
+          nut: name
+        }
       }
+      i++
     }
-    i++
+    callback(null)
   }
-  callback(null)
-}
 
-/**
- * Get a template object from templates
- * @param  {String} name template keyname
- * @return {Object}      template object
- */
-Nuts.prototype.getTemplate = function (name) {
-  return templates[name]
+  /**
+   * Get a template object from templates
+   * @param  {String} name template keyname
+   * @return {Object}      template object
+   */
+  getTemplate (name) {
+    return templates[name]
+  }
+
+  /**
+   * Get a rendered template
+   * @param  {String} tmplName template keyname
+   * @param  {Object} data     locals
+   * @return {String}          rendered html
+   */
+  render (tmplName, data) {
+    let tmpl, i
+      data = data || {}
+    if (!allCompiled) {
+      for (i in templates) {
+        templates[i].render = compileTag(templates[i])
+      }
+      allCompiled = true
+    }
+    tmpl = templates[tmplName]
+    if (tmpl) {
+      if (tmpl.schema.nuif === undefined) {
+        return tmpl.render(data)
+      }
+      if (tmpl.schema.nuif === '') {
+        return data ? tmpl.render(data) : ''
+      }
+      return data[tmpl.schema.nuif] ? tmpl.render(data) : ''
+    }
+    return ''
+  }
 }
 
 const printChildren = function (children, x) {
-  let i = 0,
-      len = children.length
   let fragment = document.createDocumentFragment()
-  while (i < len) {
-    fragment.appendChild(children[i].render(x))
-    i++
-  }
+  forEach.call(children, child => fragment.appendChild(child.render(x)))
   return fragment
 }
 
@@ -468,34 +474,6 @@ compileTag = function (template) {
     case 'directive':
       return newCompiledDirective(schema)
   }
-}
-
-/**
- * Get a rendered template
- * @param  {String} tmplName template keyname
- * @param  {Object} data     locals
- * @return {String}          rendered html
- */
-Nuts.prototype.render = function (tmplName, data) {
-  let tmpl, i
-  data = data || {}
-  if (!allCompiled) {
-    for (i in templates) {
-      templates[i].render = compileTag(templates[i])
-    }
-    allCompiled = true
-  }
-  tmpl = templates[tmplName]
-  if (tmpl) {
-    if (typeof tmpl.schema.nuif === 'undefined') {
-      return tmpl.render(data)
-    }
-    if (tmpl.schema.nuif === '') {
-      return data ? tmpl.render(data) : ''
-    }
-    return data[tmpl.schema.nuif] ? tmpl.render(data) : ''
-  }
-  return ''
 }
 
 const nuts = new Nuts()
