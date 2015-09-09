@@ -114,7 +114,7 @@ const separateNuAtts = function (atts) {
 
 const TagSchema = function (attributes, dom) {
   let atts = getAttributes(attributes),
-      domChildren, nuChildren, i
+      domChildren, nuChildren
 
   switch (dom.nodeType) {
     case 1:
@@ -233,15 +233,10 @@ class Nuts {
   addTemplate (src, callback) {
     let div = document.createElement('div')
     div.innerHTML = src
-    let elems = div.childNodes
 
-    let i = 0,
-        el, name, atts
-
-    while (i < elems.length) {
-      el = elems[i]
-      atts = el.attributes
-      name = getNutName(atts)
+    forEach.call(div.childNodes, el => {
+      let atts = el.attributes,
+          name = getNutName(atts)
       allCompiled = false
       if (name) {
         templates[name] = {
@@ -250,8 +245,7 @@ class Nuts {
           nut: name
         }
       }
-      i++
-    }
+    })
     callback(null)
   }
 
@@ -271,15 +265,14 @@ class Nuts {
    * @return {String}          rendered html
    */
   render (tmplName, data) {
-    let tmpl, i
-      data = data || {}
+    data = data || {}
     if (!allCompiled) {
-      for (i in templates) {
+      for (let i in templates) {
         templates[i].render = compileTag(templates[i])
       }
       allCompiled = true
     }
-    tmpl = templates[tmplName]
+    let tmpl = templates[tmplName]
     if (tmpl) {
       if (tmpl.schema.nuif === undefined) {
         return tmpl.render(data)
@@ -314,7 +307,7 @@ const direct = function (t, el) {
   return function (x) {
     let props = [],
         preX = {},
-        len, i, j, z
+        i, z
 
     if (pipe === '') {
       for (i in x) {
@@ -375,15 +368,11 @@ const direct = function (t, el) {
         z = x[each]
       }
       if (z) {
-        i = 0
-        len = z.length
-        while (i < len) {
-          j = z[i]
+        forEach.call(z, j => {
           if (children) {
             el.appendChild(printChildren(children, j).cloneNode(true))
           }
-          i++
-        }
+        })
       }
     } else {
       // compile content
