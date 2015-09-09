@@ -236,8 +236,7 @@ class Nuts {
     div.innerHTML = src
 
     forEach.call(div.childNodes, el => {
-      let atts = el.attributes,
-          name = getNutName(atts)
+      let name = getNutName(el.attributes)
       allCompiled = false
       if (name) {
         templates[name] = {
@@ -416,18 +415,14 @@ const newCompiledDirective = function (tmp) {
 }
 
 const newCompiledTag = function (tmp) {
-  let nuas
   if (tmp.as) {
-    nuas = tmp.as
+    tmp = partial(tmp, templates[tmp.as].schema)
     delete tmp.as
-    tmp = partial(tmp, templates[nuas].schema)
   }
 
   // crete element
   let el = document.createElement(tmp.name),
       atts = tmp.attribs
-
-  let i
 
   // preprint doctype
   /*
@@ -436,7 +431,7 @@ const newCompiledTag = function (tmp) {
   }
   */
   // render regular attributes
-  for (i in atts) {
+  for (let i in atts) {
     el.setAttribute(i, atts[i])
   }
 
@@ -446,7 +441,7 @@ const newCompiledTag = function (tmp) {
   }
 
   let children = tmp.children
-  for (i in children) {
+  for (let i in children) {
     children[i].render = compileTag(children[i])
   }
   return direct(tmp, el)
