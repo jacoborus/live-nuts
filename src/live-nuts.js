@@ -1,9 +1,10 @@
 'use strict'
-var templates = {},
-  allCompiled = false
+
+let templates = {},
+    allCompiled = false
 
 // list of attributes to extract from tags
-var nuProps = [
+const nuProps = [
   'type',
   'name',
   'class',
@@ -21,7 +22,7 @@ var nuProps = [
   'nuSakes'
 ]
 
-var nuObjs = [
+const nuObjs = [
   'attribs',
   'nuAtts',
   'namesakes',
@@ -29,7 +30,7 @@ var nuObjs = [
 ]
 
 // TODO: test this
-var partial = function (target, obj) {
+const partial = function (target, obj) {
   nuProps.forEach(function (p) {
     if (obj[p] !== undefined) {
       target[p] = obj[p]
@@ -51,7 +52,7 @@ var partial = function (target, obj) {
   return target
 }
 
-var getNutName = function (atts) {
+const getNutName = function (atts) {
   if (atts.nut) {
     return atts.nut.value
   } else {
@@ -59,11 +60,11 @@ var getNutName = function (atts) {
   }
 }
 
-var getAttributes = function (atts) {
-  var len = atts.length,
-    obj = {},
-    i = 0,
-    att
+const getAttributes = function (atts) {
+  let len = atts.length,
+      obj = {},
+      i = 0,
+      att
 
   while (i < len) {
     if (atts.hasOwnProperty(i)) {
@@ -77,15 +78,15 @@ var getAttributes = function (atts) {
 
 /* - Utils */
 // detect if an attribute name is prefixed with nu-
-var startsWithNu = function (str) {
+const startsWithNu = function (str) {
   return str.indexOf('nu-') === 0
 }
 // remove nu- prefix from attribute
-var getNuProp = function (prop) {
+const getNuProp = function (prop) {
   return prop.substr(3, prop.length)
 }
 
-var hasProp = function (name, list) {
+const hasProp = function (name, list) {
   if (list[name] !== undefined && list[name]) {
     return true
   } else {
@@ -94,10 +95,10 @@ var hasProp = function (name, list) {
 }
 
 // move attributes with nu- prefix to nuAtts property
-var separateNamesakes = function (atts, nuAtts) {
-  var names = {},
-    sakes = {},
-    i
+const separateNamesakes = function (atts, nuAtts) {
+  let names = {},
+      sakes = {},
+      i
 
   for (i in atts) {
     if (hasProp(i, nuAtts)) {
@@ -111,8 +112,8 @@ var separateNamesakes = function (atts, nuAtts) {
 }
 
 // move attributes with nu- prefix to nuAtts property
-var separateNuAtts = function (atts) {
-  var nuAtts = {},
+const separateNuAtts = function (atts) {
+  let nuAtts = {},
     i
 
   for (i in atts) {
@@ -124,9 +125,9 @@ var separateNuAtts = function (atts) {
   return nuAtts
 }
 
-var TagSchema = function (attributes, dom) {
-  var atts = getAttributes(attributes),
-    domChildren, nuChildren, i
+const TagSchema = function (attributes, dom) {
+  let atts = getAttributes(attributes),
+      domChildren, nuChildren, i
 
   switch (dom.nodeType) {
     case 1:
@@ -211,7 +212,7 @@ var TagSchema = function (attributes, dom) {
 
   // separate nuAttributes from the regular ones
   this.nuAtts = separateNuAtts(atts)
-  var sakes = separateNamesakes(atts, this.nuAtts)
+  let sakes = separateNamesakes(atts, this.nuAtts)
   this.namesakes = sakes[0]
   this.nuSakes = sakes[1]
 
@@ -220,7 +221,7 @@ var TagSchema = function (attributes, dom) {
     this.children = []
     nuChildren = this.children
     domChildren = dom.childNodes
-    var len = domChildren.length
+    let len = domChildren.length
     i = 0
     while (i < len) {
       nuChildren[i] = {
@@ -239,7 +240,7 @@ var TagSchema = function (attributes, dom) {
 /**
  * Nuts constructor
  */
-var Nuts = function () {
+const Nuts = function () {
 }
 
 /**
@@ -248,12 +249,12 @@ var Nuts = function () {
  * @param {Function} callback    Signature: error
  */
 Nuts.prototype.addTemplate = function (src, callback) {
-  var div = document.createElement('div')
+  let div = document.createElement('div')
   div.innerHTML = src
-  var elems = div.childNodes
+  let elems = div.childNodes
 
-  var i = 0,
-    el, name, atts
+  let i = 0,
+      el, name, atts
 
   while (i < elems.length) {
     el = elems[i]
@@ -281,10 +282,10 @@ Nuts.prototype.getTemplate = function (name) {
   return templates[name]
 }
 
-var printChildren = function (children, x) {
-  var i = 0,
-    len = children.length
-  var fragment = document.createDocumentFragment()
+const printChildren = function (children, x) {
+  let i = 0,
+      len = children.length
+  let fragment = document.createDocumentFragment()
   while (i < len) {
     fragment.appendChild(children[i].render(x))
     i++
@@ -292,22 +293,22 @@ var printChildren = function (children, x) {
   return fragment
 }
 
-var direct = function (t, el) {
-  var pipe = t.pipe,
-    scope = t.scope,
-    model = t.model,
-    nuSakes = t.nuSakes,
-    children = t.children,
-    namesakes = t.namesakes,
-    nuAtts = t.nuAtts,
-    nuClass = t.nuClass,
-    checked = t.checked,
-    each = t.each
+const direct = function (t, el) {
+  let pipe = t.pipe,
+      scope = t.scope,
+      model = t.model,
+      nuSakes = t.nuSakes,
+      children = t.children,
+      namesakes = t.namesakes,
+      nuAtts = t.nuAtts,
+      nuClass = t.nuClass,
+      checked = t.checked,
+      each = t.each
 
   return function (x) {
-    var props = [],
-      preX = {},
-      len, i, j, z
+    let props = [],
+        preX = {},
+        len, i, j, z
 
     if (pipe === '') {
       for (i in x) {
@@ -395,31 +396,31 @@ var direct = function (t, el) {
 }
 
 /* - Generate compiled tags - */
-var compileTag
+let compileTag
 
-var newCompiledText = function (tmp) {
-  var out = document.createTextNode(tmp.data)
+const newCompiledText = function (tmp) {
+  let out = document.createTextNode(tmp.data)
   return function () {
     return out
   }
 }
 
-var newCompiledComment = function (tmp) {
-  var out = document.createComment(tmp.data)
+const newCompiledComment = function (tmp) {
+  let out = document.createComment(tmp.data)
   return function () {
     return out
   }
 }
 
-var newCompiledDirective = function (tmp) {
-  var out = '<' + tmp.data + '>'
+const newCompiledDirective = function (tmp) {
+  let out = '<' + tmp.data + '>'
   return function () {
     return out
   }
 }
 
-var newCompiledTag = function (tmp) {
-  var nuas
+const newCompiledTag = function (tmp) {
+  let nuas
   if (tmp.as) {
     nuas = tmp.as
     delete tmp.as
@@ -427,10 +428,10 @@ var newCompiledTag = function (tmp) {
   }
 
   // crete element
-  var el = document.createElement(tmp.name),
-    atts = tmp.attribs
+  let el = document.createElement(tmp.name),
+      atts = tmp.attribs
 
-  var i
+  let i
 
   // preprint doctype
   /*
@@ -448,7 +449,7 @@ var newCompiledTag = function (tmp) {
     el.classList.add(tmp.class)
   }
 
-  var children = tmp.children
+  let children = tmp.children
   for (i in children) {
     children[i].render = compileTag(children[i])
   }
@@ -456,7 +457,7 @@ var newCompiledTag = function (tmp) {
 }
 
 compileTag = function (template) {
-  var schema = template.schema
+  let schema = template.schema
   switch (schema.type) {
     case 'tag':
       return newCompiledTag(schema)
@@ -476,7 +477,7 @@ compileTag = function (template) {
  * @return {String}          rendered html
  */
 Nuts.prototype.render = function (tmplName, data) {
-  var tmpl, i
+  let tmpl, i
   data = data || {}
   if (!allCompiled) {
     for (i in templates) {
@@ -497,11 +498,7 @@ Nuts.prototype.render = function (tmplName, data) {
   return ''
 }
 
-var nuts = new Nuts()
+const nuts = new Nuts()
 
 nuts.version = '0.0.1'
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = nuts
-} else {
-  window.nuts = nuts
-}
+window.nuts = nuts

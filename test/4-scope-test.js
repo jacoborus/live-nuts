@@ -1,19 +1,8 @@
-/*globals it describe chai*/
 'use strict'
-
-var expect,
-  require = require || function () {},
-  nuts = nuts || require('../live-nuts.js')
-
-if (typeof chai !== 'undefined' && chai !== null) {
-  expect = chai.expect
-} else {
-  expect = require('chai').expect
-}
 
 describe('Scope', function () {
   it('render simple data', function () {
-    var tmpl = '<span nut="simpleData" nu-model="word">hi</span>'
+    let tmpl = '<span nut="simpleData" nu-model="word">hi</span>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('simpleData', { word: 'bye' }).outerHTML
@@ -22,7 +11,7 @@ describe('Scope', function () {
   })
 
   it('render data inside inner tags', function () {
-    var tmpl = '<ul nut="dataThrough"><li nu-model="word">hi</li></ul>'
+    let tmpl = '<ul nut="dataThrough"><li nu-model="word">hi</li></ul>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('dataThrough', { word: 'bye' }).outerHTML
@@ -31,7 +20,7 @@ describe('Scope', function () {
   })
 
   it('render data passed through scope', function () {
-    var tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>'
+    let tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('basicScope', { card: { name: 'Name' }}).outerHTML
@@ -40,7 +29,7 @@ describe('Scope', function () {
   })
 
   it('use children dom elem if there is no model in data', function () {
-    var tmpl = '<ul nut="defaultChildrenScope" nu-scope="card"><li nu-model="name">no name</li></ul>'
+    let tmpl = '<ul nut="defaultChildrenScope" nu-scope="card"><li nu-model="name">no name</li></ul>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('defaultChildrenScope', { card: { }}).outerHTML
@@ -49,7 +38,7 @@ describe('Scope', function () {
   })
 
   it('render data passed through multiple scopes', function () {
-    var tmpl = '<div  nut="doubleScope">'
+    let tmpl = '<div  nut="doubleScope">'
       + '<ul nu-scope="card">'
       + '<li nu-model="name">no name</li>'
       + '</ul></div>'
@@ -61,7 +50,7 @@ describe('Scope', function () {
   })
 
   it('render className from data', function () {
-    var tmpl = '<span nut="classData" class="featured" nu-class="nuclass">bye</span>'
+    let tmpl = '<span nut="classData" class="featured" nu-class="nuclass">bye</span>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('classData', {nuclass: 'white'}).outerHTML
@@ -70,7 +59,7 @@ describe('Scope', function () {
   })
 
   it('render attributes with namesake', function () {
-    var tmpl = '<span nut="nuSakes" id="id" nu-id="nuid"></span>'
+    let tmpl = '<span nut="nuSakes" id="id" nu-id="nuid"></span>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('nuSakes', {nuclass: 'white'}).outerHTML
@@ -79,7 +68,7 @@ describe('Scope', function () {
   })
 
   it('render attributes from data', function () {
-    var tmpl = '<span nut="nuAtts" nu-id="color"></span>'
+    let tmpl = '<span nut="nuAtts" nu-id="color"></span>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('nuAtts', {color: 'white'}).outerHTML
@@ -88,7 +77,7 @@ describe('Scope', function () {
   })
 
   it('Inserts the element only when the value evaluates to true', function () {
-    var tmpl = '<span nut="nuif" nu-if="color">hi</span>'
+    let tmpl = '<span nut="nuif" nu-if="color">hi</span>'
     nuts.addTemplate(tmpl, function () {
       expect(
         nuts.render('nuif', {color: true}).outerHTML
