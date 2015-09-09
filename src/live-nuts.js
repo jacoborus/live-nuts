@@ -2,6 +2,13 @@
 
 const forEach = Array.prototype.forEach
 
+const nodeType = {
+  1: 'tag',
+  3: 'text',
+  8: 'comment',
+  10: 'directive'
+}
+
 let templates = {},
     allCompiled = false
 
@@ -116,28 +123,11 @@ const TagSchema = function (attributes, dom) {
   let atts = getAttributes(attributes),
       domChildren, nuChildren
 
-  switch (dom.nodeType) {
-    case 1:
-      this.type = 'tag'
-      break
-    case 3:
-      this.type = 'text'
-      break
-    case 8:
-      this.type = 'comment'
-      break
-    case 10:
-      this.type = 'directive'
-      break
-  }
-
+  this.type = nodeType[dom.nodeType]
   this.data = dom.data
-
   this.name = dom.localName
 
   // assign attributes
-
-  // separate special attributes
   if (atts.class) {
     this.class = atts.class
     delete atts.class
