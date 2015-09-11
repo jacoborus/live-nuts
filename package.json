@@ -6,7 +6,7 @@
   "scripts": {
     "eslint": "eslint src test",
     "test": "npm run build && sensible-browser ./test/test.html",
-    "build": "cat build_assets/start.txt src/live-nuts.js build_assets/end.txt > dist/live-nuts.js"
+    "build": "cat src/begin-script.txt src/live-nuts.js src/end-script.txt > dist/live-nuts.js"
   },
   "repository": {
     "type": "git",
