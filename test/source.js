@@ -3,11 +3,11 @@
 describe('Template source:', function () {
   it('generate a source from template string', function (done) {
     let nuts = new Nuts(),
-        tmpl = '<ul nut="simpleTag"></ul>'
+        tmpl = '<span nut="simpleTag"></span>'
     nuts.addTemplates(tmpl, function (err) {
       expect(err).to.not.be.ok
       expect(nuts.templates.simpleTag.source.type).to.equal('tag')
-      expect(nuts.templates.simpleTag.source.name).to.equal('ul')
+      expect(nuts.templates.simpleTag.source.name).to.equal('span')
       done()
     })
   })
@@ -121,6 +121,20 @@ describe('Template source:', function () {
       expect(err).to.not.be.ok
       expect(nuts.templates.formatTag.source.formatters[0]).to.equal('format')
       expect(nuts.templates.formatTag.source.formatters[1]).to.equal('other')
+      done()
+    })
+  })
+
+  it('generate a source from template string', function (done) {
+    let nuts = new Nuts(),
+        tmpl = '<ul nut="simpleTag"><li>hola<span></span></li></ul>'
+    nuts.addTemplates(tmpl, function (err) {
+      expect(err).to.not.be.ok
+      expect(nuts.templates.simpleTag.children[0].source.type).to.equal('tag')
+      expect(nuts.templates.simpleTag.children[0].source.name).to.equal('li')
+      expect(nuts.templates.simpleTag.children[0].children[0].source.type).to.equal('text')
+      expect(nuts.templates.simpleTag.children[0].children[1].source.type).to.equal('tag')
+      expect(nuts.templates.simpleTag.children[0].children[1].source.name).to.equal('span')
       done()
     })
   })

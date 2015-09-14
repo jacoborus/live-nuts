@@ -1,7 +1,8 @@
 'use strict'
 
-const range = new Range()
-const forEach = Array.prototype.forEach
+const range = new Range(),
+      forEach = Array.prototype.forEach,
+      map = Array.prototype.map
 
 // create a Set with all self-closing html tags
 const voidElementsSet = new Set(),
@@ -73,8 +74,7 @@ const separateNuAtts = function (atts) {
 
 const getSource = function (el) {
   let src = {},
-      atts = getAttributes(el.attributes)
-      // domChildren, nuChildren
+      atts = getAttributes(el.attributes || [])
 
   src.type = nodeType[el.nodeType]
   src.data = el.data
@@ -132,19 +132,6 @@ const getSource = function (el) {
   src.nuAtts = separateNuAtts(atts)
   src.attribs = atts
 
-  // // assign children dom elements
-  // if (dom.childNodes && dom.childNodes.length) {
-  //   this.children = []
-  //   nuChildren = this.children
-  //   domChildren = dom.childNodes
-  //   forEach.call(domChildren, (child, i) => {
-  //     nuChildren[i] = {
-  //       src: null,
-  //       schema: new TagSchema(child.attributes || [], child)
-  //     }
-  //   })
-  // }
-
   // // assign attributes
   // delete atts.nut
   // this.attribs = atts || {}
@@ -181,6 +168,18 @@ const getSource = function (el) {
   return src
 }
 
+const getNut = function (el) {
+  let nut = {
+    raw: el.outerHTML,
+    source: getSource(el)
+  }
+  // assign children dom elements
+  if (el.childNodes && el.childNodes.length) {
+    nut.children = map.call(el.childNodes, child => getNut(child))
+  }
+  return nut
+}
+
 /**
  * Nuts constructor
  */
@@ -199,11 +198,8 @@ class Nuts {
     forEach.call(fragment.childNodes, el => {
       let name = getNutName(el)
       if (name) {
-        this.templates[name] = {
-          raw: el.outerHTML,
-          source: getSource(el),
-          name
-        }
+        let nut = this.templates[name] = getNut(el)
+        nut.name = name
       }
     })
     callback()
