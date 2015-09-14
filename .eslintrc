@@ -8,6 +8,9 @@
     "globals": {
       "expect": true,
       "Nuts": true,
+      "module": true,
+      "exports": true,
+      "require": true,
       "nuts": true
     },
     "ecmaFeatures": {

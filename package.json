@@ -1,12 +1,12 @@
 {
-  "name": "live-nuts",
+  "name": "nuts",
   "version": "0.0.1",
   "description": "Live HTML template engine using NUTS syntax",
   "main": "index.js",
   "scripts": {
     "eslint": "eslint src test",
     "test": "npm run build && sensible-browser ./test/test.html",
-    "build": "cat src/begin-script.txt src/live-nuts.js src/end-script.txt > dist/live-nuts.js"
+    "build": "browserify src/live-nuts.js --standalone Nuts -o dist/live-nuts.js"
   },
   "repository": {
     "type": "git",
@@ -26,9 +26,9 @@
   },
   "homepage": "https://github.com/jacoborus/live-nuts",
   "devDependencies": {
+    "browserify": "^11.1.0",
     "chai": "^3.2.0",
     "eslint": "^1.3.1",
-    "mocha": "^2.0.1",
-    "uglify-js": "^2.4.24"
+    "mocha": "^2.0.1"
   }
 }
