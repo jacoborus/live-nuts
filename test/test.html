@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>live-nuts tests</title>
-	<link rel="stylesheet" media="all" href="../node_modules/mocha/mocha.css">
+	<!-- <link rel="stylesheet" media="all" href="../node_modules/mocha/mocha.css"> -->
 	<style>
 		body{
 			font-family: sans-serif;
@@ -11,23 +11,8 @@
 	</style>
 </head>
 <body>
-	<div id="mocha"><p><a href=".">Index</a></p></div>
-	<div id="messages"></div>
-	<div id="fixtures">
-		<div id="rendered" name="rendered"></div>
-		<div id="almanac" name="example"></div>
-		<div id="noName"></div>
-	</div>
-	<script src="../node_modules/mocha/mocha.js"></script>
-	<script src="../node_modules/chai/chai.js"></script>
 	<script src="../dist/live-nuts.js"></script>
-  <script>
-    var expect = chai.expect
-  </script>
-	<script>mocha.setup('bdd')</script>
-	<script src="add-templates.js"></script>
-	<script src="source.js"></script>
-	<!-- <script src="schema.js"></script> -->
-	<script>mocha.run();</script>
+	<!-- <script src="add-templates.js"></script> -->
+	<script src="../dist/tests.js"></script>
 </body>
 </html>
