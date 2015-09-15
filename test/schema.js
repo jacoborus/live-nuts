@@ -1,25 +1,26 @@
 'use strict'
 
-describe.skip('Schema:', function () {
-  it('has same properties as source when no extension passed', function (done) {
-    let nuts = new Nuts()
-    nuts.templates = {
+const makeSchemas = require('../src/schema.js')
+const test = require('tape')
+
+test.skip('Schema:', function (t) {
+  t.test('has same properties as source when no extension passed', function (t) {
+    let templates = {
       sample: {
         source: {
           scope: 'test'
         }
       }
     }
-    nuts.makeSchemas(function (err) {
-      expect(err).to.not.be.ok
-      expect(nuts.templates.sample.schema.scope).equals('test')
-      done()
+    makeSchemas(templates, function (err) {
+      t.error(err)
+      t.is(templates.sample.schema.scope, 'test')
+      t.end()
     })
   })
 
-  it('extend nut properties', function (done) {
-    let nuts = new Nuts()
-    nuts.templates = {
+  t.test('extend nut properties', function (t) {
+    let templates = {
       sample: {
         source: {
           scope: 'test'
@@ -32,17 +33,16 @@ describe.skip('Schema:', function () {
         }
       }
     }
-    nuts.makeSchemas(function (err) {
-      expect(err).to.not.be.ok
-      expect(nuts.templates.sample.scope).equals('test')
-      expect(nuts.templates.sample.other).equals('other')
-      done()
+    makeSchemas(templates, function (err) {
+      t.error(err)
+      t.is(templates.sample.scope, 'test')
+      t.is(templates.sample.other, 'other')
+      t.end()
     })
   })
 
-  it('extend attributes and variable attributes', function (done) {
-    let nuts = new Nuts()
-    nuts.templates = {
+  t.test('extend attributes and variable attributes', function (t) {
+    let templates = {
       sample: {
         source: {
           attribs: { other: 'src' },
@@ -56,19 +56,18 @@ describe.skip('Schema:', function () {
         }
       }
     }
-    nuts.makeSchemas(function (err) {
-      expect(err).to.not.be.ok
-      expect(nuts.templates.sample.schema.attribs.id).equals('ext')
-      expect(nuts.templates.sample.schema.attribs.other).equals('src')
-      expect(nuts.templates.sample.schema.nuAtts.id).equals('ext')
-      expect(nuts.templates.sample.schema.nuAtts.other).equals('src')
-      done()
+    makeSchemas(templates, function (err) {
+      t.error(err)
+      t.is(templates.sample.schema.attribs.id, 'ext')
+      t.is(templates.sample.schema.attribs.other, 'src')
+      t.is(templates.sample.schema.nuAtts.id, 'ext')
+      t.is(templates.sample.schema.nuAtts.other, 'src')
+      t.end()
     })
   })
 
-  it('extend nutName', function (done) {
-    let nuts = new Nuts()
-    nuts.templates = {
+  t.test('extend nutName', function (t) {
+    let templates = {
       sample: {
         source: {
           nutName: 'test'
@@ -80,16 +79,15 @@ describe.skip('Schema:', function () {
         }
       }
     }
-    nuts.makeSchemas(function (err) {
-      expect(err).to.not.be.ok
-      expect(nuts.templates.sample.schema.nutName).equals('test')
-      done()
+    makeSchemas(templates, function (err) {
+      t.error(err)
+      t.is(templates.sample.schema.nutName, 'test')
+      t.end()
     })
   })
 
-  it('extend formatters', function (done) {
-    let nuts = new Nuts()
-    nuts.templates = {
+  t.test('extend formatters', function (t) {
+    let templates = {
       sample: {
         source: {
           formatters: ['test']
@@ -101,10 +99,10 @@ describe.skip('Schema:', function () {
         }
       }
     }
-    nuts.makeSchemas(function (err) {
-      expect(err).to.not.be.ok
-      expect(nuts.templates.sample.schema.formatters[0]).equals('test')
-      done()
+    makeSchemas(templates, function (err) {
+      t.error(err)
+      t.is(templates.sample.schema.formatters[0], 'test')
+      t.end()
     })
   })
 })

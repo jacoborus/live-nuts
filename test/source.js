@@ -87,6 +87,7 @@ test('distribute special nuts attributes', function (t) {
   t.is(src.nuAtts.nut, undefined)
   // regular attributes
   t.is(src.attribs.myatt, 'myatt')
+  t.is(src.attribs.custom, 'custom')
   // variable attributes
   t.is(src.nuAtts.custom, 'custom')
   t.end()

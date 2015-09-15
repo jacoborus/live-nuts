@@ -184,12 +184,6 @@ const getSource = function (el) {
   }
 
   src.nuAtts = separateNuAtts(atts)
-  src.attribs = atts
-
-  // // assign attributes
-  // delete atts.nut
-  // this.attribs = atts || {}
-
   // separate boolean attributes from the regular ones
   // and remove them from regular ones
   src.booleans = {}
@@ -199,6 +193,9 @@ const getSource = function (el) {
       delete src.nuAtts[i]
     }
   }
+
+  delete atts.nut
+  src.attribs = atts
 
   {
     // add formatters from piped model
