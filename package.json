@@ -5,12 +5,25 @@
   "main": "index.js",
   "scripts": {
     "eslint": "eslint src test",
-    "test": "npm run build && node_modules/run-headless-chromium/run-headless-chromium.js test/test.html | faucet",
+    "test": "npm run build && cat dist/tests.js | testling",
     "build": "browserify src/live-nuts.js --standalone Nuts -o dist/live-nuts.js && browserify test/index.js -o dist/tests.js"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:jacoborus/live-nuts.git"
+  },
+  "testling": {
+    "files": "dist/tests.js",
+    "browsers": [
+      "ie/10..latest",
+      "chrome/latest",
+      "firefox/latest",
+      "safari/latest",
+      "opera/latest",
+      "iphone/6",
+      "ipad/6",
+      "android-browser/latest"
+    ]
   },
   "keywords": [
     "NUTS",
@@ -26,10 +39,9 @@
   },
   "homepage": "https://github.com/jacoborus/live-nuts",
   "devDependencies": {
-    "browserify": "^11.1.0",
-    "eslint": "^1.4.1",
-    "faucet": "0.0.1",
-    "run-headless-chromium": "0.0.12",
-    "tape": "^4.2.0"
+    "browserify": "^11.2.0",
+    "eslint": "^1.6.0",
+    "tape": "^4.2.1",
+    "testling": "^1.7.1"
   }
 }
