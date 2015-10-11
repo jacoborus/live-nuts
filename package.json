@@ -4,7 +4,7 @@
   "description": "Live HTML template engine using NUTS syntax",
   "main": "index.js",
   "scripts": {
-    "eslint": "eslint src test",
+    "linter": "eslint src test",
     "test": "npm run build && cat dist/tests.js | testling",
     "build": "browserify src/live-nuts.js --standalone Nuts -o dist/live-nuts.js && browserify test/index.js -o dist/tests.js"
   },

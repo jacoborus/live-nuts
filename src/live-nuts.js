@@ -1,9 +1,8 @@
 'use strict'
 
-const range = new Range(),
+const newNut = require('./nut.js'),
+      range = new Range(),
       forEach = Array.prototype.forEach
-
-const getNut = require('./nut.js')
 
 const getNutName = function (elem) {
   if (elem.attributes.nut) {
@@ -31,7 +30,7 @@ class Nuts {
     forEach.call(fragment.childNodes, el => {
       let name = getNutName(el)
       if (name) {
-        let nut = this.templates[name] = getNut(el)
+        let nut = this.templates[name] = newNut(el)
         nut.name = name
       }
     })
