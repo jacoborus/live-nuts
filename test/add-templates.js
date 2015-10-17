@@ -3,7 +3,7 @@
 const Nuts = require('../src/live-nuts.js')
 const test = require('tape')
 
-test(':nuts#addTemplate:', function (t) {
+test.skip(':nuts#addTemplate:', function (t) {
   t.test('add src to a new template in templates archive', function (t) {
     let nuts = new Nuts(),
         tmpl = '<span nut="one">hello</span>'

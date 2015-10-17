@@ -4,7 +4,7 @@ const newNut = require('./nut.js'),
       range = new Range(),
       forEach = Array.prototype.forEach
 
-const getNutName = function (elem) {
+function getNutName (elem) {
   if (elem.attributes.nut) {
     return elem.attributes.nut.value
   } else {

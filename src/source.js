@@ -150,6 +150,12 @@ const getSource = function (el) {
       }
     }
   }
+
+  // assign children dom elements
+  if (el.childNodes && el.childNodes.length) {
+    src.children = Array.prototype.map.call(el.childNodes, child => getSource(child))
+  }
+
   return src
 }
 

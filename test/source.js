@@ -115,14 +115,14 @@ test('detect formatters', function (t) {
   t.end()
 })
 
-// test('generate a source from template string', function (t) {
-//   let tmpl = '<ul nut="simpleTag"><li>hola<span></span></li></ul>',
-//       src = getSrc(tmpl)
+test('generate a source from template string', function (t) {
+  let tmpl = '<ul nut="simpleTag"><li>hola<span></span></li></ul>',
+      src = getSrc(tmpl)
 
-//   t.is(nuts.templates.simpleTag.children[0].source.type, 'tag')
-//   t.is(nuts.templates.simpleTag.children[0].source.name, 'li')
-//   t.is(nuts.templates.simpleTag.children[0].children[0].source.type, 'text')
-//   t.is(nuts.templates.simpleTag.children[0].children[1].source.type, 'tag')
-//   t.is(nuts.templates.simpleTag.children[0].children[1].source.name, 'span')
-//   t.end()
-// })
+  t.is(src.children[0].type, 'tag')
+  t.is(src.children[0].name, 'li')
+  t.is(src.children[0].children[0].type, 'text')
+  t.is(src.children[0].children[1].type, 'tag')
+  t.is(src.children[0].children[1].name, 'span')
+  t.end()
+})

@@ -1,12 +1,11 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Nuts = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict'
 
-const range = new Range(),
+const newNut = require('./nut.js'),
+      range = new Range(),
       forEach = Array.prototype.forEach
 
-const getNut = require('./nut.js')
-
-const getNutName = function (elem) {
+function getNutName (elem) {
   if (elem.attributes.nut) {
     return elem.attributes.nut.value
   } else {
@@ -32,7 +31,7 @@ class Nuts {
     forEach.call(fragment.childNodes, el => {
       let name = getNutName(el)
       if (name) {
-        let nut = this.templates[name] = getNut(el)
+        let nut = this.templates[name] = newNut(el)
         nut.name = name
       }
     })
@@ -49,19 +48,19 @@ const getSource = require('./source.js')
 
 const map = Array.prototype.map
 
-const getNut = function (el) {
+const newNut = function (el) {
   let nut = {
     raw: el.outerHTML,
     source: getSource(el)
   }
   // assign children dom elements
   if (el.childNodes && el.childNodes.length) {
-    nut.children = map.call(el.childNodes, child => getNut(child))
+    nut.children = map.call(el.childNodes, child => newNut(child))
   }
   return nut
 }
 
-module.exports = getNut
+module.exports = newNut
 
 },{"./source.js":3}],3:[function(require,module,exports){
 'use strict'
@@ -216,6 +215,12 @@ const getSource = function (el) {
       }
     }
   }
+
+  // assign children dom elements
+  if (el.childNodes && el.childNodes.length) {
+    src.children = Array.prototype.map.call(el.childNodes, child => getSource(child))
+  }
+
   return src
 }
 
