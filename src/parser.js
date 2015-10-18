@@ -60,7 +60,7 @@ const separateNuAtts = function (atts) {
   return nuAtts
 }
 
-const getSource = function (el) {
+const parser = function (el) {
   let src = {},
       atts = getAttributes(el.attributes || [])
 
@@ -153,10 +153,10 @@ const getSource = function (el) {
 
   // assign children dom elements
   if (el.childNodes && el.childNodes.length) {
-    src.children = Array.prototype.map.call(el.childNodes, child => getSource(child))
+    src.children = Array.prototype.map.call(el.childNodes, child => parser(child))
   }
 
   return src
 }
 
-module.exports = getSource
+module.exports = parser

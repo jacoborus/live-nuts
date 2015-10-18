@@ -1,17 +1,11 @@
 'use strict'
 
-const getSource = require('./source.js')
-
-const map = Array.prototype.map
+const parser = require('./parser.js')
 
 const newNut = function (el) {
   let nut = {
     raw: el.outerHTML,
-    source: getSource(el)
-  }
-  // assign children dom elements
-  if (el.childNodes && el.childNodes.length) {
-    nut.children = map.call(el.childNodes, child => newNut(child))
+    source: parser(el)
   }
   return nut
 }

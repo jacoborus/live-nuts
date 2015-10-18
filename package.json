@@ -12,19 +12,6 @@
     "type": "git",
     "url": "git@github.com:jacoborus/live-nuts.git"
   },
-  "testling": {
-    "files": "dist/tests.js",
-    "browsers": [
-      "ie/10..latest",
-      "chrome/latest",
-      "firefox/latest",
-      "safari/latest",
-      "opera/latest",
-      "iphone/6",
-      "ipad/6",
-      "android-browser/latest"
-    ]
-  },
   "keywords": [
     "NUTS",
     "html",

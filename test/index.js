@@ -1,4 +1,4 @@
 'use strict'
-require('./source.js')
-require('./schema.js')
-require('./add-templates.js')
+require('./parser-test.js')
+require('./extend-test.js')
+// require('./add-templates.js')

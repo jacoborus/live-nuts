@@ -1,15 +1,15 @@
 'use strict'
 
-const getSource = require('../src/source.js')
+const getSource = require('../src/parser.js')
 const test = require('tape')
 
 const range = document.createRange()
-const getSrc = function (tmpl) {
+const parser = function (tmpl) {
   return getSource(range.createContextualFragment(tmpl).childNodes[0])
 }
 
 test('generate a source from template string', function (t) {
-  let src = getSrc('<span nut="simpleTag"></span>')
+  let src = parser('<span nut="simpleTag"></span>')
 
   t.is(src.type, 'tag')
   t.is(src.name, 'span')
@@ -17,7 +17,7 @@ test('generate a source from template string', function (t) {
 })
 
 test('separate nuts attributes from regular ones', function (t) {
-  let src = getSrc('<span id="id" nu-att="nuid" nut="separateAtts">hello</span>')
+  let src = parser('<span id="id" nu-att="nuid" nut="separateAtts">hello</span>')
   t.is(src.attribs.id, 'id')
   t.is(src.nuAtts.att, 'nuid')
   t.end()
@@ -51,7 +51,7 @@ test('distribute special nuts attributes', function (t) {
         '>' +
         'hello' +
         '</span>',
-      src = getSrc(tmpl)
+      src = parser(tmpl)
 
   // class
   t.is(src.class, 'class')
@@ -83,7 +83,6 @@ test('distribute special nuts attributes', function (t) {
   t.is(src.as, 'nuas')
   t.is(src.nuAtts.as, undefined)
   // nut keyname
-  // t.(src.nutName, 'specialNuTs')
   t.is(src.nuAtts.nut, undefined)
   // regular attributes
   t.is(src.attribs.myatt, 'myatt')
@@ -95,29 +94,29 @@ test('distribute special nuts attributes', function (t) {
 
 test('add boolean attributes to schema', function (t) {
   let tmpl = '<span nut="booleans" nu-bool-="myboolean">hello</span>',
-      src = getSrc(tmpl)
+      src = parser(tmpl)
   t.is(src.booleans.bool, 'myboolean')
   t.end()
 })
 
 test('detect void elements', function (t) {
   let tmpl = '<input nut="voidelem">',
-      src = getSrc(tmpl)
+      src = parser(tmpl)
   t.is(src.voidElement, true)
   t.end()
 })
 
 test('detect formatters', function (t) {
   let tmpl = '<input nut="formatTag" nu-model=" model | format | other ">',
-      src = getSrc(tmpl)
+      src = parser(tmpl)
   t.is(src.formatters[0], 'format')
   t.is(src.formatters[1], 'other')
   t.end()
 })
 
-test('generate a source from template string', function (t) {
+test('parse child elements', function (t) {
   let tmpl = '<ul nut="simpleTag"><li>hola<span></span></li></ul>',
-      src = getSrc(tmpl)
+      src = parser(tmpl)
 
   t.is(src.children[0].type, 'tag')
   t.is(src.children[0].name, 'li')
