@@ -25,6 +25,7 @@ test('separate nuts attributes from regular ones', function (t) {
 
 test('distribute special nuts attributes', function (t) {
   let tmpl = '<span ' +
+        ' nut="list"' +
         ' class="class"' +
         ' nu-class="nuclass"' +
         // scopes
@@ -84,6 +85,7 @@ test('distribute special nuts attributes', function (t) {
   t.is(src.nuAtts.as, undefined)
   // nut keyname
   t.is(src.nuAtts.nut, undefined)
+  t.is(src.keyname, 'list')
   // regular attributes
   t.is(src.attribs.myatt, 'myatt')
   t.is(src.attribs.custom, 'custom')

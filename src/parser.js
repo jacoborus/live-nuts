@@ -70,6 +70,10 @@ const parser = function (el) {
   src.voidElement = voidElementsSet.has(src.name)
 
   // assign attributes
+  if (atts.nut) {
+    src.keyname = atts.nut
+    delete atts.nut
+  }
   if (atts.class) {
     src.class = atts.class
     delete atts.class
