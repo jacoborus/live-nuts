@@ -32,6 +32,7 @@ test('extend nuts', function (t) {
     t.is(newlist.as, undefined)
     t.is(newlist.children[0].unless, 'mark')
     t.is(newlist.children[1].nuif, 'mark')
+    t.is(newlist.childrenFrom, 'list')
     // leave extension
     t.is(list.repeat, 'articles')
     t.is(list.scope, undefined)
@@ -166,4 +167,94 @@ test('extend children of nuts recursive', function (t) {
     t.is(list.children[1].children[0].children[0].scope, 'desc')
     t.end()
   })
+})
+
+test('make circular partials', function (t) {
+  let templates = {
+    list: {
+      key: 'list',
+      repeat: 'articles',
+      children: [{
+        unless: 'mark',
+        as: 'relist'
+      }, {
+        nuif: 'mark',
+        children: [{
+          class: 'testclass',
+          children: [{
+            class: 'grandchildren',
+            as: 'relist'
+          }]
+        }]
+      }]
+    },
+    newlist: {
+      key: 'newlist',
+      scope: 'desc',
+      as: 'list'
+    },
+    relist: {
+      key: 'relist',
+      as: 'newlist',
+      class: 'reclass',
+      children: [{
+        as: 'list',
+        attribs: {
+          test: 'test'
+        }
+      }]
+    }
+
+  }
+
+  let newlist = templates['newlist'],
+      relist = templates['relist'],
+      list = templates['list']
+
+  makePartials(templates, function () {
+    t.is(relist.repeat, 'articles')
+    t.is(relist.scope, 'desc')
+    t.is(relist.key, 'relist')
+    t.is(relist.as, undefined)
+    t.is(relist.class, 'reclass')
+    t.is(relist.children[0].attribs.test, 'test')
+    t.notOk(relist.children[1])
+
+    t.is(newlist.repeat, 'articles')
+    t.is(newlist.scope, 'desc')
+    t.is(newlist.key, 'newlist')
+    t.is(newlist.as, undefined)
+    t.is(newlist.children[0].unless, 'mark')
+    t.is(newlist.children[1].nuif, 'mark')
+
+    t.is(list.repeat, 'articles')
+    t.is(list.scope, undefined)
+    t.is(list.key, 'list')
+    t.is(list.as, undefined)
+    t.is(list.children[0].scope, 'desc')
+    t.is(list.children[1].children[0].class, 'testclass')
+    t.is(list.children[1].children[0].children[0].class, 'grandchildren')
+    t.is(list.children[1].children[0].children[0].scope, 'desc')
+    t.is(list.children[1].children[0].children[0].children[0].children[0].scope, 'desc')
+    t.end()
+  })
+})
+
+test('avoid circular extensions before crash', function (t) {
+  let templates = {
+    list: {
+      key: 'list',
+      as: 'newlist'
+    },
+    newlist: {
+      key: 'newlist',
+      scope: 'desc',
+      as: 'list'
+    }
+  }
+
+  t.throws(function () {
+    makePartials(templates)
+  }, /circular dependencies between nuts not allowed/)
+  t.end()
 })

@@ -11,11 +11,9 @@ const nuProps = [
   'scope',
   'model',
   'repeat',
-  'inherit',
   'nuif',
   'unless',
   'checked',
-  'children',
   'formatters'
 ]
 
@@ -47,6 +45,7 @@ module.exports = function (src, extension, next) {
   })
 
   if (!src.children && extension.children) {
+    src.childrenFrom = extension.key
     src.children = extension.children
   }
   delete src.as
