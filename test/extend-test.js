@@ -4,12 +4,11 @@ const extend = require('../src/extend.js')
 const test = require('tape')
 
 test('has same properties as source when no extension passed', function (t) {
-  let sample = {
-        scope: 'test'
-      },
-      result = extend(sample)
-  t.is(result.scope, 'test')
-  t.end()
+  let sample = {scope: 'test'}
+  extend(sample, null, function () {
+    t.is(sample.scope, 'test')
+    t.end()
+  })
 })
 
 test('extend nut properties', function (t) {
@@ -18,13 +17,14 @@ test('extend nut properties', function (t) {
       },
       otherSample = {
         scope: 'extension',
-        other: 'other'
-      },
-      result = extend(sample, otherSample)
+        model: 'other'
+      }
 
-  t.is(result.scope, 'test')
-  t.is(result.other, 'other')
-  t.end()
+  extend(sample, otherSample, function () {
+    t.is(sample.scope, 'test')
+    t.is(sample.model, 'other')
+    t.end()
+  })
 })
 
 test('extend attributes and variable attributes', function (t) {
@@ -35,27 +35,15 @@ test('extend attributes and variable attributes', function (t) {
       otherSample = {
         attribs: { id: 'ext', other: 'ext' },
         nuAtts: { id: 'ext', other: 'ext' }
-      },
-      result = extend(sample, otherSample)
+      }
 
-  t.is(result.attribs.id, 'ext')
-  t.is(result.attribs.other, 'src')
-  t.is(result.nuAtts.id, 'ext')
-  t.is(result.nuAtts.other, 'src')
-  t.end()
-})
-
-test('extend nutName', function (t) {
-  let sample = {
-        nutName: 'test'
-      },
-      otherSample = {
-        nutName: 'other'
-      },
-      result = extend(sample, otherSample)
-
-  t.is(result.nutName, 'test')
-  t.end()
+  extend(sample, otherSample, function () {
+    t.is(sample.attribs.id, 'ext')
+    t.is(sample.attribs.other, 'src')
+    t.is(sample.nuAtts.id, 'ext')
+    t.is(sample.nuAtts.other, 'src')
+    t.end()
+  })
 })
 
 test('extend formatters', function (t) {
@@ -64,9 +52,10 @@ test('extend formatters', function (t) {
       },
       otherSample = {
         formatters: ['other']
-      },
-      result = extend(sample, otherSample)
+      }
 
-  t.is(result.formatters[0], 'test')
-  t.end()
+  extend(sample, otherSample, function () {
+    t.is(sample.formatters[0], 'test')
+    t.end()
+  })
 })

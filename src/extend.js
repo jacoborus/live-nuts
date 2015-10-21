@@ -2,7 +2,6 @@
 
 const nuProps = [
   'voidElement',
-  'nutName',
   'type',
   'name',
   'data',
@@ -25,38 +24,32 @@ const nuObjs = [
   'nuAtts'
 ]
 
-const extend = function (source, extension) {
-  let schema = {},
-      extent = Object.create(extension || null)
-
-  delete extent.nutName
+module.exports = function (src, extension, next) {
+  if (!extension) return next()
 
   nuProps.forEach(prop => {
-    if (source[prop] !== undefined) {
-      extent[prop] = source[prop]
+    if (src[prop] === undefined && extension[prop] !== undefined) {
+      src[prop] = extension[prop]
     }
   })
 
   nuObjs.forEach(o => {
-    if (source[o]) {
-      extent[o] = extent[o] || {}
-      for (let i in source[o]) {
-        extent[o][i] = source[o][i]
+    if (!src[o] && extension[o]) {
+      src[o] = {}
+    }
+    if (extension[o]) {
+      for (let i in extension[o]) {
+        if (src[o][i] === undefined) {
+          src[o][i] = extension[o][i]
+        }
       }
     }
   })
 
-  // TODO: add new hash as nut name
-  if (source.nutName) {
-    schema.nutName = source.nutName
+  if (!src.children && extension.children) {
+    src.children = extension.children
   }
+  delete src.as
 
-  // use the children of source template
-  if (source.children) {
-    extent.children = source.children
-  }
-
-  return extent
+  next()
 }
-
-module.exports = extend
