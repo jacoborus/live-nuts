@@ -11,9 +11,11 @@ test('sniff basic data from element to model', function (t) {
   dd.innerHTML = 'uno'
   dl.appendChild(dd)
 
-  let model = sniffer(dl)
-  t.is(model.test, 'uno')
-  t.end()
+  let model = {}
+  sniffer(dl, model, () => {
+    t.is(model.test, 'uno')
+    t.end()
+  })
 })
 
 test('sniff basic data from childrens to model', function (t) {
@@ -26,8 +28,10 @@ test('sniff basic data from childrens to model', function (t) {
   dd.appendChild(span)
   dl.appendChild(dd)
 
-  let model = sniffer(dl)
-  t.is(model.test, 'uno')
-  t.end()
+  let model = {}
+  sniffer(dl, model, () => {
+    t.is(model.test, 'uno')
+    t.end()
+  })
 })
 

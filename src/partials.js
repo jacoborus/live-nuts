@@ -1,16 +1,7 @@
 'use strict'
 
 import extend from './extend.js'
-
-function newCounter (limit, callback) {
-  let count = 0
-  return function (err) {
-    if (err) { return callback(err)}
-    if (++count === limit) {
-      callback()
-    }
-  }
-}
+import newCounter from './counter.js'
 
 function extendInside (nut, templates, next) {
   if (nut.childrenFrom || !nut.children || !nut.children.length) {
