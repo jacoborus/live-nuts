@@ -6,7 +6,7 @@
   "scripts": {
     "linter": "eslint src test",
     "test": "npm run build && cat dist/tests.js | testling",
-    "build": "browserify src/live-nuts.js --standalone Nuts -o dist/live-nuts.js && browserify test/index.js -o dist/tests.js"
+    "build": "browserify -t babelify test/index.js -o dist/tests.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/jacoborus/live-nuts",
   "devDependencies": {
+    "babelify": "^6.4.0",
     "browserify": "^11.2.0",
     "eslint": "^1.6.0",
     "tape": "^4.2.1",

@@ -1,5 +1,5 @@
 'use strict'
-require('./parser-test.js')
-require('./extend-test.js')
-require('./partials-test.js')
-// require('./add-templates.js')
+// require('./parser-test.js')
+import './parser-test.js'
+import './extend-test.js'
+import './partials-test.js'

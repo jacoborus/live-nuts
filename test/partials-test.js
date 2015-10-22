@@ -1,7 +1,7 @@
 'use strict'
 
-const makePartials = require('../src/partials.js'),
-      test = require('tape')
+import makePartials from '../src/partials.js'
+import test from 'tape'
 
 test('extend nuts', function (t) {
   let templates = {

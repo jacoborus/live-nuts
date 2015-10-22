@@ -1,6 +1,6 @@
 'use strict'
 
-const extend = require('./extend.js')
+import extend from './extend.js'
 
 function newCounter (limit, callback) {
   let count = 0
@@ -34,7 +34,7 @@ function hasCircular (arr, key, templates) {
   return hasCircular(arr, templates[key].as, templates)
 }
 
-module.exports = function (templates, callback) {
+export default function (templates, callback) {
   let keys = Object.keys(templates)
   // detect circular dependencies
   if (keys.some(key => hasCircular([], key, templates))) {

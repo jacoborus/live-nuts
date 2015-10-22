@@ -22,7 +22,7 @@ const nuObjs = [
   'nuAtts'
 ]
 
-module.exports = function (src, extension, next) {
+export default function (src, extension, next) {
   if (!extension) return next()
 
   nuProps.forEach(prop => {

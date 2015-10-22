@@ -163,4 +163,4 @@ const parser = function (el) {
   return src
 }
 
-module.exports = parser
+export default parser
