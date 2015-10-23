@@ -1,7 +1,7 @@
 'use strict'
 
 import test from 'tape'
-import sniffer from '../src/sniffer.js'
+import extract from '../src/extract.js'
 
 test('sniff basic data from element to model', function (t) {
   let dl = document.createElement('dl'),
@@ -12,7 +12,7 @@ test('sniff basic data from element to model', function (t) {
   dl.appendChild(dd)
 
   let model = {}
-  sniffer(dl, model, () => {
+  extract(dl, model, () => {
     t.is(model.test, 'uno')
     t.end()
   })
@@ -29,7 +29,7 @@ test('sniff basic data from childrens to model', function (t) {
   dl.appendChild(dd)
 
   let model = {}
-  sniffer(dl, model, () => {
+  extract(dl, model, () => {
     t.is(model.test, 'uno')
     t.end()
   })
