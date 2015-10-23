@@ -3,12 +3,17 @@
 import newCounter from './counter.js'
 
 function extract (element, scope, callback) {
+  let scopeAtt = element.getAttribute('nu-scope')
+  if (scopeAtt) {
+    scope[scopeAtt] = scope[scopeAtt] || {}
+  }
+  let innerScope = scopeAtt ? scope[scopeAtt] : scope
   let model = element.getAttribute('nu-model')
   if (model !== null) {
     if (model) {
-      scope[model] = element.innerText
+      innerScope[model] = element.innerText
     } else {
-      scope = element.innerText
+      innerScope = element.innerText
     }
     return callback()
   }
@@ -18,7 +23,7 @@ function extract (element, scope, callback) {
   // launch callback after children data is extracted
   let count = newCounter(element.children.length, callback)
   Array.prototype.forEach.call(element.children, child => {
-    extract(child, scope, count)
+    extract(child, innerScope, count)
   })
 }
 
