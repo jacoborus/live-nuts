@@ -1,10 +1,8 @@
 'use strict'
 
-export default function (filtersArchive, next) {
+export default function (archive, next) {
   return function (filters) {
-    Object.keys(filters).forEach(name => {
-      filtersArchive.set(name, filters[name])
-    })
+    Object.keys(filters).forEach(name => archive.set(name, filters[name]))
     next()
   }
 }
