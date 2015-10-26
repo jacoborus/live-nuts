@@ -1,5 +1,7 @@
 'use strict'
 
+import parser from '../parser.js'
+
 function getElement (template) {
   if (typeof template === 'string') {
     return document.createRange().createContextualFragment(template).childNodes[0]
@@ -7,10 +9,10 @@ function getElement (template) {
   return template
 }
 
-export default function (parse, templates, next) {
+export default function (templates, next) {
   return function (template) {
     let element = getElement(template),
-        parsed = parse(element)
+        parsed = parser(element)
     if (parsed.keyname) {
       templates.set(parsed.keyname, parsed)
     }
