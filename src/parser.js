@@ -60,7 +60,7 @@ const separateNuAtts = function (atts) {
   return nuAtts
 }
 
-const parser = function (el) {
+const parser = function (el, rawChildren) {
   let src = {},
       atts = getAttributes(el.attributes || [])
 
@@ -89,10 +89,6 @@ const parser = function (el) {
   if (atts['nu-model'] || atts['nu-model'] === '') {
     src.model = atts['nu-model']
     delete atts['nu-model']
-  }
-  if (atts['nu-inherit'] || atts['nu-inherit'] === '') {
-    src.inherit = atts['nu-inherit']
-    delete atts['nu-inherit']
   }
   if (atts['nu-if'] || atts['nu-if'] === '') {
     if (atts['nu-if']) {
@@ -155,9 +151,13 @@ const parser = function (el) {
     }
   }
 
-  // assign children dom elements
-  if (el.childNodes && el.childNodes.length) {
-    src.children = Array.prototype.map.call(el.childNodes, child => parser(child))
+  if (rawChildren) {
+    src.children = el.childNodes
+  } else {
+    // assign children dom elements
+    if (el.childNodes && el.childNodes.length) {
+      src.children = Array.prototype.map.call(el.childNodes, child => parser(child, rawChildren))
+    }
   }
 
   return src

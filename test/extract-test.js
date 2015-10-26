@@ -3,7 +3,20 @@
 import test from 'tape'
 import extract from '../src/extract.js'
 
-test('sniff basic data from element to model', function (t) {
+test('extract basic data from element to model', function (t) {
+  let dl = document.createElement('dl')
+
+  dl.setAttribute('nu-model', 'test')
+  dl.innerHTML = 'uno'
+
+  let scope = {}
+  extract(dl, scope, () => {
+    t.is(scope.test, 'uno')
+    t.end()
+  })
+})
+
+test('extract basic data from children to model', function (t) {
   let dl = document.createElement('dl'),
       dd = document.createElement('dd')
 
@@ -18,7 +31,7 @@ test('sniff basic data from element to model', function (t) {
   })
 })
 
-test('sniff basic data from children to model', function (t) {
+test('extract basic data from nested children to model', function (t) {
   let dl = document.createElement('dl'),
       dd = document.createElement('dd'),
       span = document.createElement('span')
@@ -35,7 +48,7 @@ test('sniff basic data from children to model', function (t) {
   })
 })
 
-test('sniff basic data from scoped children to model', function (t) {
+test('extract basic data from scoped children to model', function (t) {
   let dl = document.createElement('dl'),
       dd = document.createElement('dd'),
       span = document.createElement('span')
@@ -48,10 +61,20 @@ test('sniff basic data from scoped children to model', function (t) {
 
   let model = {}
   extract(dl, model, () => {
-    // t.ok(model.tunnel)
-    t.comment(JSON.stringify(model))
     t.is(model.tunnel.test, 'uno')
     t.end()
   })
 })
 
+test('add an instance for every scope', function (t) {
+  let dl = document.createElement('dl')
+
+  dl.setAttribute('nu-model', 'test')
+  dl.innerHTML = 'uno'
+
+  let scope = {}
+  extract(dl, scope, () => {
+    t.is(scope.test, 'uno')
+    t.end()
+  })
+})

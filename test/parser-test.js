@@ -9,7 +9,8 @@ const parser = function (tmpl) {
 }
 
 test('generate a source from template string', function (t) {
-  let src = parser('<span nut="simpleTag"></span>')
+  let tmpl = '<span nut="simpleTag"></span>'
+  let src = parser(tmpl)
 
   t.is(src.type, 'tag')
   t.is(src.name, 'span')
@@ -31,7 +32,6 @@ test('distribute special nuts attributes', function (t) {
         // scopes
         ' nu-scope="scope"' +
         ' nu-model="model"' +
-        ' nu-inherit="inherit"' +
         // conditionals
         ' nu-if="if"' +
         ' nu-unless="unless"' +
@@ -65,9 +65,6 @@ test('distribute special nuts attributes', function (t) {
   // model
   t.is(src.model, 'model')
   t.is(src.nuAtts.model, undefined)
-  // inherit
-  t.is(src.inherit, 'inherit')
-  t.is(src.nuAtts.inherit, undefined)
   // nuif
   t.is(src.nuif, 'if')
   t.is(src.nuAtts.nuif, undefined)
