@@ -2,20 +2,26 @@
 
 import parser from '../parser.js'
 
-function getElement (template) {
+function getElements (template) {
   if (typeof template === 'string') {
-    return document.createRange().createContextualFragment(template).childNodes[0]
+    let childNodes = document.createRange().createContextualFragment(template).childNodes
+    return childNodes
   }
-  return template
+  return [template]
 }
 
 export default function (templates, next) {
   return function (template) {
-    let element = getElement(template),
-        parsed = parser(element)
-    if (parsed.keyname) {
-      templates.set(parsed.keyname, parsed)
-    }
+    let elements = getElements(template)
+
+    Array.prototype.forEach.call(elements, element => {
+      let schema = parser(element)
+      if (schema.keyname) {
+        templates.set(schema.keyname, schema)
+      }
+    })
+
     next()
   }
 }
+

@@ -1,6 +1,5 @@
 'use strict'
 
-import parser from './parser.js'
 import addTemplateFactory from './api/add-templates.js'
 import setViewFactory from './api/set-view.js'
 import addFiltersFactory from './api/add-filters.js'
@@ -23,7 +22,7 @@ function next () {
   }
 }
 
-let addTemplates = addTemplateFactory(parser, templates, next),
+let addTemplates = addTemplateFactory(templates, next),
     setView = setViewFactory(views, next),
     addFilters = addFiltersFactory(filtersArchive, next)
 
