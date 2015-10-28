@@ -7,6 +7,10 @@
     },
     "globals": {
       "expect": true,
+      "Nuts": true,
+      "module": true,
+      "exports": true,
+      "require": true,
       "nuts": true
     },
     "ecmaFeatures": {
@@ -31,7 +35,7 @@
         "func-style": [0, "declaration"],
         "guard-for-in": 0,
         "handle-callback-err": [2, "^(err|error|anySpecificError)$" ],
-        "indent": [1, 2, {
+        "indent": [2, 2, {
           "SwitchCase": 1,
           "VariableDeclarator": {
             "var": 2,
