@@ -1,16 +1,15 @@
 'use strict'
 
-const getSource = require('../src/parser.js')
-const test = require('tape')
+import getSource from '../src/parser.js'
+import test from 'tape'
 
-const range = document.createRange()
-const parser = function (tmpl) {
-  return getSource(range.createContextualFragment(tmpl).childNodes[0])
+function parser (tmpl) {
+  return getSource(document.createRange().createContextualFragment(tmpl).childNodes[0])
 }
 
 test('generate a source from template string', function (t) {
-  let tmpl = '<span nut="simpleTag"></span>'
-  let src = parser(tmpl)
+  let tmpl = '<span nut="simpleTag"></span>',
+      src = parser(tmpl)
 
   t.is(src.type, 'tag')
   t.is(src.name, 'span')

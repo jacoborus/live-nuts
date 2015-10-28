@@ -14,25 +14,22 @@ function extendInside (nut, templates, next) {
   nut.children.forEach(child => extend(child, templates[child.as], countExtend))
 }
 
+// detect circular dependencies inside an schema
 function hasCircular (arr, key, templates) {
-  if (!templates[key].as) {
-    return false
-  }
-  if (arr.indexOf(key) > -1) {
-    return true
-  }
+  if (!templates[key].as) return false
+  if (arr.indexOf(key) > -1) return true
   arr.push(key)
   return hasCircular(arr, templates[key].as, templates)
 }
 
 export default function (templates, callback) {
   let keys = Object.keys(templates)
-  // detect circular dependencies
+  // detect circular dependencies in all schemas
   if (keys.some(key => hasCircular([], key, templates))) {
     throw new Error('circular dependencies between nuts not allowed')
   }
   // iterate nuts
-  function next () {
+  (function next () {
     if (keys.length) {
       let nut = templates[keys.shift()]
       if (!nut.as) return next()
@@ -47,6 +44,5 @@ export default function (templates, callback) {
         extendInside(templates[key], templates, count)
       }
     }
-  }
-  next()
+  })()
 }

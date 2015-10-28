@@ -1,17 +1,20 @@
 'use strict'
 
 import addTemplateFactory from './api/add-templates.js'
-import setViewFactory from './api/set-view.js'
+import addBehaviourFactory from './api/add-behaviour.js'
 import addFiltersFactory from './api/add-filters.js'
 
 let api = {},
     templates = new Map(),
-    views = new Map(),
+    behaviours = new Map(),
     filtersArchive = new Map(),
     queue = []
 
+function addViewsToSchemas (callback) {
+}
+
 function resolveDocument (callback) {
-  callback()
+  addViewsToSchemas(callback)
 }
 
 function next () {
@@ -23,7 +26,7 @@ function next () {
 }
 
 let addTemplates = addTemplateFactory(templates, next),
-    setView = setViewFactory(views, next),
+    addBehaviour = addBehaviourFactory(behaviours, next),
     addFilters = addFiltersFactory(filtersArchive, next)
 
 api.addTemplates = function (templates) {
@@ -31,8 +34,8 @@ api.addTemplates = function (templates) {
   return api
 }
 
-api.setView = function (templateName, options) {
-  queue.push(() => setView(templateName, options))
+api.addBehaviour = function (templateName, options) {
+  queue.push(() => addBehaviour(templateName, options))
   return api
 }
 
