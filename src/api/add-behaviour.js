@@ -1,9 +1,9 @@
 'use strict'
 
-export default function (views, next) {
+export default function (behaviours, next) {
   return function (templateName, options) {
     if (options) {
-      views.set(templateName, options)
+      behaviours.set(templateName, options)
     }
     next()
   }

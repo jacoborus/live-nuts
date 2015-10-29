@@ -6,7 +6,7 @@
   "scripts": {
     "linter": "eslint src test",
     "test": "npm run build && cat dist/tests.js | testling",
-    "build": "browserify -t babelify test/index.js -o dist/tests.js"
+    "build": "mkdir -p dist && browserify -t babelify test/index.js -o dist/tests.js"
   },
   "repository": {
     "type": "git",
