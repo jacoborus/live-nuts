@@ -1,7 +1,7 @@
 'use strict'
 
 import test from 'tape'
-import addTemplatesFactory from '../../src/api/add-templates.js'
+import { addTemplatesFactory } from '../src/api-factories.js'
 
 test('add a template from an element into templates archive', function (t) {
   let templatesArchive = new Map(),
@@ -40,4 +40,37 @@ test('add multiple templates from a string', function (t) {
   })
 
   addTemplates(element)
+})
+
+
+import { addFiltersFactory } from '../src/api-factories.js'
+
+test('add everyFilter in filtersArchive', function (t) {
+  let filtersArchive = new Map()
+  let addFilters = addFiltersFactory(filtersArchive, function () {
+    t.ok(filtersArchive.has('filterOne'))
+    t.ok(filtersArchive.has('filterTwo'))
+    let fn = filtersArchive.get('filterOne')
+    t.is(fn('-'), '-one')
+    t.end()
+  })
+
+  addFilters({
+    filterOne: value => value + 'one',
+    filterTwo: value => value + 'two'
+  })
+})
+
+import { addBehaviourFactory } from '../src/api-factories.js'
+
+test('add behaviour to archive', function (t) {
+  let behavioursArchive = new Map()
+  let addBehaviour = addBehaviourFactory(behavioursArchive, function () {
+    t.ok(behavioursArchive.has('templateName'))
+    t.end()
+  })
+
+  addBehaviour('templateName', {
+    events: {}
+  })
 })
