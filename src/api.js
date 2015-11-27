@@ -1,8 +1,6 @@
 'use strict'
 
-import addTemplateFactory from './api/add-templates.js'
-import addBehaviourFactory from './api/add-behaviour.js'
-import addFiltersFactory from './api/add-filters.js'
+import { addTemplateFactory, addBehaviourFactory, addFiltersFactory } from './api-factories.js'
 import setBehaviourFactory from './set-behaviour.js'
 import newCounter from './counter.js'
 
