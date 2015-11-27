@@ -66,15 +66,4 @@ test('extract basic data from scoped children to model', function (t) {
   })
 })
 
-test('add an instance for every scope', function (t) {
-  let dl = document.createElement('dl')
-
-  dl.setAttribute('nu-model', 'test')
-  dl.innerHTML = 'uno'
-
-  let scope = {}
-  extract(dl, scope, () => {
-    t.is(scope.test, 'uno')
-    t.end()
-  })
-})
+test.skip('add an instance for every scope')

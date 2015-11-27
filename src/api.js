@@ -3,6 +3,8 @@
 import addTemplateFactory from './api/add-templates.js'
 import addBehaviourFactory from './api/add-behaviour.js'
 import addFiltersFactory from './api/add-filters.js'
+import setBehaviourFactory from './set-behaviour.js'
+import newCounter from './counter.js'
 
 let api = {},
     templates = new Map(),
@@ -10,11 +12,19 @@ let api = {},
     filtersArchive = new Map(),
     queue = []
 
-function addViewsToSchemas (callback) {
+function addBehaviourToSchemas (callback) {
+  let keys = Object.keys(behaviours),
+      counter = newCounter(keys.length, callback)
+  keys.forEach(key => setBehaviour(key, behaviours.get(key), counter))
 }
 
 function resolveDocument (callback) {
-  addViewsToSchemas(callback)
+  // 1- get templates from template tags
+  // 2- add templates into templates archive
+  // 3- add filters into filters archive
+  // 4- add behaviours into behaviours archive
+  // 5- set behaviours into templates
+  addBehaviourToSchemas(callback)
 }
 
 function next () {
@@ -27,15 +37,16 @@ function next () {
 
 let addTemplates = addTemplateFactory(templates, next),
     addBehaviour = addBehaviourFactory(behaviours, next),
-    addFilters = addFiltersFactory(filtersArchive, next)
+    addFilters = addFiltersFactory(filtersArchive, next),
+    setBehaviour = setBehaviourFactory(behaviours, next)
 
 api.addTemplates = function (templates) {
   queue.push(() => addTemplates(templates))
   return api
 }
 
-api.addBehaviour = function (templateName, options) {
-  queue.push(() => addBehaviour(templateName, options))
+api.addBehaviour = function (templateName, behaviour) {
+  queue.push(() => addBehaviour(templateName, behaviour))
   return api
 }
 

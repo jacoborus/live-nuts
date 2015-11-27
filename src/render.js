@@ -1,11 +1,5 @@
 'use strict'
 
-// 1. create an instance from a schema and a model
-// 2. create an element (document fragment) into instance
-// 3. add bindings to element
-// 4. create model links
-// 5. render children
-
 function render (schema, scope) {
   let element
   if (schema.type === 'tag') {
