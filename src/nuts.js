@@ -1,20 +1,18 @@
 'use strict'
 
-import { addTemplateFactory, addBehaviourFactory, addFiltersFactory } from './api-factories.js'
+import {
+  addTemplateFactory,
+  addBehaviourFactory,
+  addFiltersFactory
+} from './api-factories.js'
+
 import setBehaviourFactory from './set-behaviour.js'
-import newCounter from './counter.js'
 
 let api = {},
-    templates = new Map(),
+    schemas = new Map(),
     behaviours = new Map(),
     filtersArchive = new Map(),
     queue = []
-
-function addBehaviourToSchemas (callback) {
-  let keys = Object.keys(behaviours),
-      counter = newCounter(keys.length, callback)
-  keys.forEach(key => setBehaviour(key, behaviours.get(key), counter))
-}
 
 function resolveDocument (callback) {
   // 1- get templates from template tags
@@ -22,7 +20,7 @@ function resolveDocument (callback) {
   // 3- add filters into filters archive
   // 4- add behaviours into behaviours archive
   // 5- set behaviours into templates
-  addBehaviourToSchemas(callback)
+  setBehaviours(callback)
 }
 
 function next () {
@@ -33,10 +31,10 @@ function next () {
   }
 }
 
-let addTemplates = addTemplateFactory(templates, next),
+let addTemplates = addTemplateFactory(schemas, next),
     addBehaviour = addBehaviourFactory(behaviours, next),
     addFilters = addFiltersFactory(filtersArchive, next),
-    setBehaviour = setBehaviourFactory(behaviours, next)
+    setBehaviours = setBehaviourFactory(behaviours, schemas, next)
 
 api.addTemplates = function (templates) {
   queue.push(() => addTemplates(templates))

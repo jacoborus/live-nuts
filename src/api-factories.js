@@ -14,18 +14,18 @@ function getElements (template) {
 /**
  * Factory function for adding templates into the archive
  *
- * @param {object} templates templates archive
+ * @param {object} schemas schemas archive
  * @param {function} next callback
- * @return {function} this function add templates in the templates archive
+ * @return {function} this function add templates in the schemas archive
  */
-export function addTemplatesFactory (templates, next) {
+export function addTemplatesFactory (schemas, next) {
   return function (template) {
     let elements = getElements(template)
 
     Array.prototype.forEach.call(elements, element => {
       let schema = parser(element)
       if (schema.keyname) {
-        templates.set(schema.keyname, schema)
+        schemas.set(schema.keyname, schema)
       }
     })
 
@@ -60,5 +60,18 @@ export function addBehaviourFactory (behaviours, next) {
       behaviours.set(templateName, behaviour)
     }
     next()
+  }
+}
+
+import newCounter from './counter.js'
+
+export function setBehavioursFactory (behaviours, schemas, next) {
+  return function () {
+    let counter = newCounter(behaviours.size, next)
+
+    behaviours.forEach((behaviour, key) => {
+      schemas.get(key).behaviour = behaviour
+      counter()
+    })
   }
 }

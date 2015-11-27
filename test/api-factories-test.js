@@ -42,7 +42,6 @@ test('add multiple templates from a string', function (t) {
   addTemplates(element)
 })
 
-
 import { addFiltersFactory } from '../src/api-factories.js'
 
 test('add everyFilter in filtersArchive', function (t) {
@@ -73,4 +72,21 @@ test('add behaviour to archive', function (t) {
   addBehaviour('templateName', {
     events: {}
   })
+})
+
+import { setBehavioursFactory } from '../src/api-factories.js'
+
+test('set behaviours in schemas', (t) => {
+  let behavioursArchive = new Map(),
+      schemas = new Map()
+
+  schemas.set('uno', {})
+  behavioursArchive.set('uno', {})
+
+  let setBehaviours = setBehavioursFactory(behavioursArchive, schemas, () => {
+    t.ok(typeof schemas.get('uno').behaviour, 'object')
+    t.end()
+  })
+
+  setBehaviours()
 })
