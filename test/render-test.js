@@ -49,21 +49,3 @@ test('add bindings to rendered elements', t => {
   t.is(control, true)
   t.end()
 })
-
-// test('updates value when model changes', function (t) {
-//   let scope = {
-//     testModel: 'testing'
-//   }
-//   let nut = {
-//     key: 'testKey',
-//     type: 'tag',
-//     name: 'span',
-//     model: 'testModel'
-//   }
-//   let instance = render(nut, scope)
-//   t.is(instance.element.localName, 'span')
-//   t.is(instance.element.innerText, 'testing')
-//   instance.update({testModel: 'passed'})
-//   t.is(instance.element.innerText, 'passed')
-//   t.end()
-// })

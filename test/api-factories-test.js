@@ -42,9 +42,23 @@ test('add multiple templates from a string', function (t) {
   addTemplates(element)
 })
 
+import { addFilterFactory } from '../src/api-factories.js'
+
+test('add a filter into filtersArchive', function (t) {
+  let filtersArchive = new Map()
+  let addFilter = addFilterFactory(filtersArchive, function () {
+    t.ok(filtersArchive.has('filterOne'))
+    let fn = filtersArchive.get('filterOne')
+    t.is(fn('-'), '-one')
+    t.end()
+  })
+
+  addFilter('filterOne', value => value + 'one')
+})
+
 import { addFiltersFactory } from '../src/api-factories.js'
 
-test('add everyFilter in filtersArchive', function (t) {
+test('add everyFilter into filtersArchive', function (t) {
   let filtersArchive = new Map()
   let addFilters = addFiltersFactory(filtersArchive, function () {
     t.ok(filtersArchive.has('filterOne'))

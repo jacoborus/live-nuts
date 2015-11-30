@@ -1,12 +1,22 @@
 'use strict'
 
-import {
-  addTemplateFactory,
-  addBehaviourFactory,
-  addFiltersFactory
-} from './api-factories.js'
+//  Resolve document
+// - extract template tags from html document
+// - add templates into schemas archive
+// - add filters into filters archive
+// - add behaviours into behaviours archive
+// - set behaviours into templates
+// - make partials (with extend.js)
+// - retrieve data from regular html and generate and assign instances
+// - enjoy
 
-import setBehaviourFactory from './set-behaviour.js'
+import {
+  addTemplatesFactory,
+  addBehaviourFactory,
+  addFiltersFactory,
+  addFilterFactory,
+  setBehavioursFactory
+} from './api-factories.js'
 
 let api = {},
     schemas = new Map(),
@@ -14,13 +24,8 @@ let api = {},
     filtersArchive = new Map(),
     queue = []
 
-function resolveDocument (callback) {
-  // 1- get templates from template tags
-  // 2- add templates into templates archive
-  // 3- add filters into filters archive
-  // 4- add behaviours into behaviours archive
-  // 5- set behaviours into templates
-  setBehaviours(callback)
+function resolveDocument () {
+  setBehaviours()
 }
 
 function next () {
@@ -31,10 +36,11 @@ function next () {
   }
 }
 
-let addTemplates = addTemplateFactory(schemas, next),
+let addTemplates = addTemplatesFactory(schemas, next),
     addBehaviour = addBehaviourFactory(behaviours, next),
+    addFilter = addFilterFactory(filtersArchive, next),
     addFilters = addFiltersFactory(filtersArchive, next),
-    setBehaviours = setBehaviourFactory(behaviours, schemas, next)
+    setBehaviours = setBehavioursFactory(behaviours, schemas, next)
 
 api.addTemplates = function (templates) {
   queue.push(() => addTemplates(templates))
@@ -43,6 +49,11 @@ api.addTemplates = function (templates) {
 
 api.addBehaviour = function (templateName, behaviour) {
   queue.push(() => addBehaviour(templateName, behaviour))
+  return api
+}
+
+api.addFilter = function (filterName, filter) {
+  queue.push(() => addFilter(filterName, filter))
   return api
 }
 

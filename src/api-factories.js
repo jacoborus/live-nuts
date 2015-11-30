@@ -40,6 +40,20 @@ export function addTemplatesFactory (schemas, next) {
  * @param {function} next callback
  * @return {function} function that adds filters into filters archive
  */
+export function addFilterFactory (archive, next) {
+  return function (filterName, filter) {
+    archive.set(filterName, filter)
+    next()
+  }
+}
+
+/**
+ * Factory function add filters
+ *
+ * @param {object} archive filters archive
+ * @param {function} next callback
+ * @return {function} function that adds filters into filters archive
+ */
 export function addFiltersFactory (archive, next) {
   return function (filters) {
     Object.keys(filters).forEach(name => archive.set(name, filters[name]))
