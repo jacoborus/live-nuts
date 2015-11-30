@@ -10,13 +10,7 @@
 // - retrieve data from regular html and generate and assign instances
 // - enjoy
 
-import {
-  addTemplatesFactory,
-  addBehaviourFactory,
-  addFiltersFactory,
-  addFilterFactory,
-  setBehavioursFactory
-} from './api-factories.js'
+import apiFactories from '../src/api-factories.js'
 
 let api = {},
     schemas = new Map(),
@@ -36,11 +30,13 @@ function next () {
   }
 }
 
-let addTemplates = addTemplatesFactory(schemas, next),
-    addBehaviour = addBehaviourFactory(behaviours, next),
-    addFilter = addFilterFactory(filtersArchive, next),
-    addFilters = addFiltersFactory(filtersArchive, next),
-    setBehaviours = setBehavioursFactory(behaviours, schemas, next)
+let {
+    addTemplates,
+    addBehaviour,
+    addFilter,
+    addFilters,
+    setBehaviours
+  } = apiFactories(schemas, filtersArchive, behaviours, next)
 
 api.addTemplates = function (templates) {
   queue.push(() => addTemplates(templates))
