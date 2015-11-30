@@ -1,6 +1,7 @@
 'use strict'
 
 import parser from './parser.js'
+import newCounter from './counter.js'
 
 let createRange = document.createRange()
 
@@ -11,15 +12,8 @@ function getElements (template) {
   return [template]
 }
 
-/**
- * Factory function for adding templates into the archive
- *
- * @param {object} schemas schemas archive
- * @param {function} next callback
- * @return {function} this function add templates in the schemas archive
- */
-export function addTemplatesFactory (schemas, next) {
-  return function (template) {
+export default function (schemas, filtersArchive, behaviours, next) {
+  function addTemplates (template) {
     let elements = getElements(template)
 
     Array.prototype.forEach.call(elements, element => {
@@ -31,56 +25,25 @@ export function addTemplatesFactory (schemas, next) {
 
     next()
   }
-}
 
-/**
- * Factory function add filters
- *
- * @param {object} archive filters archive
- * @param {function} next callback
- * @return {function} function that adds filters into filters archive
- */
-export function addFilterFactory (archive, next) {
-  return function (filterName, filter) {
-    archive.set(filterName, filter)
+  function addFilter (filterName, filter) {
+    filtersArchive.set(filterName, filter)
     next()
   }
-}
 
-/**
- * Factory function add filters
- *
- * @param {object} archive filters archive
- * @param {function} next callback
- * @return {function} function that adds filters into filters archive
- */
-export function addFiltersFactory (archive, next) {
-  return function (filters) {
-    Object.keys(filters).forEach(name => archive.set(name, filters[name]))
+  function addFilters (filters) {
+    Object.keys(filters).forEach(name => filtersArchive.set(name, filters[name]))
     next()
   }
-}
 
-/**
- * function
- *
- * @param {object} behaviours behaviours archive
- * @param {function} next callback
- * @return {function} function that adds behaviours to behaviours archive
- */
-export function addBehaviourFactory (behaviours, next) {
-  return function (templateName, behaviour) {
+  function addBehaviour (templateName, behaviour) {
     if (behaviour) {
       behaviours.set(templateName, behaviour)
     }
     next()
   }
-}
 
-import newCounter from './counter.js'
-
-export function setBehavioursFactory (behaviours, schemas, next) {
-  return function () {
+  function setBehaviours () {
     let counter = newCounter(behaviours.size, next)
 
     behaviours.forEach((behaviour, key) => {
@@ -88,4 +51,6 @@ export function setBehavioursFactory (behaviours, schemas, next) {
       counter()
     })
   }
+
+  return {addTemplates, addFilter, addFilters, addBehaviour, setBehaviours}
 }
