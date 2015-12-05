@@ -90,10 +90,10 @@ test('set behaviours in schemas', (t) => {
   schemas.set('uno', {})
   behavioursArchive.set('uno', {})
 
-  let { setBehaviours } = apiFactories(schemas, null, behavioursArchive, () => {
+  let { setBehaviours } = apiFactories(schemas, null, behavioursArchive)
+
+  setBehaviours(() => {
     t.ok(typeof schemas.get('uno').behaviour, 'object')
     t.end()
   })
-
-  setBehaviours()
 })

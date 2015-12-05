@@ -43,11 +43,11 @@ export default function (schemas, filtersArchive, behaviours, next) {
     next()
   }
 
-  function setBehaviours () {
-    let counter = newCounter(behaviours.size, next)
-
+  function setBehaviours (callback = function () {}) {
+    let counter = newCounter(behaviours.size, callback)
     behaviours.forEach((behaviour, key) => {
-      schemas.get(key).behaviour = behaviour
+      if (schema) schema.behaviour = behaviour
+      let schema = schemas.get(key)
       counter()
     })
   }

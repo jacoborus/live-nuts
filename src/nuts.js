@@ -59,7 +59,14 @@ api.addFilters = function (filters) {
 }
 
 api.resolve = function (callback) {
+  queue.push(() => addTemplates(document.querySelectorAll('template[nut]')))
   queue.push(() => resolveDocument(callback))
+  next()
 }
 
+api.schemas = schemas
+api.filtersArchive = filtersArchive
+api.behaviours = behaviours
+
 export default api
+window.nuts = api
