@@ -6,7 +6,7 @@ import apiFactories from '../src/api-factories.js'
 
 test('add a template from an element into templates archive', function (t) {
   let schemas = new Map(),
-      element = document.createElement('span')
+      element = document.createElement('template')
 
   element.setAttribute('nut', 'testkey')
 
@@ -15,7 +15,7 @@ test('add a template from an element into templates archive', function (t) {
     t.end()
   })
 
-  addTemplates(element)
+  addTemplates([element])
 })
 
 test('add a template from a string into template archive', function (t) {

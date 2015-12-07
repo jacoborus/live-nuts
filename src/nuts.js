@@ -23,11 +23,7 @@ function resolveDocument () {
 }
 
 function next () {
-  if (queue.length) {
-    queue.shift()()
-  } else {
-    resolveDocument()
-  }
+  if (queue.length) queue.shift()()
 }
 
 let {

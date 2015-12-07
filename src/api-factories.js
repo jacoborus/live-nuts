@@ -9,7 +9,7 @@ function getElements (template) {
   if (typeof template === 'string') {
     return createRange.createContextualFragment(template).childNodes
   }
-  return [template]
+  return template
 }
 
 export default function (schemas, filtersArchive, behaviours, next) {
