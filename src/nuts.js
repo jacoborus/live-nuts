@@ -10,7 +10,8 @@
 // - retrieve data from regular html and generate and assign instances
 // - enjoy
 
-import apiFactories from '../src/api-factories.js'
+import apiFactories from './api-factories.js'
+import makePartials from './partials.js'
 
 let api = {},
     schemas = new Map(),
@@ -18,8 +19,10 @@ let api = {},
     filtersArchive = new Map(),
     queue = []
 
-function resolveDocument () {
-  setBehaviours()
+function resolveDocument (callback) {
+  setBehaviours(function () {
+    makePartials(schemas, callback)
+  })
 }
 
 function next () {

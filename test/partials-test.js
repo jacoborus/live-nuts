@@ -4,27 +4,26 @@ import makePartials from '../src/partials.js'
 import test from 'tape'
 
 test('extend nuts', function (t) {
-  let templates = {
-    list: {
-      key: 'list',
-      repeat: 'articles',
-      children: [{
-        unless: 'mark'
-      }, {
-        nuif: 'mark'
-      }]
-    },
-    newlist: {
-      key: 'newlist',
-      scope: 'desc',
-      as: 'list'
-    }
-  }
+  let schemas = new Map()
+  .set('list', {
+    key: 'list',
+    repeat: 'articles',
+    children: [{
+      unless: 'mark'
+    }, {
+      nuif: 'mark'
+    }]
+  })
+  .set('newlist', {
+    key: 'newlist',
+    scope: 'desc',
+    as: 'list'
+  })
 
-  let newlist = templates['newlist'],
-      list = templates['list']
+  let newlist = schemas.get('newlist'),
+      list = schemas.get('list')
 
-  makePartials(templates, function () {
+  makePartials(schemas, function () {
     // extend target
     t.is(newlist.repeat, 'articles')
     t.is(newlist.scope, 'desc')
@@ -43,39 +42,37 @@ test('extend nuts', function (t) {
 })
 
 test('extend nuts recursive', function (t) {
-  let templates = {
-    list: {
-      key: 'list',
-      repeat: 'articles',
-      children: [{
-        unless: 'mark'
-      }, {
-        nuif: 'mark'
-      }]
-    },
-    newlist: {
-      key: 'newlist',
-      scope: 'desc',
-      as: 'list'
-    },
-    relist: {
-      key: 'relist',
-      as: 'newlist',
-      class: 'reclass',
-      children: [{
-        attribs: {
-          test: 'test'
-        }
-      }]
-    }
+  let schemas = new Map()
+  .set('list', {
+    key: 'list',
+    repeat: 'articles',
+    children: [{
+      unless: 'mark'
+    }, {
+      nuif: 'mark'
+    }]
+  })
+  .set('newlist', {
+    key: 'newlist',
+    scope: 'desc',
+    as: 'list'
+  })
+  .set('relist', {
+    key: 'relist',
+    as: 'newlist',
+    class: 'reclass',
+    children: [{
+      attribs: {
+        test: 'test'
+      }
+    }]
+  })
 
-  }
+  let newlist = schemas.get('newlist'),
+      relist = schemas.get('relist'),
+      list = schemas.get('list')
 
-  let newlist = templates['newlist'],
-      relist = templates['relist'],
-      list = templates['list']
-
-  makePartials(templates, function () {
+  makePartials(schemas, function () {
     // top extend
     t.is(relist.repeat, 'articles')
     t.is(relist.scope, 'desc')
@@ -101,47 +98,45 @@ test('extend nuts recursive', function (t) {
 })
 
 test('extend children of nuts recursive', function (t) {
-  let templates = {
-    list: {
-      key: 'list',
-      repeat: 'articles',
+  let schemas = new Map()
+  .set('list', {
+    key: 'list',
+    repeat: 'articles',
+    children: [{
+      unless: 'mark',
+      as: 'relist'
+    }, {
+      nuif: 'mark',
       children: [{
-        unless: 'mark',
-        as: 'relist'
-      }, {
-        nuif: 'mark',
+        class: 'testclass',
         children: [{
-          class: 'testclass',
-          children: [{
-            class: 'grandchildren',
-            as: 'relist'
-          }]
+          class: 'grandchildren',
+          as: 'relist'
         }]
       }]
-    },
-    newlist: {
-      key: 'newlist',
-      scope: 'desc',
-      as: 'list'
-    },
-    relist: {
-      key: 'relist',
-      as: 'newlist',
-      class: 'reclass',
-      children: [{
-        attribs: {
-          test: 'test'
-        }
-      }]
-    }
+    }]
+  })
+  .set('newlist', {
+    key: 'newlist',
+    scope: 'desc',
+    as: 'list'
+  })
+  .set('relist', {
+    key: 'relist',
+    as: 'newlist',
+    class: 'reclass',
+    children: [{
+      attribs: {
+        test: 'test'
+      }
+    }]
+  })
 
-  }
+  let newlist = schemas.get('newlist'),
+      relist = schemas.get('relist'),
+      list = schemas.get('list')
 
-  let newlist = templates['newlist'],
-      relist = templates['relist'],
-      list = templates['list']
-
-  makePartials(templates, function () {
+  makePartials(schemas, function () {
     t.is(relist.repeat, 'articles')
     t.is(relist.scope, 'desc')
     t.is(relist.key, 'relist')
@@ -170,48 +165,46 @@ test('extend children of nuts recursive', function (t) {
 })
 
 test('make circular partials', function (t) {
-  let templates = {
-    list: {
-      key: 'list',
-      repeat: 'articles',
+  let schemas = new Map()
+  .set('list', {
+    key: 'list',
+    repeat: 'articles',
+    children: [{
+      unless: 'mark',
+      as: 'relist'
+    }, {
+      nuif: 'mark',
       children: [{
-        unless: 'mark',
-        as: 'relist'
-      }, {
-        nuif: 'mark',
+        class: 'testclass',
         children: [{
-          class: 'testclass',
-          children: [{
-            class: 'grandchildren',
-            as: 'relist'
-          }]
+          class: 'grandchildren',
+          as: 'relist'
         }]
       }]
-    },
-    newlist: {
-      key: 'newlist',
-      scope: 'desc',
-      as: 'list'
-    },
-    relist: {
-      key: 'relist',
-      as: 'newlist',
-      class: 'reclass',
-      children: [{
-        as: 'list',
-        attribs: {
-          test: 'test'
-        }
-      }]
-    }
+    }]
+  })
+  .set('newlist', {
+    key: 'newlist',
+    scope: 'desc',
+    as: 'list'
+  })
+  .set('relist', {
+    key: 'relist',
+    as: 'newlist',
+    class: 'reclass',
+    children: [{
+      as: 'list',
+      attribs: {
+        test: 'test'
+      }
+    }]
+  })
 
-  }
+  let newlist = schemas.get('newlist'),
+      relist = schemas.get('relist'),
+      list = schemas.get('list')
 
-  let newlist = templates['newlist'],
-      relist = templates['relist'],
-      list = templates['list']
-
-  makePartials(templates, function () {
+  makePartials(schemas, function () {
     t.is(relist.repeat, 'articles')
     t.is(relist.scope, 'desc')
     t.is(relist.key, 'relist')
@@ -241,20 +234,19 @@ test('make circular partials', function (t) {
 })
 
 test('avoid circular extensions before crash', function (t) {
-  let templates = {
-    list: {
-      key: 'list',
-      as: 'newlist'
-    },
-    newlist: {
-      key: 'newlist',
-      scope: 'desc',
-      as: 'list'
-    }
-  }
+  let schemas = new Map()
+  .set('list', {
+    key: 'list',
+    as: 'newlist'
+  })
+  .set('newlist', {
+    key: 'newlist',
+    scope: 'desc',
+    as: 'list'
+  })
 
   t.throws(function () {
-    makePartials(templates)
+    makePartials(schemas)
   }, /circular dependencies between nuts not allowed/)
   t.end()
 })
