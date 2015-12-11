@@ -2,6 +2,13 @@
 
 import newCounter from './counter.js'
 
+/**
+ * extract data model from html
+ *
+ * @param {DOMnode} element target element to extract data from
+ * @param {object} scope extracted data will be outputted here
+ * @param {function} callback simple next function caller
+ */
 function extract (element, scope, callback) {
   let scopeAtt = element.getAttribute('nu-scope')
   if (scopeAtt) {

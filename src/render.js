@@ -21,10 +21,12 @@ function addBindings (bindings, element) {
   }
 }
 
-let links = new Map()
-function addLinks (instance, scope) {
-  links.has(scope) || links.set(scope, new Map())
-  let scopeLinks = links.get(scope),
+let allLinks = new Map()
+
+function addLinks (instance) {
+  let scope = instance.scope
+  allLinks.has(scope) || allLinks.set(scope, new Map())
+  let scopeLinks = allLinks.get(scope),
       modelName = instance.schema.model
   if (modelName !== null) {
     scopeLinks.has(modelName) || scopeLinks.set(modelName, new Set())
@@ -33,15 +35,15 @@ function addLinks (instance, scope) {
   }
 }
 
-function instantiate (nut, scope) {
+function instantiate (schema, scope) {
   let links = new Set(),
-      element = render(nut, scope),
-      instance = { scope, schema: nut, element, links }
+      element = render(schema, scope),
+      instance = { scope, schema, element, links }
 
-  addLinks(instance, scope)
-  if (nut.bindings) addBindings(nut.bindings, element)
-  if (nut.children) {
-    nut.children.forEach(childSchema => {
+  addLinks(instance)
+  if (schema.bindings) addBindings(schema.bindings, element)
+  if (schema.children) {
+    schema.children.forEach(childSchema => {
       element.appendChild(instantiate(childSchema, scope).element)
     })
   }

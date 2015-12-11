@@ -12,16 +12,22 @@
 
 import apiFactories from './api-factories.js'
 import makePartials from './partials.js'
+import extract from './extract.js'
 
 let api = {},
     schemas = new Map(),
     behaviours = new Map(),
     filtersArchive = new Map(),
+    model = {},
     queue = []
 
 function resolveDocument (callback) {
   setBehaviours(function () {
-    makePartials(schemas, callback)
+    makePartials(schemas, () => {
+      extract(document.head, model, () => {
+        extract(document.body, model, callback)
+      })
+    })
   })
 }
 
@@ -64,6 +70,7 @@ api.resolve = function (callback) {
 }
 
 api.schemas = schemas
+api.model = model
 api.filtersArchive = filtersArchive
 api.behaviours = behaviours
 
