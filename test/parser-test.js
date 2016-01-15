@@ -3,8 +3,8 @@
 import getSource from '../src/parser.js'
 import test from 'tape'
 
-function parser (tmpl) {
-  return getSource(document.createRange().createContextualFragment(tmpl).childNodes[0])
+function parser (tmpl, rawChildren) {
+  return getSource(document.createRange().createContextualFragment(tmpl).childNodes[0], rawChildren)
 }
 
 test('generate a source from template string', function (t) {
@@ -121,5 +121,17 @@ test('parse child elements', function (t) {
   t.is(src.children[0].children[0].type, 'text')
   t.is(src.children[0].children[1].type, 'tag')
   t.is(src.children[0].children[1].name, 'span')
+  t.end()
+})
+
+test('parse just parent element and send children as raw', function (t) {
+  let tmpl = '<ul nut="simpleTag"><li nu-model="sample">hola<span></span></li></ul>',
+      src = parser(tmpl, true)
+
+  t.notOk(src.children[0].model)
+  // t.is(src.children[0].name, 'li')
+  // t.is(src.children[0].children[0].type, 'text')
+  // t.is(src.children[0].children[1].type, 'tag')
+  // t.is(src.children[0].children[1].name, 'span')
   t.end()
 })

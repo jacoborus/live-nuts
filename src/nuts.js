@@ -7,8 +7,7 @@
 // - add behaviours into behaviours archive
 // - set behaviours into templates
 // - make partials (with extend.js)
-// - retrieve data from regular html and generate and assign instances
-// - enjoy
+// - register elements, create nuts tree and instance nuts
 
 import apiFactories from './api-factories.js'
 import makePartials from './partials.js'
@@ -20,16 +19,6 @@ let api = {},
     filtersArchive = new Map(),
     model = {},
     queue = []
-
-function resolveDocument (callback) {
-  setBehaviours(function () {
-    makePartials(schemas, () => {
-      extract(document.head, model, () => {
-        extract(document.body, model, callback)
-      })
-    })
-  })
-}
 
 function next () {
   if (queue.length) queue.shift()()
@@ -61,6 +50,16 @@ api.addFilter = function (filterName, filter) {
 api.addFilters = function (filters) {
   queue.push(() => addFilters(filters))
   return api
+}
+
+function resolveDocument (callback) {
+  setBehaviours(function () {
+    makePartials(schemas, () => {
+      extract(document.head, model, () => {
+        extract(document.body, model, callback)
+      })
+    })
+  })
 }
 
 api.resolve = function (callback) {
