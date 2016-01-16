@@ -10,12 +10,12 @@ test('instantiate tree with scope', function (t) {
   let testScope = {}
   let schemas = new Map()
   schemas.set('x-bor', {
-    extends: 'li',
+    localName: 'li',
     tagName: 'x-bor',
     scope: 'saludo'
   })
   schemas.set('x-bar', {
-    extends: 'span',
+    localName: 'span',
     tagName: 'x-bar',
     model: 'funciona',
     events: {
@@ -47,6 +47,7 @@ test('instantiate tree with scope', function (t) {
       t.is(testScope.saludo.funciona, 'hola')
       bar.click()
       t.is(testScope.saludo.funciona, 'adios')
+      document.body.removeChild(element)
       t.end()
     })
   })

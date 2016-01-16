@@ -12,7 +12,7 @@ test('generate a source from template string', function (t) {
       src = parser(tmpl)
 
   t.is(src.type, 'tag')
-  t.is(src.name, 'span')
+  t.is(src.localName, 'span')
   t.end()
 })
 
@@ -54,6 +54,7 @@ test('distribute special nuts attributes', function (t) {
       src = parser(tmpl)
 
   // class
+  t.is(src.localName, 'span')
   t.is(src.class, 'class')
   t.is(src.nuAtts.class, undefined)
   // nuClass
@@ -117,10 +118,10 @@ test('parse child elements', function (t) {
       src = parser(tmpl)
 
   t.is(src.children[0].type, 'tag')
-  t.is(src.children[0].name, 'li')
+  t.is(src.children[0].localName, 'li')
   t.is(src.children[0].children[0].type, 'text')
   t.is(src.children[0].children[1].type, 'tag')
-  t.is(src.children[0].children[1].name, 'span')
+  t.is(src.children[0].children[1].localName, 'span')
   t.end()
 })
 
@@ -129,9 +130,5 @@ test('parse just parent element and send children as raw', function (t) {
       src = parser(tmpl, true)
 
   t.notOk(src.children[0].model)
-  // t.is(src.children[0].name, 'li')
-  // t.is(src.children[0].children[0].type, 'text')
-  // t.is(src.children[0].children[1].type, 'tag')
-  // t.is(src.children[0].children[1].name, 'span')
   t.end()
 })

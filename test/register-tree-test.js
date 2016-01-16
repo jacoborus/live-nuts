@@ -4,14 +4,14 @@
 import test from 'tape'
 import registerTree from '../src/register-tree.js'
 
-test('register nuts as custom elements', function (t) {
+test('create a tree with custom nuts', function (t) {
   let schemas = new Map()
   schemas.set('x-foo', {
-    extends: 'li',
+    localName: 'li',
     tagName: 'x-foo'
   })
   schemas.set('x-fa', {
-    extends: 'span',
+    localName: 'span',
     tagName: 'x-fa'
   })
 

@@ -7,18 +7,22 @@
 // - add behaviours into behaviours archive
 // - set behaviours into templates
 // - make partials (with extend.js)
-// - register elements, create nuts tree and instance nuts
+// - register elements, create nuts tree and instantiate nuts
 
 import apiFactories from './api-factories.js'
 import makePartials from './partials.js'
-import extract from './extract.js'
+import registerTree from './register-tree.js'
+import instantiator from './instantiate.js'
 
 let api = {},
     schemas = new Map(),
     behaviours = new Map(),
     filtersArchive = new Map(),
+    links = new Map(),
     model = {},
     queue = []
+
+let instantiate = instantiator(schemas, links)
 
 function next () {
   if (queue.length) queue.shift()()
@@ -55,9 +59,8 @@ api.addFilters = function (filters) {
 function resolveDocument (callback) {
   setBehaviours(function () {
     makePartials(schemas, () => {
-      extract(document.head, model, () => {
-        extract(document.body, model, callback)
-      })
+      registerTree(document.children[0], schemas)
+      .then(tree => instantiate(tree, model, () => callback()))
     })
   })
 }

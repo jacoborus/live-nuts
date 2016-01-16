@@ -66,8 +66,8 @@ export default function parser (el, rawChildren) {
 
   src.type = nodeType[el.nodeType]
   src.data = el.data
-  src.name = el.localName
-  src.voidElement = voidElementsSet.has(src.name)
+  src.localName = el.localName
+  src.voidElement = voidElementsSet.has(src.localName)
 
   // assign attributes
   if (atts.nut) {

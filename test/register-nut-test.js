@@ -7,7 +7,7 @@ import registerNut from '../src/register-nut.js'
 test('register nuts as custom elements', function (t) {
   let x = 0
   let schema = {
-    extends: 'li',
+    localName: 'li',
     tagName: 'register-tag'
   }
 
@@ -19,5 +19,6 @@ test('register nuts as custom elements', function (t) {
   document.body.appendChild(el)
   t.ok(el.isNut)
   t.is(x, 1)
+  document.body.removeChild(el)
   t.end()
 })
