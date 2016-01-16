@@ -66,7 +66,7 @@ function resolveDocument (callback) {
 }
 
 api.resolve = function (callback) {
-  queue.push(() => addTemplates(document.querySelectorAll('template[nut]')))
+  queue.push(() => addTemplates(document.querySelectorAll('template[nut-templates]')))
   queue.push(() => resolveDocument(callback))
   next()
 }

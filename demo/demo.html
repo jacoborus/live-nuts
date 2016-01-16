@@ -2,22 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title nu-model="title">supertitulo</title>
+  <title is="web-title">Task list</title>
 </head>
 <body>
-  <section id="tasklist" data-nut="taskList">
-    <h1>Tasks</h1>
-    <label for="newtask">new task:</label>
-    <input type="text" data-nut="newTask" id="newtask" name="newtask">
-    <button>add</button>
-    <ul data-nut="list">
-      <li data-nut="task">Practice typing</li>
-    </ul>
-  </section>
-  <template nut="myyy" class="aclass">
-    testing templates
+  <div is="tunnel-div">
+    <h1 is="custom-title">my title</h1>
+  </div>
+  <input type="text" is="input-title">
+  <template nut-templates="1">
+    <div nut="tunnel-div" nu-scope="tunnel"></div>
+    <h1 nut="custom-title" nu-model="variable"></h1>
+    <title nut="web-title" nu-scope="tunnel" nu-model="variable"></title>
+    <input nut="input-title" nu-scope="tunnel">
   </template>
-  <script src="dist/nuts.js"></script>
+  <script src="../dist/nuts.js"></script>
   <script src="demo.js"></script>
 </body>
 </html>

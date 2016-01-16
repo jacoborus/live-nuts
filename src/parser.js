@@ -71,7 +71,7 @@ export default function parser (el, rawChildren) {
 
   // assign attributes
   if (atts.nut) {
-    src.keyname = atts.nut
+    src.tagName = atts.nut
     delete atts.nut
   }
   if (atts.class) {

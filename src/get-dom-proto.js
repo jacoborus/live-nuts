@@ -83,3 +83,4 @@ const elementTypes = {
 export default function (kind) {
   return Object.create(window['HTML' + elementTypes[kind] + 'Element'].prototype)
 }
+

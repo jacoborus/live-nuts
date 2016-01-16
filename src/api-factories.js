@@ -9,6 +9,9 @@ function getElements (template) {
   if (typeof template === 'string') {
     return createRange.createContextualFragment(template).childNodes
   }
+  if (template[0] && template[0].nodeName === 'TEMPLATE') {
+    return template[0].content.children
+  }
   return template
 }
 
@@ -18,8 +21,8 @@ export default function (schemas, filtersArchive, behaviours, next) {
 
     Array.prototype.forEach.call(elements, element => {
       let schema = parser(element)
-      if (schema.keyname) {
-        schemas.set(schema.keyname, schema)
+      if (schema.tagName) {
+        schemas.set(schema.tagName, schema)
       }
     })
 
@@ -47,8 +50,10 @@ export default function (schemas, filtersArchive, behaviours, next) {
     let counter = newCounter(behaviours.size, callback)
     behaviours.forEach((behaviour, key) => {
       // TODO: check this weird thing
-      if (schema) schema.behaviour = behaviour
       let schema = schemas.get(key)
+      if (schema) {
+        if (behaviour.events) schema.events = behaviour.events
+      }
       counter()
     })
   }

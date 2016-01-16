@@ -4,31 +4,26 @@
 
 nuts
 .addFilter('titler', x => x + ' titleeeeeeee')
-.addBehaviour('my-template', {
-  init: function (nut) {
-    if (nut.scope.current) {
-      // do something
-    }
-  },
-  exit: function () {},
-  on: {
-    click: (nut, event) => {
-      event.preventDefault()
-      nut.set('current', false)
-      nut.methodOne()
-    }
-  },
-  children: {
-    title: {
-      init: nut => {
-        if (nut.get('current')) console.log('activo!')
+.addBehaviour('input-title', {
+  events: {
+    keypress: function (e, nut) {
+      let key = e.which || e.keyCode
+      if (key === 13) { // 13 is enter
+        if (nut.element.value.trim()) {
+          nut.updateScope('variable', nut.element.value)
+        }
       }
     }
-  },
-  methods: {
-    methodOne: function () {}
+  }
+})
+.addBehaviour('custom-title', {
+  events: {
+    click: function (event, nut) {
+      nut.updateModel('hola')
+    }
   }
 })
 .resolve(function () {
-  console.log('vamosssssssssss')
+  console.log('ok!')
+  console.log(nuts.model)
 })

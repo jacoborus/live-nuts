@@ -6,16 +6,19 @@ import apiFactories from '../src/api-factories.js'
 
 test('add a template from an element into templates archive', function (t) {
   let schemas = new Map(),
-      element = document.createElement('template')
+      container = document.createElement('div')
 
-  element.setAttribute('nut', 'testkey')
+  container.innerHTML = `<template nut-templates>
+    <div nut="test-key"></div>
+  </template>`
 
   let { addTemplates } = apiFactories(schemas, null, null, function () {
-    t.ok(schemas.has('testkey'))
+    console.log(schemas)
+    t.ok(schemas.has('test-key'))
     t.end()
   })
 
-  addTemplates([element])
+  addTemplates([container.children[0]])
 })
 
 test('add a template from a string into template archive', function (t) {
@@ -88,7 +91,11 @@ test('set behaviours in schemas', (t) => {
       schemas = new Map()
 
   schemas.set('uno', {})
-  behavioursArchive.set('uno', {})
+  behavioursArchive.set('uno', {
+    events: {
+      click: function () {}
+    }
+  })
 
   let { setBehaviours } = apiFactories(schemas, null, behavioursArchive)
 
