@@ -49,10 +49,8 @@ export default function (schemas, filtersArchive, behaviours, next) {
   function setBehaviours (callback = function () {}) {
     let counter = newCounter(behaviours.size, callback)
     behaviours.forEach((behaviour, key) => {
-      // TODO: check this weird thing
-      let schema = schemas.get(key)
-      if (schema) {
-        if (behaviour.events) schema.events = behaviour.events
+      if (schemas.has(key) && behaviour.events) {
+        schemas.get(key).events = behaviour.events
       }
       counter()
     })
