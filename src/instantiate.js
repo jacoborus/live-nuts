@@ -3,25 +3,6 @@
 import newCounter from './counter.js'
 
 export default function (schemas, links) {
-  function updateScope (scope) {
-    if (!links.has(scope)) links.set(scope, new Set())
-    let link = links.get(scope)
-    return function (modelName, data) {
-      scope[modelName] = data
-      link.forEach(x => x.updateView())
-    }
-  }
-
-  function updateModel (scope, nut) {
-    if (!links.has(scope)) links.set(scope, new Set())
-    let link = links.get(scope)
-    link.add(nut)
-    return function (data) {
-      scope[nut.model] = data
-      link.forEach(x => x.updateView())
-    }
-  }
-
   /**
    * extract data model from html
    *
@@ -38,12 +19,10 @@ export default function (schemas, links) {
       let nut = {},
           schema = schemas.get(el.getAttribute('is')),
           scopeAtt = schema.scope,
-          model = schema.model,
           innerScope
 
-      nut.model = schema.model
-      nut.scope = schema.scope
       nut.element = el
+      nut.schema = schema
 
       for (let i in schema.events) {
         el.addEventListener(i, function (event) {
@@ -58,20 +37,34 @@ export default function (schemas, links) {
         innerScope = scope
       }
 
-      nut.updateScope = updateScope(innerScope, nut)
-      nut.updateView = function () {
-        el.innerHTML = innerScope[model]
+      if (!links.has(innerScope)) links.set(innerScope, new Set())
+      let link = links.get(innerScope)
+
+      nut.updateScope = function (modelName, data) {
+        innerScope[modelName] = data
+        link.forEach(x => x.updateView())
       }
+
+      nut.updateView = function () {
+        el.innerHTML = innerScope[schema.model]
+      }
+
       nut.getScope = function (key) {
         if (key) return innerScope[key]
         return innerScope
       }
-      if (model) {
-        innerScope[model] = el.innerText
-        nut.updateModel = updateModel(innerScope, nut)
-        return count()
+
+      if (schema.model) {
+        link.add(nut)
+        innerScope[schema.model] = el.innerText
+        nut.updateModel = function (data) {
+          innerScope[schema.model] = data
+          link.forEach(x => x.updateView())
+        }
+        count()
+      } else {
+        extract(child, innerScope, count)
       }
-      extract(child, innerScope, count)
     })
   }
 }

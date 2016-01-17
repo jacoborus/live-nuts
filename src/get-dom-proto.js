@@ -1,5 +1,6 @@
 'use strict'
 
+// TODO: optimize this. now it is too big
 const elementTypes = {
   a: 'Anchor',
   area: 'Area',

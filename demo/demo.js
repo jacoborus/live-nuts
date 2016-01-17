@@ -3,7 +3,6 @@
 'use strict'
 
 nuts
-.addFilter('titler', x => x + ' titleeeeeeee')
 .addBehaviour('input-title', {
   events: {
     keypress: function (e, nut) {
@@ -19,7 +18,11 @@ nuts
 .addBehaviour('custom-title', {
   events: {
     click: function (event, nut) {
-      nut.updateModel('hola')
+      if (nut.getScope()[nut.schema.model] === 'hola') {
+        nut.updateModel('adios')
+      } else {
+        nut.updateModel('hola')
+      }
     }
   }
 })
