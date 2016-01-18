@@ -2,8 +2,6 @@
 import './parser-test.js'
 import './extend-test.js'
 import './partials-test.js'
-import './extract-test.js'
-import './render-test.js'
 import './api-factories-test.js'
 import './register-nut-test.js'
 import './register-tree-test.js'

@@ -20,10 +20,10 @@ test('instantiate tree with scope', function (t) {
     model: 'funciona',
     events: {
       click: function (event, nut) {
-        if (nut.getScope()[nut.model] === 'hola') {
-          nut.updateModel('adios')
+        if (nut.getScope()[nut.schema.model] === 'hola') {
+          nut.updateScope('funciona', 'adios')
         } else {
-          nut.updateModel('hola')
+          nut.updateScope('funciona', 'hola')
         }
       }
     }

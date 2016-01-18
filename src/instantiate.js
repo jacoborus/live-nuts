@@ -37,12 +37,17 @@ export default function (schemas, links) {
         innerScope = scope
       }
 
-      if (!links.has(innerScope)) links.set(innerScope, new Set())
+      if (!links.has(innerScope)) links.set(innerScope, new Map())
       let link = links.get(innerScope)
+
+      // constains all links where nut is linked
+      // When element is dettached unlink all
+      let innerLinks = new Set()
 
       nut.updateScope = function (modelName, data) {
         innerScope[modelName] = data
-        link.forEach(x => x.updateView())
+        link.get(modelName).forEach(x => x(data))
+        return nut
       }
 
       nut.updateView = function () {
@@ -54,13 +59,41 @@ export default function (schemas, links) {
         return innerScope
       }
 
-      if (schema.model) {
-        link.add(nut)
-        innerScope[schema.model] = el.innerText
-        nut.updateModel = function (data) {
-          innerScope[schema.model] = data
-          link.forEach(x => x.updateView())
+      if (schema.booleans) {
+        for (let att in schema.booleans) {
+          let model = schema.booleans[att]
+          let linkModel = link.get(model) || link.set(model, new Set()).get(model)
+          let actionLink = value => {
+            if (value) {
+              el.setAttribute(att, '')
+            } else {
+              el.removeAttribute(att)
+            }
+          }
+          innerLinks.add(() => linkModel.delete(actionLink))
+          linkModel.add(actionLink)
+          innerScope[model] = el.getAttribute(model)
         }
+      }
+
+      if (schema.nuAtts) {
+        for (let att in schema.nuAtts) {
+          let model = schema.nuAtts[att]
+          let linkModel = link.get(model) || link.set(model, new Set()).get(model)
+          let actionLink = value => el.setAttribute(att, value)
+          innerLinks.add(() => linkModel.delete(actionLink))
+          linkModel.add(actionLink)
+          innerScope[model] = el.getAttribute(att)
+        }
+      }
+
+      if (schema.model) {
+        let model = schema.model
+        let linkModel = link.get(model) || link.set(model, new Set()).get(model)
+        let actionLink = value => el.innerHTML = value
+        innerLinks.add(() => linkModel.delete(actionLink))
+        linkModel.add(actionLink)
+        innerScope[model] = el.innerText
         count()
       } else {
         extract(child, innerScope, count)

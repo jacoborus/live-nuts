@@ -7,13 +7,15 @@
 <body>
   <div is="tunnel-div">
     <h1 is="custom-title">my title</h1>
+    <div is="div-att" something="hello">00</div>
   </div>
   <input type="text" is="input-title">
-  <template nut-templates="1">
+  <template nut-templates>
     <div nut="tunnel-div" nu-scope="tunnel"></div>
     <h1 nut="custom-title" nu-model="variable"></h1>
     <title nut="web-title" nu-scope="tunnel" nu-model="variable"></title>
     <input nut="input-title" nu-scope="tunnel">
+    <div nut="div-att" nu-something="variable" nu-bool-="bool">00</div>
   </template>
   <script src="../dist/nuts.js"></script>
   <script src="demo.js"></script>

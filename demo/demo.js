@@ -8,7 +8,7 @@ nuts
     keypress: function (e, nut) {
       let key = e.which || e.keyCode
       if (key === 13) { // 13 is enter
-        if (nut.element.value.trim()) {
+        if (nut.element.value) {
           nut.updateScope('variable', nut.element.value)
         }
       }
@@ -19,9 +19,13 @@ nuts
   events: {
     click: function (event, nut) {
       if (nut.getScope()[nut.schema.model] === 'hola') {
-        nut.updateModel('adios')
+        nut
+        .updateScope('variable', 'adios')
+        .updateScope('bool', true)
       } else {
-        nut.updateModel('hola')
+        nut
+        .updateScope('variable', 'hola')
+        .updateScope('bool', false)
       }
     }
   }

@@ -13,7 +13,6 @@ test('add a template from an element into templates archive', function (t) {
   </template>`
 
   let { addTemplates } = apiFactories(schemas, null, null, function () {
-    console.log(schemas)
     t.ok(schemas.has('test-key'))
     t.end()
   })
