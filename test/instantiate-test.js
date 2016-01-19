@@ -88,13 +88,14 @@ test('instantiate tree with array', function (t) {
   .then(tree => {
     instantiate(tree, testScope, () => {
       t.ok(testScope.list)
-      t.ok(Array.isArray(testScope.list))
-      t.is(testScope.list[0].number, '1')
-      t.is(testScope.list[1].number, '2')
+      t.ok(Array.isArray(testScope.list.items))
+      t.is(testScope.list.items[0].number, '1')
+      t.is(testScope.list.items[1].number, '2')
       let bar = element.querySelector('#xli1')
       bar.click()
-      t.is(testScope.list[0].number, 2)
+      t.is(testScope.list.items[0].number, 2)
       document.body.removeChild(element)
+      console.log(testScope)
       t.end()
     })
   })

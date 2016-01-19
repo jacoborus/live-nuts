@@ -30,17 +30,23 @@ export default function (schemas, links) {
         })
       }
 
+      let preScope
       if (scopeAtt) {
-        if (!scope[scopeAtt]) scope[scopeAtt] = []
-        if (schema.repeat) {
-          let localScope = {}
-          scope[scopeAtt].push(localScope)
-          innerScope = localScope
-        } else {
-          innerScope = scope[scopeAtt]
-        }
+        if (!scope[scopeAtt]) scope[scopeAtt] = {}
+        preScope = scope[scopeAtt]
       } else {
-        innerScope = scope
+        preScope = scope
+      }
+
+      if (schema.repeat) {
+        let localScope = {}
+        if (!preScope[schema.repeat]) {
+          preScope[schema.repeat] = []
+        }
+        preScope[schema.repeat].push(localScope)
+        innerScope = localScope
+      } else {
+        innerScope = preScope
       }
 
       if (!links.has(innerScope)) links.set(innerScope, new Map())
