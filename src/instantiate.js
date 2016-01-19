@@ -31,8 +31,14 @@ export default function (schemas, links) {
       }
 
       if (scopeAtt) {
-        if (!scope[scopeAtt]) scope[scopeAtt] = {}
-        innerScope = scope[scopeAtt]
+        if (!scope[scopeAtt]) scope[scopeAtt] = []
+        if (schema.repeat) {
+          let localScope = {}
+          scope[scopeAtt].push(localScope)
+          innerScope = localScope
+        } else {
+          innerScope = scope[scopeAtt]
+        }
       } else {
         innerScope = scope
       }
@@ -46,7 +52,7 @@ export default function (schemas, links) {
 
       nut.updateScope = function (modelName, data) {
         innerScope[modelName] = data
-        link.get(modelName).forEach(x => x(data))
+        !link.has(modelName) || link.get(modelName).forEach(x => x(data))
         return nut
       }
 
