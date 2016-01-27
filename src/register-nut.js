@@ -5,7 +5,7 @@ import getDOMProto from './get-dom-proto.js'
 export default function (schema, count) {
   let proto = getDOMProto(schema.localName)
 
-  proto.attachedCallback = function () {
+  proto.createdCallback = function () {
     this.isNut = true
     count()
   }
