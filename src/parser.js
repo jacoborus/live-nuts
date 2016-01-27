@@ -32,9 +32,7 @@ voidElements.forEach(e => voidElementsSet.add(e))
 
 const getAttributes = function (atts) {
   let obj = {}
-  Array.prototype.forEach.call(atts, att => {
-    obj[att.name] = att.value
-  })
+  Array.from(atts).forEach(att => obj[att.name] = att.value)
   return obj
 }
 

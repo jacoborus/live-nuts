@@ -9,7 +9,7 @@ nuts
       let key = e.which || e.keyCode
       if (key === 13) { // 13 is enter
         if (nut.element.value) {
-          nut.updateScope('variable', nut.element.value)
+          nut.scope.variable = nut.element.value
         }
       }
     }
@@ -18,14 +18,12 @@ nuts
 .addBehaviour('custom-title', {
   events: {
     click: function (event, nut) {
-      if (nut.getScope()[nut.schema.model] === 'hola') {
-        nut
-        .updateScope('variable', 'adios')
-        .updateScope('bool', true)
+      if (nut.scope.variable === 'hola') {
+        nut.scope.variable = 'adios'
+        nut.scope.bool = true
       } else {
-        nut
-        .updateScope('variable', 'hola')
-        .updateScope('bool', false)
+        nut.scope.variable = 'hola'
+        nut.scope.bool = false
       }
     }
   }

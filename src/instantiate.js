@@ -44,7 +44,7 @@ export default function (schemas, links) {
           preScope[schema.repeat] = []
         }
         preScope[schema.repeat].push(localScope)
-        innerScope = localScope
+        innerScope = preScope[schema.repeat][preScope[schema.repeat].length - 1]
       } else {
         innerScope = preScope
       }
@@ -56,20 +56,7 @@ export default function (schemas, links) {
       // When element is dettached unlink all
       let innerLinks = new Set()
 
-      nut.updateScope = function (modelName, data) {
-        innerScope[modelName] = data
-        !link.has(modelName) || link.get(modelName).forEach(x => x(data))
-        return nut
-      }
-
-      nut.updateView = function () {
-        el.innerHTML = innerScope[schema.model]
-      }
-
-      nut.getScope = function (key) {
-        if (key) return innerScope[key]
-        return innerScope
-      }
+      nut.scope = innerScope
 
       if (schema.booleans) {
         for (let att in schema.booleans) {
@@ -84,7 +71,6 @@ export default function (schemas, links) {
           }
           innerLinks.add(() => linkModel.delete(actionLink))
           linkModel.add(actionLink)
-          innerScope[model] = el.getAttribute(model)
         }
       }
 

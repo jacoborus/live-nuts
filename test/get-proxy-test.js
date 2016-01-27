@@ -2,7 +2,7 @@
 
 import test from 'tape'
 
-import getProxyFactory from './get-proxy.js'
+import getProxyFactory from '../src/get-proxy.js'
 
 let globalModel = {
   title: 'super title',

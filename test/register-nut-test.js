@@ -16,6 +16,7 @@ test('register nuts as custom elements', function (t) {
   })
 
   let el = document.createElement('li', 'register-tag')
+  t.is(x, 0)
   document.body.appendChild(el)
   t.ok(el.isNut)
   t.is(x, 1)

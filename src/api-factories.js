@@ -19,7 +19,7 @@ export default function (schemas, filtersArchive, behaviours, next) {
   function addTemplates (template) {
     let elements = getElements(template)
 
-    Array.prototype.forEach.call(elements, element => {
+    Array.from(elements).forEach(element => {
       let schema = parser(element)
       if (schema.tagName) {
         schemas.set(schema.tagName, schema)

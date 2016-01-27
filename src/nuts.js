@@ -13,15 +13,17 @@ import apiFactories from './api-factories.js'
 import makePartials from './partials.js'
 import registerTree from './register-tree.js'
 import instantiator from './instantiate.js'
+import getProxyFactory from './get-proxy.js'
 
 let api = {},
     schemas = new Map(),
     behaviours = new Map(),
     filtersArchive = new Map(),
     links = new Map(),
-    model = {},
     queue = []
 
+let getProxy = getProxyFactory(links)
+let model = getProxy({})
 let instantiate = instantiator(schemas, links)
 
 function next () {
@@ -60,7 +62,9 @@ function resolveDocument (callback) {
   setBehaviours(function () {
     makePartials(schemas, () => {
       registerTree(document.children[0], schemas)
-      .then(tree => instantiate(tree, model, () => callback()))
+      .then(tree => {
+        instantiate(tree, model, () => callback())
+      })
     })
   })
 }

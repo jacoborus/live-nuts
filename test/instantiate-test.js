@@ -1,13 +1,12 @@
 'use strict'
 
 import test from 'tape'
-
 import registerTree from '../src/register-tree.js'
 import instantiator from '../src/instantiate.js'
+import getProxyFactory from '../src/get-proxy.js'
 
 test('instantiate tree with scope', function (t) {
   let links = new Map()
-  let testScope = {}
   let schemas = new Map()
   schemas.set('x-bor', {
     localName: 'li',
@@ -20,14 +19,15 @@ test('instantiate tree with scope', function (t) {
     model: 'funciona',
     events: {
       click: function (event, nut) {
-        if (nut.getScope()[nut.schema.model] === 'hola') {
-          nut.updateScope('funciona', 'adios')
+        if (nut.scope.funciona === 'hola') {
+          nut.scope.funciona = 'adios'
         } else {
-          nut.updateScope('funciona', 'hola')
+          nut.scope.funciona = 'hola'
         }
       }
     }
   })
+
   let element = document.createElement('div')
   element.innerHTML = `<div>
     <strong>hola</strong>
@@ -38,6 +38,8 @@ test('instantiate tree with scope', function (t) {
     </li>
   </div>`
   let instantiate = instantiator(schemas, links)
+  let getProxy = getProxyFactory(links)
+  let testScope = getProxy({})
 
   registerTree(element, schemas)
   .then(tree => {
@@ -56,8 +58,8 @@ test('instantiate tree with scope', function (t) {
 
 test('instantiate tree with array', function (t) {
   let links = new Map()
-  let testScope = {}
   let schemas = new Map()
+  let getProxy = getProxyFactory(links)
   schemas.set('x-li', {
     localName: 'li',
     tagName: 'x-li',
@@ -67,9 +69,8 @@ test('instantiate tree with array', function (t) {
     events: {
       click: function (event, nut) {
         let model = nut.schema.model
-        let n = Number(nut.getScope(model))
-        nut
-        .updateScope(model, ++n)
+        let n = Number(nut.scope[model])
+        nut.scope.number = ++n
       }
     }
   })
@@ -79,23 +80,23 @@ test('instantiate tree with array', function (t) {
   })
   let element = document.createElement('div')
   element.innerHTML = `<ul is="x-ul">
-    <li id="xli1" is="x-li" test="test1">1</li>
-    <li is="x-li" test="test2">2</li>
+    <li id="xli1" is="x-li" test="test1">uno</li>
+    <li is="x-li" test="test2">dos</li>
   </ul>`
   let instantiate = instantiator(schemas, links)
+  let testScope = getProxy({})
 
   registerTree(element, schemas)
   .then(tree => {
     instantiate(tree, testScope, () => {
       t.ok(testScope.list)
       t.ok(Array.isArray(testScope.list.items))
-      t.is(testScope.list.items[0].number, '1')
-      t.is(testScope.list.items[1].number, '2')
+      t.is(testScope.list.items.length, 2)
+      t.is(testScope.list.items[0].number, 'uno') // fail
+      t.is(testScope.list.items[1].number, 'dos') // fail
       let bar = element.querySelector('#xli1')
       bar.click()
-      t.is(testScope.list.items[0].number, 2)
       document.body.removeChild(element)
-      console.log(testScope)
       t.end()
     })
   })

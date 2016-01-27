@@ -16,7 +16,9 @@ export default function (element, schemas) {
     })
 
     let nutsTree = new Map()
-    let registerCount = newCounter(schemas.size, () => makeTree(element, nutsTree))
+    let registerCount = newCounter(schemas.size, () => {
+      makeTree(element, nutsTree)
+    })
     let treeCounter = newCounter(total, () => {
       resolve(nutsTree)
     })

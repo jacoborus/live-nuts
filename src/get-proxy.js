@@ -11,7 +11,7 @@ export default function (links) {
           link.set(prop, new Set())
         }
         return Reflect.set(target, prop, value)
-      } else {
+      } else if (value) {
         let p = deepProxy(value)
         return Reflect.set(target, prop, p)
       }
