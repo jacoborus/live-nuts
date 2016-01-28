@@ -8,6 +8,7 @@ import getProxyFactory from '../src/get-proxy.js'
 test('instantiate tree with scope', function (t) {
   let links = new Map()
   let schemas = new Map()
+
   schemas.set('x-bor', {
     localName: 'li',
     tagName: 'x-bor',
@@ -37,6 +38,7 @@ test('instantiate tree with scope', function (t) {
       </div>
     </li>
   </div>`
+
   let instantiate = instantiator(schemas, links)
   let getProxy = getProxyFactory(links)
   let testScope = getProxy({})
@@ -60,6 +62,7 @@ test('instantiate tree with array', function (t) {
   let links = new Map()
   let schemas = new Map()
   let getProxy = getProxyFactory(links)
+
   schemas.set('x-li', {
     localName: 'li',
     tagName: 'x-li',
@@ -78,11 +81,13 @@ test('instantiate tree with array', function (t) {
     localName: 'ul',
     tagName: 'x-ul'
   })
+
   let element = document.createElement('div')
   element.innerHTML = `<ul is="x-ul">
     <li id="xli1" is="x-li" test="test1">uno</li>
     <li is="x-li" test="test2">dos</li>
   </ul>`
+
   let instantiate = instantiator(schemas, links)
   let testScope = getProxy({})
 
