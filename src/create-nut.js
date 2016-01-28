@@ -50,7 +50,7 @@ function getScope (scope, schema) {
 function renderNut (schema, scope) {
   let nut = {},
       el = renderElement(schema),
-      { nuAtts, children, events } = schema
+      { nuAtts, children, events, model } = schema
 
   // add events
   Object.keys(events).forEach(type => el.addEventListener(type, e => events[type](e, nut)))
@@ -59,6 +59,8 @@ function renderNut (schema, scope) {
 
   if (!links.has(innerScope)) links.set(innerScope, new Map())
   let link = links.get(innerScope)
+
+  nut.scope = innerScope
 
   // constains all links where nut is linked
   // When element is dettached unlink all
@@ -84,8 +86,12 @@ function renderNut (schema, scope) {
     })
   }
 
-  if (schema.model) {
-    el.innerHTML = scope[schema.model]
+  if (model) {
+    el.innerHTML = scope[model]
+    let linkModel = link.get(model) || link.set(model, new Set()).get(model)
+    let actionLink = value => el.innerHTML = value
+    innerLinks.add(() => linkModel.delete(actionLink))
+    linkModel.add(actionLink)
   } else {
     renderChildren(children, scope).forEach(c => {if (c) el.appendChild(c)})
   }
