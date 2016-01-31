@@ -29,19 +29,15 @@ test('extend nut properties', function (t) {
 
 test('extend attributes and variable attributes', function (t) {
   let sample = {
-        attribs: { other: 'src' },
-        nuAtts: {other: 'src' }
+        attribs: { other: 'src' }
       },
       otherSample = {
-        attribs: { id: 'ext', other: 'ext' },
-        nuAtts: { id: 'ext', other: 'ext' }
+        attribs: { id: 'ext', other: 'ext' }
       }
 
   extend(sample, otherSample, function () {
     t.is(sample.attribs.id, 'ext')
     t.is(sample.attribs.other, 'src')
-    t.is(sample.nuAtts.id, 'ext')
-    t.is(sample.nuAtts.other, 'src')
     t.end()
   })
 })

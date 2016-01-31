@@ -5,44 +5,33 @@ const nuProps = [
   'type',
   'name',
   'data',
-  'each',
-  'class',
-  'nuClass',
   'scope',
   'model',
   'repeat',
-  'nuif',
+  'if',
   'unless',
-  'checked',
-  'formatters'
-]
-
-const nuObjs = [
-  'attribs',
-  'nuAtts'
+  'attribs'
 ]
 
 export default function (src, extension, next) {
   if (!extension) return next()
 
   nuProps.forEach(prop => {
-    if (src[prop] === undefined && extension[prop] !== undefined) {
+    if (!(prop in src) && prop in extension) {
       src[prop] = extension[prop]
     }
   })
 
-  nuObjs.forEach(o => {
-    if (!src[o] && extension[o]) {
-      src[o] = {}
-    }
-    if (extension[o]) {
-      for (let i in extension[o]) {
-        if (src[o][i] === undefined) {
-          src[o][i] = extension[o][i]
-        }
+  if (!('attribs' in src) && 'attribs' in extension) {
+    src.attribs = {}
+  }
+  if ('attribs' in extension) {
+    for (let i in extension['attribs']) {
+      if (!(i in src.attribs)) {
+        src.attribs[i] = extension.attribs[i]
       }
     }
-  })
+  }
 
   if (!src.children && extension.children) {
     src.childrenFrom = extension.key
