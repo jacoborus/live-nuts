@@ -173,7 +173,7 @@ test('make circular partials', function (t) {
       unless: 'mark',
       as: 'relist'
     }, {
-      nuif: 'mark',
+      if: 'mark',
       children: [{
         class: 'testclass',
         children: [{
@@ -191,7 +191,6 @@ test('make circular partials', function (t) {
   .set('relist', {
     key: 'relist',
     as: 'newlist',
-    class: 'reclass',
     children: [{
       as: 'list',
       attribs: {
@@ -209,7 +208,6 @@ test('make circular partials', function (t) {
     t.is(relist.scope, 'desc')
     t.is(relist.key, 'relist')
     t.is(relist.as, undefined)
-    t.is(relist.class, 'reclass')
     t.is(relist.children[0].attribs.test, 'test')
     t.notOk(relist.children[1])
 
@@ -218,15 +216,13 @@ test('make circular partials', function (t) {
     t.is(newlist.key, 'newlist')
     t.is(newlist.as, undefined)
     t.is(newlist.children[0].unless, 'mark')
-    t.is(newlist.children[1].nuif, 'mark')
+    t.is(newlist.children[1].if, 'mark')
 
     t.is(list.repeat, 'articles')
     t.is(list.scope, undefined)
     t.is(list.key, 'list')
     t.is(list.as, undefined)
     t.is(list.children[0].scope, 'desc')
-    t.is(list.children[1].children[0].class, 'testclass')
-    t.is(list.children[1].children[0].children[0].class, 'grandchildren')
     t.is(list.children[1].children[0].children[0].scope, 'desc')
     t.is(list.children[1].children[0].children[0].children[0].children[0].scope, 'desc')
     t.end()
