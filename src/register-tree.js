@@ -1,7 +1,6 @@
 'use strict'
 
 import newCounter from './counter.js'
-import registerNut from './register-nut.js'
 
 let forEach = Array.prototype.forEach
 
@@ -16,17 +15,12 @@ export default function (element, schemas) {
     })
 
     let nutsTree = new Map()
-    let registerCount = newCounter(schemas.size, () => {
-      makeTree(element, nutsTree)
-    })
     let treeCounter = newCounter(total, () => {
       resolve(nutsTree)
     })
 
     if (schemas.size) {
-      schemas.forEach(schema => {
-        registerNut(schema, registerCount)
-      })
+      makeTree(element, nutsTree)
     } else {
       resolve(nutsTree)
     }

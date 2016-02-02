@@ -31,6 +31,7 @@ export default function (schemas, callback) {
   // iterate nuts
   (function next () {
     if (keys.length) {
+      // first extend the main template tags
       let nut = schemas.get(keys.shift())
       if (!nut.as) return next()
       if (schemas.get(nut.as).as) {
@@ -39,6 +40,7 @@ export default function (schemas, callback) {
         extend(nut, schemas.get(nut.as), next)
       }
     } else {
+      // then extend the children tags inside main tags
       let count = newCounter(schemas.size, callback)
       schemas.forEach(value => extendInside(value, schemas, count))
     }

@@ -25,6 +25,7 @@ export default function (src, extension, next) {
   if (!('attribs' in src) && 'attribs' in extension) {
     src.attribs = {}
   }
+
   if ('attribs' in extension) {
     for (let i in extension['attribs']) {
       if (!(i in src.attribs)) {
