@@ -4,13 +4,16 @@ export default function (links) {
   let handler = {
     set (target, prop, value, receiver) {
       if (typeof value !== 'object') {
-        let link = links.get(receiver)
-        if (link.has(prop)) {
-          link.get(prop).forEach(f => f(value))
-        } else {
-          link.set(prop, new Set())
+        let ok = Reflect.set(target, prop, value)
+        if (ok) {
+          let link = links.get(receiver)
+          if (link.has(prop)) {
+            link.get(prop).forEach(f => f(value))
+          } else {
+            link.set(prop, new Set())
+          }
         }
-        return Reflect.set(target, prop, value)
+        return ok
       } else if (value) {
         let p = deepProxy(value)
         return Reflect.set(target, prop, p)

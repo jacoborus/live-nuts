@@ -2,6 +2,7 @@
 
 import newCounter from './counter.js'
 
+let links
 const matcher = /{{([^}]*)}}/
 
 function getScope (scope, scopeAtt) {
@@ -13,16 +14,28 @@ function getScope (scope, scopeAtt) {
   }
 }
 
-function loopStr (str) {
-  if (!str) return []
+function parseStr (str) {
+  if (!str) {
+    return {
+      fns: [],
+      models: []
+    }
+  }
   let st = str.match(matcher)
   if (st.index) {
-    return [() => str.substr(0, st.index)]
-      .concat(loopStr(str.substring(st.index)))
+    let out = str.substr(0, st.index)
+    let next = parseStr(str.substring(st.index))
+    return {
+      fns: [() => out].concat(next.fns),
+      models: [].concat(next.models)
+    }
   } else {
     let model = st[1].trim()
-    return [scope => scope[model] || '']
-      .concat(loopStr(str.substring(st[0].length)))
+    let next = parseStr(str.substring(st[0].length))
+    return {
+      fns: [scope => scope[model] || ''].concat(next.fns),
+      models: [model].concat(next.models)
+    }
   }
 }
 
@@ -31,9 +44,9 @@ function compileAttributes (atts) { // compile attributes
   for (let att in atts) {
     let value = atts[att]
     if (value.match(matcher)) {
-      let loop = loopStr(value)
+      let loop = parseStr(value)
       fns.push(function (el, scope) {
-        el.setAttribute(att, loop.reduce((str, fn) => str + fn(scope), ''))
+        el.setAttribute(att, loop.fns.reduce((str, fn) => str + fn(scope), ''))
       })
     } else {
       fns.push(el => el.setAttribute(att, value))
@@ -45,13 +58,22 @@ function compileAttributes (atts) { // compile attributes
 function compileText (schema, callback) {
   let data = schema.data
   if (schema.data.match(matcher)) {
-    let loop = loopStr(schema.data)
-    if (loop.length === 1) {
-      let fn = loop[0]
-      schema.render = scope => document.createTextNode(fn(scope))
+    let loop = parseStr(schema.data)
+    // let models = new Set()
+    if (loop.fns.length === 1) {
+      let fn = loop.fns[0]
+      schema.render = scope => {
+        let el = document.createTextNode(fn(scope))
+        let updateFn = value => el.textContent = value
+        loop.models.forEach(model => links.get(scope).get(model).add(updateFn))
+        return el
+      }
     } else {
       schema.render = function (scope) {
-        return document.createTextNode(loop.reduce((str, fn) => str + fn(scope), ''))
+        let el = document.createTextNode(loop.fns.reduce((str, fn) => str + fn(scope), ''))
+        let updateFn = () => el.textContent = loop.fns.reduce((str, fn) => str + fn(scope), '')
+        loop.models.forEach(model => links.get(scope).get(model).add(updateFn))
+        return el
       }
     }
   } else {
@@ -67,21 +89,24 @@ function compileTag (schema, callback) {
     renderAttributes = compileAttributes(attribs)
   }
   schema.render = (outerScope) => {
-    let scope = getScope(outerScope, schema.scope)
-    let el = document.createElement(schema.localName)
-    let nut = { el, scope }
+    let scope = getScope(outerScope, schema.scope),
+        el = document.createElement(schema.localName),
+        nut = { el, scope }
+    // let link = links.get(scope)
+    // let linkModel = link.get(model) || link.set(model, new Set()).get(model)
+    // render attributes
     if (attribs) renderAttributes(el, scope)
-
     // add events
     if (events) {
       Object.keys(events).forEach(type => el.addEventListener(type, e => events[type](e, nut)))
     }
+    // render children
     if (schema.children) {
       schema.children.forEach(c => el.appendChild(c.render(scope)))
     }
     return el
   }
-
+  // compile children
   if (children && children.length) {
     let count = newCounter(children.length, callback)
     children.forEach(c => compile(c, count))
@@ -98,6 +123,7 @@ function compile (schema, callback) {
   }
 }
 
-export default function () {
+export default function (inLinks) {
+  links = inLinks
   return compile
 }

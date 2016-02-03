@@ -5,6 +5,7 @@ import compiler from '../src/compiler.js'
 import getProxyFactory from '../src/get-proxy.js'
 
 test('compile simple tag with attributes', function (t) {
+  let control = 0
   let schema = {
     type: 1,
     tagName: 'c-item',
@@ -17,14 +18,15 @@ test('compile simple tag with attributes', function (t) {
     isNut: true,
     events: {
       click: (e, nut) => {
-        nut.scope['color'] = 'red'
+        control++
+        nut.scope.color = 'red'
       }
     }
   }
 
   let links = new Map()
-  let compile = compiler(links)
   let getProxy = getProxyFactory(links)
+  let compile = compiler(links)
 
   let scope = getProxy({
     color: 'green',
@@ -37,6 +39,10 @@ test('compile simple tag with attributes', function (t) {
     t.is(el.getAttribute('title'), 'green')
     t.is(el.getAttribute('alt'), 'alternative')
     t.is(el.getAttribute('other'), 'other another one')
+    t.is(control, 0)
+    el.click()
+    t.is(el.getAttribute('title'), 'red')
+    t.is(control, 1)
     t.end()
   })
 })
@@ -74,6 +80,9 @@ test('compile text nodes', function (t) {
     localName: 'span',
     isNut: true,
     type: 1,
+    events: {
+      click: (e, nut) => nut.scope.color = 'other'
+    },
     children: [{
       type: 3,
       data: 'hola'
@@ -104,6 +113,9 @@ test('compile text nodes', function (t) {
     t.is(el.childNodes[1].data, 'rojo')
     t.is(el.childNodes[2].nodeType, 3)
     t.is(el.childNodes[2].data, 'otro rojo')
+    el.click()
+    t.is(el.childNodes[1].data, 'other')
+    t.is(el.childNodes[2].data, 'otro other')
     window.el = el
     t.end()
   })
