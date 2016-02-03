@@ -41,15 +41,19 @@ function parseStr (str) {
 
 function compileAttributes (atts) { // compile attributes
   let fns = []
-  for (let att in atts) {
-    let value = atts[att]
+  for (let name in atts) {
+    let value = atts[name]
     if (value.match(matcher)) {
       let loop = parseStr(value)
       fns.push(function (el, scope) {
-        el.setAttribute(att, loop.fns.reduce((str, fn) => str + fn(scope), ''))
+        let updateFn = () => {
+          el.setAttribute(name, loop.fns.reduce((str, fn) => str + fn(scope), ''))
+        }
+        loop.models.forEach(model => links.get(scope).get(model).add(updateFn))
+        el.setAttribute(name, loop.fns.reduce((str, fn) => str + fn(scope), ''))
       })
     } else {
-      fns.push(el => el.setAttribute(att, value))
+      fns.push(el => el.setAttribute(name, value))
     }
   }
   return (el, scope) => fns.forEach(fn => fn(el, scope))

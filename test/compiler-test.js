@@ -4,6 +4,13 @@ import test from 'tape'
 import compiler from '../src/compiler.js'
 import getProxyFactory from '../src/get-proxy.js'
 
+function addCss () {
+  let css = document.createElement('style')
+  css.innerHTML = '.active {color: #ff0000;}'
+  document.head.appendChild(css)
+}
+addCss()
+
 test('compile simple tag with attributes', function (t) {
   let control = 0
   let schema = {
@@ -78,10 +85,16 @@ test('compile text nodes', function (t) {
   let schema = {
     tagName: 's-span',
     localName: 'span',
+    attribs: {
+      class: '{{ class }}'
+    },
     isNut: true,
     type: 1,
     events: {
-      click: (e, nut) => nut.scope.color = 'other'
+      click: (e, nut) => {
+        nut.scope.color = 'other'
+        nut.scope.class = 'active'
+      }
     },
     children: [{
       type: 3,
@@ -100,7 +113,8 @@ test('compile text nodes', function (t) {
   let getProxy = getProxyFactory(links)
 
   let scope = getProxy({
-    color: 'rojo'
+    color: 'rojo',
+    class: ''
   })
 
   compile(schema, () => {
@@ -116,7 +130,7 @@ test('compile text nodes', function (t) {
     el.click()
     t.is(el.childNodes[1].data, 'other')
     t.is(el.childNodes[2].data, 'otro other')
-    window.el = el
+    t.is(el.getAttribute('class'), 'active')
     t.end()
   })
 })
