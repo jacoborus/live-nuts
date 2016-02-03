@@ -7,4 +7,3 @@ import './register-tree-test.js'
 import './instantiate-test.js'
 import './get-proxy-test.js'
 import './compiler-test.js'
-
