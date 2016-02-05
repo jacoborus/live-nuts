@@ -2,7 +2,7 @@
 
 import test from 'tape'
 
-import getProxyFactory from '../src/get-proxy.js'
+import storeFactory from '../src/store-factory.js'
 
 let globalModel = {
   title: 'super title',
@@ -22,16 +22,14 @@ let globalModel = {
 }
 window.globalModel = globalModel
 
-test('create proxy from object with children', function (t) {
+test('create store from object with children', function (t) {
   let links = new Map()
-  let getProxy = getProxyFactory(links)
-  let p = getProxy(globalModel)
-  window.p = p
-  window.links = links
-  t.is(p.title, globalModel.title)
-  t.is(p.object.prop2, globalModel.object.prop2)
-  t.is(p.loop[0].title, globalModel.loop[0].title)
-  t.is(p.loop[1].entry, globalModel.loop[1].entry)
+  let createStore = storeFactory(links)
+  let store = createStore(globalModel)
+  t.is(store.title, globalModel.title)
+  t.is(store.object.prop2, globalModel.object.prop2)
+  t.is(store.loop[0].title, globalModel.loop[0].title)
+  t.is(store.loop[1].entry, globalModel.loop[1].entry)
   t.is(links.size, 7)
   t.end()
 })

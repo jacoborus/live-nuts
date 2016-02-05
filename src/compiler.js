@@ -162,12 +162,12 @@ function compileLoop (schema, callback) {
 function compile (schema, callback) {
   if (schema.type === 1) {
     if ('repeat' in schema) {
-      compileLoop(...arguments)
+      compileLoop(schema, callback)
     } else {
-      compileTag(...arguments)
+      compileTag(schema, callback)
     }
   } else if (schema.type === 3) {
-    compileText(...arguments)
+    compileText(schema, callback)
   }
 }
 

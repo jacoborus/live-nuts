@@ -13,7 +13,7 @@ import apiFactories from './api-factories.js'
 import makePartials from './partials.js'
 import registerTree from './register-tree.js'
 import instantiator from './instantiate.js'
-import getProxyFactory from './get-proxy.js'
+import storeFactory from './store-factory.js'
 
 let api = {},
     schemas = new Map(),
@@ -22,8 +22,8 @@ let api = {},
     links = new Map(),
     queue = []
 
-let getProxy = getProxyFactory(links)
-let model = getProxy({})
+let createStore = storeFactory(links)
+let model = createStore({})
 let instantiate = instantiator(schemas, links)
 
 function next () {

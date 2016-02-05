@@ -2,7 +2,7 @@
 
 import test from 'tape'
 import compiler from '../src/compiler.js'
-import getProxyFactory from '../src/get-proxy.js'
+import storeFactory from '../src/store-factory.js'
 
 function addCss () {
   let css = document.createElement('style')
@@ -32,16 +32,16 @@ test('compile simple tag with attributes', function (t) {
   }
 
   let links = new Map()
-  let getProxy = getProxyFactory(links)
+  let createStore = storeFactory(links)
   let compile = compiler(links)
 
-  let scope = getProxy({
+  let store = createStore({
     color: 'green',
     another: 'another one'
   })
 
   compile(schema, () => {
-    let el = schema.render(scope)
+    let el = schema.render(store)
     t.is(el.localName, 'section')
     t.is(el.getAttribute('title'), 'green')
     t.is(el.getAttribute('alt'), 'alternative')
@@ -68,12 +68,12 @@ test('compile simple tag with children', function (t) {
 
   let links = new Map()
   let compile = compiler(links)
-  let getProxy = getProxyFactory(links)
+  let createStore = storeFactory(links)
 
-  let scope = getProxy({})
+  let store = createStore({})
 
   compile(schema, () => {
-    let el = schema.render(scope)
+    let el = schema.render(store)
     t.is(el.localName, 'ul')
     t.ok(el.children.length)
     t.is(el.children[0].localName, 'li')
@@ -110,15 +110,15 @@ test('compile text nodes', function (t) {
 
   let links = new Map()
   let compile = compiler(links)
-  let getProxy = getProxyFactory(links)
+  let createStore = storeFactory(links)
 
-  let scope = getProxy({
+  let store = createStore({
     color: 'rojo',
     class: ''
   })
 
   compile(schema, () => {
-    let el = schema.render(scope)
+    let el = schema.render(store)
     t.is(el.localName, 'span')
     t.ok(el.childNodes.length)
     t.is(el.childNodes[0].nodeType, 3)
@@ -155,9 +155,9 @@ test('compile text nodes', function (t) {
 
 //   let links = new Map()
 //   let compile = compiler(links)
-//   let getProxy = getProxyFactory(links)
+//   let createStore = storeFactory(links)
 
-//   let scope = getProxy({
+//   let store = createStore({
 //     items: [{
 //       color: 'azul'
 //     }, {
@@ -168,7 +168,7 @@ test('compile text nodes', function (t) {
 //   })
 
 //   compile(schema, () => {
-//     let el = schema.render(scope)
+//     let el = schema.render(store)
 //     t.is(el.localName, 'li')
 //     t.ok(el.childNodes.length)
 //     t.is(el.childNodes[0].nodeType, 3)

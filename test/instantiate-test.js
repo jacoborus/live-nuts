@@ -3,7 +3,7 @@
 import test from 'tape'
 import registerTree from '../src/register-tree.js'
 import instantiator from '../src/instantiate.js'
-import getProxyFactory from '../src/get-proxy.js'
+import storeFactory from '../src/store-factory.js'
 
 test('instantiate tree with scope', function (t) {
   let links = new Map()
@@ -40,17 +40,17 @@ test('instantiate tree with scope', function (t) {
   </div>`
 
   let instantiate = instantiator(schemas, links)
-  let getProxy = getProxyFactory(links)
-  let testScope = getProxy({})
+  let createStore = storeFactory(links)
+  let store = createStore({})
 
   registerTree(element, schemas)
   .then(tree => {
-    instantiate(tree, testScope, () => {
+    instantiate(tree, store, () => {
       let bar = element.querySelector('#xfa1')
-      t.ok(testScope.saludo)
-      t.is(testScope.saludo.funciona, 'hola')
+      t.ok(store.saludo)
+      t.is(store.saludo.funciona, 'hola')
       bar.click()
-      t.is(testScope.saludo.funciona, 'adios')
+      t.is(store.saludo.funciona, 'adios')
       document.body.removeChild(element)
       t.end()
     })
@@ -61,7 +61,7 @@ test('instantiate tree with scope', function (t) {
 test('instantiate tree with array', function (t) {
   let links = new Map()
   let schemas = new Map()
-  let getProxy = getProxyFactory(links)
+  let createStore = storeFactory(links)
 
   schemas.set('x-li', {
     localName: 'li',
@@ -89,16 +89,16 @@ test('instantiate tree with array', function (t) {
   </ul>`
 
   let instantiate = instantiator(schemas, links)
-  let testScope = getProxy({})
+  let store = createStore({})
 
   registerTree(element, schemas)
   .then(tree => {
-    instantiate(tree, testScope, () => {
-      t.ok(testScope.list)
-      t.ok(Array.isArray(testScope.list.items))
-      t.is(testScope.list.items.length, 2)
-      t.is(testScope.list.items[0].number, 'uno') // fail
-      t.is(testScope.list.items[1].number, 'dos') // fail
+    instantiate(tree, store, () => {
+      t.ok(store.list)
+      t.ok(Array.isArray(store.list.items))
+      t.is(store.list.items.length, 2)
+      t.is(store.list.items[0].number, 'uno') // fail
+      t.is(store.list.items[1].number, 'dos') // fail
       let bar = element.querySelector('#xli1')
       bar.click()
       document.body.removeChild(element)
