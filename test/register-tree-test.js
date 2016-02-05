@@ -18,9 +18,9 @@ test('create a tree with custom nuts', function (t) {
   let element = document.createElement('div')
   element.innerHTML = `<div>
     <strong>hola</strong>
-    <li is="x-foo" id="xfoo1" test="test">
+    <li data-nut="x-foo" id="xfoo1" test="test">
       <div>
-        <span is="x-fa" id="xfa1">it works!</span>
+        <span data-nut="x-fa" id="xfa1">it works!</span>
       </div>
     </li>
   </div>`
@@ -32,8 +32,6 @@ test('create a tree with custom nuts', function (t) {
     t.ok(tree.has(xfoo1))
     t.ok(tree.get(xfoo1).has(xfa))
     t.is(xfoo1.getAttribute('test'), 'test')
-    document.body.removeChild(element)
     t.end()
   })
-  document.body.appendChild(element)
 })
