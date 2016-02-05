@@ -5,15 +5,6 @@ import newCounter from './counter.js'
 let links
 const matcher = /{{([^}]*)}}/
 
-function getRepeatedScope (scope, repeatAtt) {
-  if (repeatAtt) {
-    if (!scope[repeatAtt]) scope[repeatAtt] = []
-    return scope[repeatAtt]
-  } else {
-    return scope
-  }
-}
-
 function getSubscriber (obj) {
   let link = links.get(obj)
   return function (prop, action) {
@@ -23,16 +14,21 @@ function getSubscriber (obj) {
 
 function getScopeAndSubscribe (scope, scopeAtt, subscribe) {
   if (scopeAtt) {
-    if (!scope[scopeAtt]) {
-      scope[scopeAtt] = {}
-    }
-    let newScope = scope[scopeAtt]
     return {
-      scope: newScope,
-      subscribe: getSubscriber(newScope)
+      scope: scope[scopeAtt],
+      subscribe: getSubscriber(scope[scopeAtt])
     }
   } else {
     return { scope, subscribe }
+  }
+}
+
+function getLoopAndSubscribe (scope, schema) {
+  let scopeAtt = schema.scope
+  if (scopeAtt) {
+    return scope[scopeAtt][schema.repeat]
+  } else {
+    return scope[schema.repeat]
   }
 }
 
@@ -135,20 +131,26 @@ function compileLoop (schema, callback) {
     renderAttributes = compileAttributes(attribs)
   }
   schema.render = (outerScope) => {
-    let scope = getScopeAndSubscribe(outerScope, schema.scope),
-        el = document.createElement(schema.localName),
-        nut = { el, scope }
-    // render attributes
-    if (attribs) renderAttributes(el, scope)
-    // add events
-    if (events) {
-      Object.keys(events).forEach(type => el.addEventListener(type, e => events[type](e, nut)))
-    }
-    // render children
-    if (schema.children) {
-      schema.children.forEach(c => el.appendChild(c.render(scope)))
-    }
-    return el
+    let scope = getLoopAndSubscribe(outerScope, schema),
+        fragment = document.createDocumentFragment()
+
+    scope.forEach(item => {
+      let subscribeItem = getSubscriber(item)
+      let el = document.createElement(schema.localName),
+          nut = { el, scope: item }
+      // render attributes
+      if (attribs) renderAttributes(el, item, subscribeItem)
+      // add events
+      if (events) {
+        Object.keys(events).forEach(type => el.addEventListener(type, e => events[type](e, nut)))
+      }
+      // render children
+      if (schema.children) {
+        schema.children.forEach(c => el.appendChild(c.render(item, subscribeItem)))
+      }
+      fragment.appendChild(el)
+    })
+    return fragment
   }
   // compile children
   if (children && children.length) {

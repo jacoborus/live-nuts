@@ -23,7 +23,7 @@ let api = {},
     queue = []
 
 let createStore = storeFactory(links)
-let model = createStore({})
+let store = createStore({})
 let instantiate = instantiator(schemas, links)
 
 function next () {
@@ -63,7 +63,7 @@ function resolveDocument (callback) {
     makePartials(schemas, () => {
       registerTree(document.children[0], schemas)
       .then(tree => {
-        instantiate(tree, model, () => callback())
+        instantiate(tree, store, () => callback())
       })
     })
   })
@@ -76,7 +76,7 @@ api.resolve = function (callback) {
 }
 
 api.schemas = schemas
-api.model = model
+api.store = store
 api.filtersArchive = filtersArchive
 api.behaviours = behaviours
 

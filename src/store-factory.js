@@ -1,12 +1,12 @@
 'use strict'
 
-export default function (links) {
+export default function (rosters) {
   let handler = {
     set (target, prop, value, receiver) {
       if (typeof value !== 'object') {
         let ok = Reflect.set(target, prop, value)
         if (ok) {
-          let link = links.get(receiver)
+          let link = rosters.get(receiver)
           if (link.has(prop)) {
             link.get(prop).forEach(f => f(value))
           } else {
@@ -33,7 +33,7 @@ export default function (links) {
       }
     })
     let p = new Proxy(out, handler)
-    let link = links.get(p) || links.set(p, new Map()).get(p)
+    let link = rosters.get(p) || rosters.set(p, new Map()).get(p)
     sets.forEach(k => !link.has(k) && link.set(k, new Set()))
     return p
   }
