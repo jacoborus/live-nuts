@@ -17,7 +17,7 @@ export default function (schemas, links) {
     let count = newCounter(branch.size, callback)
     branch.forEach((child, el) => {
       let nut = {},
-          schema = schemas.get(el.getAttribute('is')),
+          schema = schemas.get(el.getAttribute('data-nut')),
           scopeAtt = schema.scope,
           innerScope
 

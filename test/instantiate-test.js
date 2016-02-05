@@ -32,9 +32,9 @@ test('instantiate tree with scope', function (t) {
   let element = document.createElement('div')
   element.innerHTML = `<div>
     <strong>hola</strong>
-    <li is="x-bor" id="xfoo1" test="test">
+    <li data-nut="x-bor" id="xfoo1" test="test">
       <div>
-        <span is="x-bar" id="xfa1">hola</span>
+        <span data-nut="x-bar" id="xfa1">hola</span>
       </div>
     </li>
   </div>`
@@ -83,9 +83,9 @@ test('instantiate tree with array', function (t) {
   })
 
   let element = document.createElement('div')
-  element.innerHTML = `<ul is="x-ul">
-    <li id="xli1" is="x-li" test="test1">uno</li>
-    <li is="x-li" test="test2">dos</li>
+  element.innerHTML = `<ul data-nut="x-ul">
+    <li id="xli1" data-nut="x-li" test="test1">uno</li>
+    <li data-nut="x-li" test="test2">dos</li>
   </ul>`
 
   let instantiate = instantiator(schemas, links)
