@@ -134,3 +134,53 @@ test('compile text nodes', function (t) {
     t.end()
   })
 })
+
+// test('compile element loops', function (t) {
+//   let schema = {
+//     tagName: 'li-loop',
+//     localName: 'li',
+//     repeat: 'items',
+//     isNut: true,
+//     type: 1,
+//     events: {
+//       click: (e, nut) => {
+//         nut.scope.color = 'other'
+//       }
+//     },
+//     children: [{
+//       type: 3,
+//       data: '{{ color }}'
+//     }]
+//   }
+
+//   let links = new Map()
+//   let compile = compiler(links)
+//   let getProxy = getProxyFactory(links)
+
+//   let scope = getProxy({
+//     items: [{
+//       color: 'azul'
+//     }, {
+//       color: 'rojo'
+//     }, {
+//       color: 'verde'
+//     }]
+//   })
+
+//   compile(schema, () => {
+//     let el = schema.render(scope)
+//     t.is(el.localName, 'li')
+//     t.ok(el.childNodes.length)
+//     t.is(el.childNodes[0].nodeType, 3)
+//     t.is(el.childNodes[0].data, 'hola')
+//     t.is(el.childNodes[1].nodeType, 3)
+//     t.is(el.childNodes[1].data, 'rojo')
+//     t.is(el.childNodes[2].nodeType, 3)
+//     t.is(el.childNodes[2].data, 'otro rojo')
+//     el.click()
+//     t.is(el.childNodes[1].data, 'other')
+//     t.is(el.childNodes[2].data, 'otro other')
+//     t.is(el.getAttribute('class'), 'active')
+//     t.end()
+//   })
+// })

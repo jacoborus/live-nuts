@@ -29,7 +29,6 @@ test('create a tree with custom nuts', function (t) {
   .then(tree => {
     let xfoo1 = element.querySelector('#xfoo1')
     let xfa = element.querySelector('#xfa1')
-    // let xfooX = xfoo1.getAttribute('test')
     t.ok(tree.has(xfoo1))
     t.ok(tree.get(xfoo1).has(xfa))
     t.is(xfoo1.getAttribute('test'), 'test')
