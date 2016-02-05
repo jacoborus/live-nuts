@@ -66,20 +66,16 @@ function compileStr (str) {
 }
 
 function compileAttributes (atts) { // compile attributes
-  let fns = []
-  Object.keys(atts).forEach(name => {
+  let fns = Object.keys(atts).map(name => {
     let value = atts[name]
-    if (value.match(matcher)) {
-      let { reduce, models } = compileStr(value)
-      fns.push(function (el, scope, subscribe) {
-        let updateFn = () => {
-          el.setAttribute(name, reduce(scope))
-        }
-        models.forEach(model => subscribe(model, updateFn))
-        updateFn()
-      })
-    } else {
-      fns.push(el => el.setAttribute(name, value))
+    if (!value.match(matcher)) {
+      return el => el.setAttribute(name, value)
+    }
+    let { reduce, models } = compileStr(value)
+    return function (el, scope, subscribe) {
+      let updateFn = () => el.setAttribute(name, reduce(scope))
+      models.forEach(model => subscribe(model, updateFn))
+      updateFn()
     }
   })
   return (el, scope, subscribe) => fns.forEach(fn => fn(el, scope, subscribe))
@@ -166,12 +162,12 @@ function compileLoop (schema, callback) {
 function compile (schema, callback) {
   if (schema.type === 1) {
     if ('repeat' in schema) {
-      compileLoop(schema, callback)
+      compileLoop(...arguments)
     } else {
-      compileTag(schema, callback)
+      compileTag(...arguments)
     }
   } else if (schema.type === 3) {
-    compileText(schema, callback)
+    compileText(...arguments)
   }
 }
 
