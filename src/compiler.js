@@ -8,7 +8,8 @@ const matcher = /{{([^}]*)}}/
 function getSubscriber (obj) {
   let link = links.get(obj)
   return function (prop, action) {
-    link.get(prop).add(action)
+    let subscriptions = link.get(prop) || link.set(prop, new Set()).get(prop)
+    subscriptions.add(action)
   }
 }
 
