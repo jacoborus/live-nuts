@@ -65,14 +65,30 @@ function compileStr (str) {
 function compileAttributes (atts) { // compile attributes
   let fns = Object.keys(atts).map(name => {
     let value = atts[name]
-    if (!value.match(matcher)) {
-      return el => el.setAttribute(name, value)
-    }
-    let { reduce, models } = compileStr(value)
-    return function (el, scope, subscribe) {
-      let updateFn = () => el.setAttribute(name, reduce(scope))
-      models.forEach(model => subscribe(model, updateFn))
-      updateFn()
+    if (name.endsWith('-')) {
+      let att = name.slice(0, -1)
+      let model = value.match(matcher)[1].trim()
+      return function (el, scope, subscribe) {
+        let updateFn = () => {
+          if (scope[model]) {
+            el.setAttribute(att, '')
+          } else {
+            el.removeAttribute(att)
+          }
+        }
+        subscribe(model, updateFn)
+        updateFn()
+      }
+    } else {
+      if (!value.match(matcher)) {
+        return el => el.setAttribute(name, value)
+      }
+      let { reduce, models } = compileStr(value)
+      return function (el, scope, subscribe) {
+        let updateFn = () => el.setAttribute(name, reduce(scope))
+        models.forEach(model => subscribe(model, updateFn))
+        updateFn()
+      }
     }
   })
   return (el, scope, subscribe) => fns.forEach(fn => fn(el, scope, subscribe))

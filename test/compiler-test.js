@@ -20,12 +20,18 @@ test('compile simple tag with attributes', function (t) {
     attribs: {
       title: '{{color}}',
       alt: 'alternative',
-      other: 'other {{ another }}'
+      other: 'other {{ another }}',
+      'booleatt-': '{{onoff}}'
     },
+    children: [{
+      type: 3,
+      data: 'hola'
+    }],
     events: {
       click: (e, nut) => {
         control++
         nut.scope.color = 'red'
+        nut.scope.onoff = !nut.scope.onoff
       }
     }
   }
@@ -36,18 +42,22 @@ test('compile simple tag with attributes', function (t) {
 
   let store = createStore({
     color: 'green',
-    another: 'another one'
+    another: 'another one',
+    onoff: true
   })
 
   compile(schema, () => {
     let el = schema.render(store)
+    document.body.appendChild(el)
     t.is(el.localName, 'section')
     t.is(el.getAttribute('title'), 'green')
     t.is(el.getAttribute('alt'), 'alternative')
     t.is(el.getAttribute('other'), 'other another one')
+    t.ok(el.hasAttribute('booleatt'))
     t.is(control, 0)
     el.click()
     t.is(el.getAttribute('title'), 'red')
+    t.notOk(el.hasAttribute('booleatt'))
     t.is(control, 1)
     t.end()
   })
