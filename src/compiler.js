@@ -94,32 +94,33 @@ function createStack () {
   }
 }
 
+function compileEvents (events) {
+  return nut => {
+    Object.keys(events).forEach(k => nut.el.addEventListener(k, e => events[k](e, nut)))
+  }
+}
+
+function compileChildren (children) {
+  return nut => children.forEach(c => nut.el.appendChild(c.render(nut.scope)))
+}
+
 function compileTag (schema, callback) {
   let { events, children, attribs } = schema
+  let scopeAtt = schema.scope
   let stack = createStack()
-  if (attribs) stack.add(compileAttributes(attribs))
-  if (events) {
-    stack.add(nut => {
-      Object.keys(events).forEach(type => {
-        nut.el.addEventListener(type, e => events[type](e, nut))
-      })
-    })
-  }
-  if (children) {
-    stack.add(nut => children.forEach(c => nut.el.appendChild(c.render(nut.scope))))
-  }
 
   schema.render = (outerScope) => {
-    if (schema.scope && !outerScope[schema.scope]) return document.createDocumentFragment()
-    let scope = schema.scope ? outerScope[schema.scope] : outerScope,
-        el = document.createElement(schema.localName),
-        nut = { el, scope }
+    if (scopeAtt && !outerScope[scopeAtt]) return document.createDocumentFragment()
+    let scope = scopeAtt ? outerScope[scopeAtt] : outerScope,
+        nut = { scope, el: document.createElement(schema.localName) }
     stack.exec(nut)
-    return el
+    return nut.el
   }
 
-  // compile children
-  if (children && children.length) {
+  if (attribs) stack.add(compileAttributes(attribs))
+  if (events) stack.add(compileEvents(events))
+  if (children) {
+    stack.add(compileChildren(children))
     let count = newCounter(children.length, callback)
     children.forEach(c => compile(c, count))
   } else {
@@ -128,35 +129,26 @@ function compileTag (schema, callback) {
 }
 
 function compileLoop (schema, callback) {
-  let { events, children, attribs } = schema
+  let { events, children, attribs, repeat } = schema
   let scopeAtt = schema.scope
-  let renderAttributes
-  if (attribs) {
-    renderAttributes = compileAttributes(attribs)
-  }
+  let stack = createStack()
+
   schema.render = (outerScope) => {
     let fragment = document.createDocumentFragment()
-    let scope = scopeAtt ? outerScope[scopeAtt][schema.repeat] : outerScope[schema.repeat]
+    let scope = scopeAtt ? outerScope[scopeAtt][repeat] : outerScope[repeat]
 
     scope.forEach(item => {
-      let el = document.createElement(schema.localName),
-          nut = { el, scope: item }
-      // render attributes
-      if (attribs) renderAttributes(el, item)
-      // add events
-      if (events) {
-        Object.keys(events).forEach(type => el.addEventListener(type, e => events[type](e, nut)))
-      }
-      // render children
-      if (schema.children) {
-        schema.children.forEach(c => el.appendChild(c.render(item)))
-      }
-      fragment.appendChild(el)
+      let nut = { scope: item, el: document.createElement(schema.localName) }
+      stack.exec(nut)
+      fragment.appendChild(nut.el)
     })
     return fragment
   }
-  // compile children
-  if (children && children.length) {
+
+  if (attribs) stack.add(compileAttributes(attribs))
+  if (events) stack.add(compileEvents(events))
+  if (children) {
+    stack.add(compileChildren(children))
     let count = newCounter(children.length, callback)
     children.forEach(c => compile(c, count))
   } else {
