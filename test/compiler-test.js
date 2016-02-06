@@ -48,7 +48,6 @@ test('compile simple tag with attributes', function (t) {
 
   compile(schema, () => {
     let el = schema.render(store)
-    document.body.appendChild(el)
     t.is(el.localName, 'section')
     t.is(el.getAttribute('title'), 'green')
     t.is(el.getAttribute('alt'), 'alternative')
@@ -184,6 +183,64 @@ test('compile element loops', function (t) {
     t.is(el.childNodes[2].textContent, 'verde')
     el.childNodes[2].click()
     t.is(el.childNodes[2].textContent, 'other')
+    t.end()
+  })
+})
+
+test.skip('render elements just when its scopes exist', function (t) {
+  let schema = {
+    type: 1,
+    localName: 'section',
+    children: [{
+      type: 1,
+      localName: 'span',
+      scope: 'span',
+      children: [{
+        type: 3,
+        data: 'span'
+      }]
+    }, {
+      type: 1,
+      localName: 'h1',
+      scope: 'h1',
+      children: [{
+        type: 3,
+        data: 'h1'
+      }]
+    }],
+    events: {
+      click: (e, nut) => {
+        if (nut.scope.state) {
+          delete nut.scope.span
+          nut.scope.h1 = {}
+        } else {
+          delete nut.scope.h1
+          nut.scope.span = {}
+        }
+        nut.scope.state = !nut.scope.state
+      }
+    }
+  }
+
+  let links = new Map()
+  let createStore = storeFactory(links)
+  let compile = compiler(links)
+
+  let store = createStore({
+    span: {},
+    state: true
+  })
+
+  compile(schema, () => {
+    let el = schema.render(store)
+    window.el = el
+    document.body.appendChild(el)
+    t.is(el.localName, 'section')
+    t.is(el.childNodes[0].textContent, 'span')
+    t.notOk(el.childNodes[1])
+    el.click()
+    t.is(el.childNodes[0].textContent, 'h1')
+    t.notOk(el.childNodes[1])
     t.end()
   })
 })

@@ -24,7 +24,7 @@ function getScopeAndSubscribe (scope, scopeAtt, subscribe) {
   }
 }
 
-function getLoopAndSubscribe (scope, schema) {
+function getScopedLoop (scope, schema) {
   let scopeAtt = schema.scope
   if (scopeAtt) {
     return scope[scopeAtt][schema.repeat]
@@ -68,30 +68,30 @@ function compileAttributes (atts) { // compile attributes
     if (name.endsWith('-')) {
       let att = name.slice(0, -1)
       let model = value.match(matcher)[1].trim()
-      return function (el, scope, subscribe) {
+      return function (nut) {
         let updateFn = () => {
-          if (scope[model]) {
-            el.setAttribute(att, '')
+          if (nut.scope[model]) {
+            nut.el.setAttribute(att, '')
           } else {
-            el.removeAttribute(att)
+            nut.el.removeAttribute(att)
           }
         }
-        subscribe(model, updateFn)
+        nut.subscribe(model, updateFn)
         updateFn()
       }
     } else {
       if (!value.match(matcher)) {
-        return el => el.setAttribute(name, value)
+        return nut => nut.el.setAttribute(name, value)
       }
       let { reduce, models } = compileStr(value)
-      return function (el, scope, subscribe) {
-        let updateFn = () => el.setAttribute(name, reduce(scope))
-        models.forEach(model => subscribe(model, updateFn))
+      return function (nut) {
+        let updateFn = () => nut.el.setAttribute(name, reduce(nut.scope))
+        models.forEach(model => nut.subscribe(model, updateFn))
         updateFn()
       }
     }
   })
-  return (el, scope, subscribe) => fns.forEach(fn => fn(el, scope, subscribe))
+  return (nut) => fns.forEach(fn => fn(nut))
 }
 
 function compileText (schema, callback) {
@@ -110,28 +110,38 @@ function compileText (schema, callback) {
   callback()
 }
 
+function createStack () {
+  let pile = []
+  return {
+    add: fn => pile.push(fn),
+    exec: nut => pile.forEach(fn => fn(nut))
+  }
+}
+
 function compileTag (schema, callback) {
   let { events, children, attribs } = schema
-  let renderAttributes
-  if (attribs) {
-    renderAttributes = compileAttributes(attribs)
+  let stack = createStack()
+  if (attribs) stack.add(compileAttributes(attribs))
+  if (events) {
+    stack.add(nut => {
+      Object.keys(events).forEach(type => {
+        nut.el.addEventListener(type, e => events[type](e, nut))
+      })
+    })
   }
+  if (children) {
+    stack.add(nut => children.forEach(c => nut.el.appendChild(c.render(nut.scope, nut.subscribe))))
+  }
+
   schema.render = (outerScope, outerSubscribe = getSubscriber(outerScope)) => {
+    if (schema.scope && !outerScope[schema.scope]) return document.createDocumentFragment()
     let { subscribe, scope } = getScopeAndSubscribe(outerScope, schema.scope, outerSubscribe),
         el = document.createElement(schema.localName),
-        nut = { el, scope }
-    // render attributes
-    if (attribs) renderAttributes(el, scope, subscribe)
-    // add events
-    if (events) {
-      Object.keys(events).forEach(type => el.addEventListener(type, e => events[type](e, nut)))
-    }
-    // render children
-    if (schema.children) {
-      schema.children.forEach(c => el.appendChild(c.render(scope, subscribe)))
-    }
+        nut = { el, scope, subscribe }
+    stack.exec(nut)
     return el
   }
+
   // compile children
   if (children && children.length) {
     let count = newCounter(children.length, callback)
@@ -148,7 +158,7 @@ function compileLoop (schema, callback) {
     renderAttributes = compileAttributes(attribs)
   }
   schema.render = (outerScope) => {
-    let scope = getLoopAndSubscribe(outerScope, schema),
+    let scope = getScopedLoop(outerScope, schema),
         fragment = document.createDocumentFragment()
 
     scope.forEach(item => {
