@@ -11,19 +11,8 @@ function subscribe (obj, prop, action) {
   pile.add(action)
 }
 
-function getScopedLoop (scope, schema) {
-  let scopeAtt = schema.scope
-  if (scopeAtt) {
-    return scope[scopeAtt][schema.repeat]
-  } else {
-    return scope[schema.repeat]
-  }
-}
-
 function parseStr (str) {
-  if (!str) {
-    return []
-  }
+  if (!str) return []
   let st = str.match(matcher)
   if (st.index) {
     let out = str.substr(0, st.index)
@@ -140,13 +129,14 @@ function compileTag (schema, callback) {
 
 function compileLoop (schema, callback) {
   let { events, children, attribs } = schema
+  let scopeAtt = schema.scope
   let renderAttributes
   if (attribs) {
     renderAttributes = compileAttributes(attribs)
   }
   schema.render = (outerScope) => {
-    let scope = getScopedLoop(outerScope, schema),
-        fragment = document.createDocumentFragment()
+    let fragment = document.createDocumentFragment()
+    let scope = scopeAtt ? outerScope[scopeAtt][schema.repeat] : outerScope[schema.repeat]
 
     scope.forEach(item => {
       let el = document.createElement(schema.localName),
