@@ -1,15 +1,9 @@
 'use strict'
 
 import newCounter from './counter.js'
+import { subscribe } from './store-factory.js'
 
-let subscriptions
 const matcher = /{{([^}]*)}}/
-
-function subscribe (obj, prop, action) {
-  let stack = subscriptions.get(obj)
-  let pile = stack.get(prop) || stack.set(prop, new Set()).get(prop)
-  pile.add(action)
-}
 
 function parseStr (str) {
   if (!str) return []
@@ -156,7 +150,7 @@ function compileLoop (schema, callback) {
   }
 }
 
-function compile (schema, callback) {
+export default function compile (schema, callback) {
   if (schema.type === 1) {
     if ('repeat' in schema) {
       compileLoop(schema, callback)
@@ -166,9 +160,4 @@ function compile (schema, callback) {
   } else if (schema.type === 3) {
     compileText(schema, callback)
   }
-}
-
-export default function (inLinks) {
-  subscriptions = inLinks
-  return compile
 }

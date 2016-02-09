@@ -2,7 +2,7 @@
 
 import test from 'tape'
 
-import storeFactory from '../src/store-factory.js'
+import { createStore, subscribe } from '../src/store-factory.js'
 
 let globalModel = {
   title: 'super title',
@@ -23,13 +23,22 @@ let globalModel = {
 window.globalModel = globalModel
 
 test('create store from object with children', function (t) {
-  let links = new Map()
-  let createStore = storeFactory(links)
   let store = createStore(globalModel)
-  t.is(store.title, globalModel.title)
-  t.is(store.object.prop2, globalModel.object.prop2)
-  t.is(store.loop[0].title, globalModel.loop[0].title)
-  t.is(store.loop[1].entry, globalModel.loop[1].entry)
-  t.is(links.size, 7)
+  t.is(store.title, globalModel.title, 'assign prop')
+  t.is(store.object.prop2, globalModel.object.prop2, 'assign prop inside obj')
+  t.is(store.loop[0].title, globalModel.loop[0].title, 'assign prop inside array')
+  t.is(store.loop[1].entry, globalModel.loop[1].entry, 'assign prop inside array')
+  let control = 0
+  let unsubscribe = subscribe(store, 'title', value => control = value)
+  store.title = 'uno'
+  t.is(control, 'uno', 'subscribe change')
+  delete store.title
+  t.is(control, undefined, 'subscribe delete')
+  subscribe(store.object, 'prop1', value => control = value)
+  store.object.prop1 = 'uno'
+  t.is(control, 'uno', 'subscribe object properties to change')
+  unsubscribe()
+  store.title = 'dos'
+  t.is(control, 'uno', 'unsubscribe')
   t.end()
 })

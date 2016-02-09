@@ -1,8 +1,8 @@
 'use strict'
 
 import test from 'tape'
-import compiler from '../src/compiler.js'
-import storeFactory from '../src/store-factory.js'
+import compile from '../src/compiler.js'
+import { createStore } from '../src/store-factory.js'
 
 function addCss () {
   let css = document.createElement('style')
@@ -36,10 +36,6 @@ test('compile simple tag with attributes', function (t) {
     }
   }
 
-  let links = new Map()
-  let createStore = storeFactory(links)
-  let compile = compiler(links)
-
   let store = createStore({
     color: 'green',
     another: 'another one',
@@ -71,10 +67,6 @@ test('compile simple tag with children', function (t) {
       type: 1
     }]
   }
-
-  let links = new Map()
-  let compile = compiler(links)
-  let createStore = storeFactory(links)
 
   let store = createStore({})
 
@@ -111,10 +103,6 @@ test('compile text nodes', function (t) {
       data: 'otro {{ color }}'
     }]
   }
-
-  let links = new Map()
-  let compile = compiler(links)
-  let createStore = storeFactory(links)
 
   let store = createStore({
     color: 'rojo',
@@ -154,10 +142,6 @@ test('compile element loops', function (t) {
       data: '{{ color }}'
     }]
   }
-
-  let rosters = new Map()
-  let compile = compiler(rosters)
-  let createStore = storeFactory(rosters)
 
   let store = createStore({
     items: [{
@@ -221,10 +205,6 @@ test.skip('render elements just when its scopes exist', function (t) {
       }
     }
   }
-
-  let links = new Map()
-  let createStore = storeFactory(links)
-  let compile = compiler(links)
 
   let store = createStore({
     span: {},
