@@ -8,7 +8,11 @@ let globalModel = {
   title: 'super title',
   object: {
     prop1: 1,
-    prop2: 2
+    prop2: 2,
+    po: {
+      a: 1,
+      b: 2
+    }
   },
   loop: [{
     title: 'A lorem title',
