@@ -3,10 +3,9 @@
 import test from 'tape'
 import registerTree from '../src/register-tree.js'
 import instantiator from '../src/instantiate.js'
-import storeFactory from '../src/store-factory.js'
+import { createStore, subscribe} from '../src/store-factory.js'
 
 test('instantiate tree with scope', function (t) {
-  let links = new Map()
   let schemas = new Map()
 
   schemas.set('x-bor', {
@@ -39,8 +38,7 @@ test('instantiate tree with scope', function (t) {
     </li>
   </div>`
 
-  let instantiate = instantiator(schemas, links)
-  let createStore = storeFactory(links)
+  let instantiate = instantiator(schemas, subscribe)
   let store = createStore({})
 
   registerTree(element, schemas)
@@ -59,9 +57,7 @@ test('instantiate tree with scope', function (t) {
 })
 
 test('instantiate tree with array', function (t) {
-  let links = new Map()
   let schemas = new Map()
-  let createStore = storeFactory(links)
 
   schemas.set('x-li', {
     localName: 'li',
@@ -88,7 +84,7 @@ test('instantiate tree with array', function (t) {
     <li data-nut="x-li" test="test2">dos</li>
   </ul>`
 
-  let instantiate = instantiator(schemas, links)
+  let instantiate = instantiator(schemas, subscribe)
   let store = createStore({})
 
   registerTree(element, schemas)

@@ -2,7 +2,7 @@
 
 import newCounter from './counter.js'
 
-export default function (schemas, links) {
+export default function (schemas, subscribe) {
   /**
    * extract data model from html
    *
@@ -49,9 +49,6 @@ export default function (schemas, links) {
         innerScope = preScope
       }
 
-      if (!links.has(innerScope)) links.set(innerScope, new Map())
-      let link = links.get(innerScope)
-
       // constains all links where nut is linked
       // When element is dettached unlink all
       let innerLinks = new Set()
@@ -61,7 +58,6 @@ export default function (schemas, links) {
       if (schema.booleans) {
         for (let att in schema.booleans) {
           let model = schema.booleans[att]
-          let linkModel = link.get(model) || link.set(model, new Set()).get(model)
           let actionLink = value => {
             if (value) {
               el.setAttribute(att, '')
@@ -69,28 +65,23 @@ export default function (schemas, links) {
               el.removeAttribute(att)
             }
           }
-          innerLinks.add(() => linkModel.delete(actionLink))
-          linkModel.add(actionLink)
+          innerLinks.add(subscribe(innerScope, model, actionLink))
         }
       }
 
       if (schema.nuAtts) {
         for (let att in schema.nuAtts) {
           let model = schema.nuAtts[att]
-          let linkModel = link.get(model) || link.set(model, new Set()).get(model)
-          let actionLink = value => el.setAttribute(att, value)
-          innerLinks.add(() => linkModel.delete(actionLink))
-          linkModel.add(actionLink)
           innerScope[model] = el.getAttribute(att)
+          let actionLink = value => el.setAttribute(att, value)
+          innerLinks.add(subscribe(innerScope, model, actionLink))
         }
       }
 
       if (schema.model) {
         let model = schema.model
-        let linkModel = link.get(model) || link.set(model, new Set()).get(model)
         let actionLink = value => el.innerHTML = value
-        innerLinks.add(() => linkModel.delete(actionLink))
-        linkModel.add(actionLink)
+        innerLinks.add(subscribe(innerScope, model, actionLink))
         innerScope[model] = el.innerText
         count()
       } else {
