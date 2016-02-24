@@ -5,11 +5,12 @@
 nuts
 .addBehaviour('input-title', {
   events: {
-    keypress: function (e, nut) {
+    keypress: function (e, nut, box) {
       let key = e.which || e.keyCode
       if (key === 13) { // 13 is enter
         if (nut.element.value) {
-          nut.scope.variable = nut.element.value
+          box.set('variable', nut.element.value)
+          console.log(box.get())
         }
       }
     }
@@ -17,18 +18,20 @@ nuts
 })
 .addBehaviour('custom-title', {
   events: {
-    click: function (event, nut) {
-      if (nut.scope.variable === 'hola') {
-        nut.scope.variable = 'adios'
-        nut.scope.bool = true
+    click: function (event, nut, box) {
+      if (box.get().variable === 'hola') {
+        box.set('variable', 'adios')
+        box.set('bool', true)
       } else {
-        nut.scope.variable = 'hola'
-        nut.scope.bool = false
+        box.set('variable', 'hola')
+        box.set('bool', false)
       }
+      console.log(box.get())
     }
   }
 })
 .resolve(function () {
   console.log('ok!')
+  window.n = nuts
   console.log(nuts.model)
 })

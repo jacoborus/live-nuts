@@ -13,21 +13,26 @@ import apiFactories from './api-factories.js'
 import makePartials from './partials.js'
 import registerTree from './register-tree.js'
 import instantiator from './instantiate.js'
-import storeFactory from './store-factory.js'
+import compile from './compiler.js'
+import newCounter from './counter.js'
+import boxes from 'boxes'
 
 let api = {},
     schemas = new Map(),
     behaviours = new Map(),
     filtersArchive = new Map(),
-    links = new Map(),
     queue = []
 
-let createStore = storeFactory(links)
-let store = createStore({})
-let instantiate = instantiator(schemas, links)
+let store = boxes.createStore('main', {})
+let instantiate = instantiator(schemas, store)
 
 function next () {
   if (queue.length) queue.shift()()
+}
+
+function compileAll (callback) {
+  let count = newCounter(schemas.size, callback)
+  schemas.forEach(s => compile(s, count))
 }
 
 let {
@@ -61,9 +66,11 @@ api.addFilters = function (filters) {
 function resolveDocument (callback) {
   setBehaviours(function () {
     makePartials(schemas, () => {
-      registerTree(document.children[0], schemas)
-      .then(tree => {
-        instantiate(tree, store, () => callback())
+      compileAll(() => {
+        registerTree(document.children[0], schemas)
+        .then(tree => {
+          instantiate(tree, store.get(), () => callback())
+        })
       })
     })
   })

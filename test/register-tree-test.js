@@ -1,5 +1,4 @@
 'use strict'
-// document.children[0]
 
 import test from 'tape'
 import registerTree from '../src/register-tree.js'

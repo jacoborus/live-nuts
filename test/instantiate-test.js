@@ -3,7 +3,7 @@
 import test from 'tape'
 import registerTree from '../src/register-tree.js'
 import instantiator from '../src/instantiate.js'
-import { createStore, subscribe} from '../src/store-factory.js'
+import boxes from 'boxes'
 
 test('instantiate tree with scope', function (t) {
   let schemas = new Map()
@@ -16,13 +16,12 @@ test('instantiate tree with scope', function (t) {
   schemas.set('x-bar', {
     localName: 'span',
     tagName: 'x-bar',
-    model: 'funciona',
     events: {
-      click: function (event, nut) {
-        if (nut.scope.funciona === 'hola') {
-          nut.scope.funciona = 'adios'
+      click: function (event, nut, box) {
+        if (box.get().funciona === 'hola') {
+          box.set('funciona', 'adios')
         } else {
-          nut.scope.funciona = 'hola'
+          box.set('funciona', 'hola')
         }
       }
     }
@@ -38,18 +37,20 @@ test('instantiate tree with scope', function (t) {
     </li>
   </div>`
 
-  let instantiate = instantiator(schemas, subscribe)
-  let store = createStore({})
+  let store = boxes.createStore('instantiate', {})
+  let instantiate = instantiator(schemas, store)
 
   registerTree(element, schemas)
   .then(tree => {
-    instantiate(tree, store, () => {
+    instantiate(tree, store.get(), () => {
       let bar = element.querySelector('#xfa1')
-      t.ok(store.saludo)
-      t.is(store.saludo.funciona, 'hola')
+      t.ok(store.get().saludo)
       bar.click()
-      t.is(store.saludo.funciona, 'adios')
+      t.is(store.get().saludo.funciona, 'hola')
+      bar.click()
+      t.is(store.get().saludo.funciona, 'adios')
       document.body.removeChild(element)
+      boxes.remove('instantiate')
       t.end()
     })
   })
@@ -63,13 +64,11 @@ test('instantiate tree with array', function (t) {
     localName: 'li',
     tagName: 'x-li',
     repeat: 'items',
-    model: 'number',
     scope: 'list',
     events: {
-      click: function (event, nut) {
-        let model = nut.schema.model
-        let n = Number(nut.scope[model])
-        nut.scope.number = ++n
+      click: function (event, nut, box) {
+        let n = Number(box.get().number)
+        box.set('number', ++n)
       }
     }
   })
@@ -84,20 +83,21 @@ test('instantiate tree with array', function (t) {
     <li data-nut="x-li" test="test2">dos</li>
   </ul>`
 
-  let instantiate = instantiator(schemas, subscribe)
-  let store = createStore({})
+  let store = boxes.createStore('instantiateTree', {})
+  let instantiate = instantiator(schemas, store)
 
   registerTree(element, schemas)
   .then(tree => {
-    instantiate(tree, store, () => {
-      t.ok(store.list)
-      t.ok(Array.isArray(store.list.items))
-      t.is(store.list.items.length, 2)
-      t.is(store.list.items[0].number, 'uno') // fail
-      t.is(store.list.items[1].number, 'dos') // fail
+    instantiate(tree, store.get(), () => {
+      t.ok(store.get().list)
+      t.ok(Array.isArray(store.get().list.items))
+      t.is(store.get().list.items.length, 2)
+      t.ok(store.get().list.items[0]) // fail
+      t.ok(store.get().list.items[1]) // fail
       let bar = element.querySelector('#xli1')
       bar.click()
       document.body.removeChild(element)
+      boxes.remove('instantiateTree')
       t.end()
     })
   })

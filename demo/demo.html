@@ -2,24 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title is="web-title">Task list</title>
+  <title data-nut="web-title">Task list</title>
 </head>
 <body>
-  <div is="tunnel-div">
-    <h1 is="custom-title">my title</h1>
-    <div is="div-att" something="hello">00</div>
+  <div data-nut="tunnel-div">
+    <h1 data-nut="custom-title">my title</h1>
+    <div data-nut="div-att" something="hello">00</div>
   </div>
   <ul>
-    <li is='x-li'>1</li>
+    <li data-nut='x-li'>1</li>
   </ul>
-  <input type="text" is="input-title">
+  <input type="text" data-nut="input-title">
   <template nut-templates>
-    <div nut="tunnel-div" nu-scope="tunnel"></div>
-    <h1 nut="custom-title" nu-model="variable"></h1>
-    <title nut="web-title" nu-scope="tunnel" nu-model="variable"></title>
-    <input nut="input-title" nu-scope="tunnel">
-    <div nut="div-att" nu-something="variable" nu-bool-="bool">00</div>
-    <li nut='x-li' nu-repeat="items" nu-model="name"></li>
+    <div nut="tunnel-div" scope="tunnel"></div>
+    <h1 nut="custom-title">{{ variable }}</h1>
+    <title nut="web-title" scope="tunnel">{{ variable }}</title>
+    <input nut="input-title" scope="tunnel">
+    <div nut="div-att" something="{{variable}}" bool-="{{bool}}">00</div>
+    <li nut='x-li' repeat="items">{{ name }}</li>
   </template>
   <script src="../dist/nuts.js"></script>
   <script src="demo.js"></script>

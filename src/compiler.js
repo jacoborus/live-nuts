@@ -1,8 +1,6 @@
 'use strict'
 
 import newCounter from './counter.js'
-import { subscribe } from './store-factory.js'
-
 const matcher = /{{([^}]*)}}/
 
 function parseStr (str) {
@@ -32,21 +30,24 @@ function compileStr (str) {
   return { reduce, models }
 }
 
-function compileAttributes (atts) { // compile attributes
+function compileAttributes (schema) { // compile attributes
+  let atts = schema.attribs
   let fns = Object.keys(atts).map(name => {
     let value = atts[name]
     if (name.endsWith('-')) {
       let att = name.slice(0, -1)
       let model = value.match(matcher)[1].trim()
-      return function (nut) {
+      schema.booleans = schema.booleans || {}
+      schema.booleans[att] = model
+      return function (nut, box) {
         let updateFn = () => {
-          if (nut.scope[model]) {
+          if (box.get()[model]) {
             nut.el.setAttribute(att, '')
           } else {
             nut.el.removeAttribute(att)
           }
         }
-        subscribe(nut.scope, model, updateFn)
+        box.subscribe(nut.scope, model, updateFn)
         updateFn()
       }
     } else {
@@ -54,24 +55,24 @@ function compileAttributes (atts) { // compile attributes
         return nut => nut.el.setAttribute(name, value)
       }
       let { reduce, models } = compileStr(value)
-      return function (nut) {
+      return function (nut, box) {
         let updateFn = () => nut.el.setAttribute(name, reduce(nut.scope))
-        models.forEach(model => subscribe(nut.scope, model, updateFn))
+        models.forEach(model => box.subscribe(nut.scope, model, updateFn))
         updateFn()
       }
     }
   })
-  return (nut) => fns.forEach(fn => fn(nut))
+  return (nut, box) => fns.forEach(fn => fn(nut, box))
 }
 
 function compileText (schema, callback) {
   let data = schema.data
   if (data.match(matcher)) {
     let { reduce, models } = compileStr(data)
-    schema.render = function (scope) {
+    schema.render = function (scope, box) {
       let el = document.createTextNode(reduce(scope))
       let updateFn = () => el.textContent = reduce(scope)
-      models.forEach(model => subscribe(scope, model, updateFn))
+      models.forEach(model => box.subscribe(scope, model, updateFn))
       return el
     }
   } else {
@@ -84,18 +85,18 @@ function createStack () {
   let pile = []
   return {
     add: fn => pile.push(fn),
-    exec: nut => pile.forEach(fn => fn(nut))
+    exec: (nut, box) => pile.forEach(fn => fn(nut, box))
   }
 }
 
 function compileEvents (events) {
-  return nut => {
-    Object.keys(events).forEach(k => nut.el.addEventListener(k, e => events[k](e, nut)))
+  return (nut, box) => {
+    Object.keys(events).forEach(k => nut.el.addEventListener(k, e => events[k](e, nut, box)))
   }
 }
 
 function compileChildren (children) {
-  return nut => children.forEach(c => nut.el.appendChild(c.render(nut.scope)))
+  return (nut, box) => children.forEach(c => nut.el.appendChild(c.render(nut.scope, box)))
 }
 
 function compileTag (schema, callback) {
@@ -103,15 +104,15 @@ function compileTag (schema, callback) {
   let scopeAtt = schema.scope
   let stack = createStack()
 
-  schema.render = (outerScope) => {
+  schema.render = (outerScope, box) => {
     if (scopeAtt && !outerScope[scopeAtt]) return document.createDocumentFragment()
     let scope = scopeAtt ? outerScope[scopeAtt] : outerScope,
         nut = { scope, el: document.createElement(schema.localName) }
-    stack.exec(nut)
+    stack.exec(nut, box.getBox(scope))
     return nut.el
   }
 
-  if (attribs) stack.add(compileAttributes(attribs))
+  if (attribs) stack.add(compileAttributes(schema))
   if (events) stack.add(compileEvents(events))
   if (children) {
     stack.add(compileChildren(children))
@@ -127,19 +128,19 @@ function compileLoop (schema, callback) {
   let scopeAtt = schema.scope
   let stack = createStack()
 
-  schema.render = (outerScope) => {
+  schema.render = (outerScope, box) => {
     let fragment = document.createDocumentFragment()
     let scope = scopeAtt ? outerScope[scopeAtt][repeat] : outerScope[repeat]
 
     scope.forEach(item => {
       let nut = { scope: item, el: document.createElement(schema.localName) }
-      stack.exec(nut)
+      stack.exec(nut, box.getBox(item))
       fragment.appendChild(nut.el)
     })
     return fragment
   }
 
-  if (attribs) stack.add(compileAttributes(attribs))
+  if (attribs) stack.add(compileAttributes(schema))
   if (events) stack.add(compileEvents(events))
   if (children) {
     stack.add(compileChildren(children))

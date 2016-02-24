@@ -25,7 +25,7 @@ export default function (element, schemas) {
 
     function makeTree (el, tree) {
       let branch = el.isNut ? tree.set(el, new Map()).get(el) : tree
-      if (el.childElementCount) {
+      if (el.childNodes.length) {
         forEach.call(el.children, child => makeTree(child, branch))
       }
       if (el.isNut) treeCounter()

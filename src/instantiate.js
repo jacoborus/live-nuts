@@ -2,7 +2,7 @@
 
 import newCounter from './counter.js'
 
-export default function (schemas, subscribe) {
+export default function (schemas, store) {
   /**
    * extract data model from html
    *
@@ -19,16 +19,10 @@ export default function (schemas, subscribe) {
       let nut = {},
           schema = schemas.get(el.getAttribute('data-nut')),
           scopeAtt = schema.scope,
+          events = schema.events,
           innerScope
 
       nut.element = el
-      nut.schema = schema
-
-      for (let i in schema.events) {
-        el.addEventListener(i, function (event) {
-          schema.events[i](event, nut)
-        })
-      }
 
       let preScope
       if (scopeAtt) {
@@ -49,7 +43,14 @@ export default function (schemas, subscribe) {
         innerScope = preScope
       }
 
-      // constains all links where nut is linked
+      if (events) {
+        Object.keys(schema.events).forEach(i => {
+          let box = store.getBox(innerScope)
+          el.addEventListener(i, e => schema.events[i](e, nut, box))
+        })
+      }
+
+      // contains all links where nut is linked
       // When element is dettached unlink all
       let innerLinks = new Set()
 
@@ -57,36 +58,18 @@ export default function (schemas, subscribe) {
 
       if (schema.booleans) {
         for (let att in schema.booleans) {
-          let model = schema.booleans[att]
           let actionLink = value => {
-            if (value) {
+            if (value[att]) {
               el.setAttribute(att, '')
             } else {
               el.removeAttribute(att)
             }
           }
-          innerLinks.add(subscribe(innerScope, model, actionLink))
+          innerLinks.add(store.subscribe(innerScope, att, actionLink))
         }
       }
 
-      if (schema.nuAtts) {
-        for (let att in schema.nuAtts) {
-          let model = schema.nuAtts[att]
-          innerScope[model] = el.getAttribute(att)
-          let actionLink = value => el.setAttribute(att, value)
-          innerLinks.add(subscribe(innerScope, model, actionLink))
-        }
-      }
-
-      if (schema.model) {
-        let model = schema.model
-        let actionLink = value => el.innerHTML = value
-        innerLinks.add(subscribe(innerScope, model, actionLink))
-        innerScope[model] = el.innerText
-        count()
-      } else {
-        extract(child, innerScope, count)
-      }
+      extract(child, innerScope, count)
     })
   }
 }

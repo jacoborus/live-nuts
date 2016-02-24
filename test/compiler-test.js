@@ -2,7 +2,7 @@
 
 import test from 'tape'
 import compile from '../src/compiler.js'
-import { createStore } from '../src/store-factory.js'
+import boxes from 'boxes'
 
 function addCss () {
   let css = document.createElement('style')
@@ -28,32 +28,34 @@ test('compile simple tag with attributes', function (t) {
       data: 'hola'
     }],
     events: {
-      click: (e, nut) => {
+      click: (e, nut, box) => {
         control++
-        nut.scope.color = 'red'
-        nut.scope.onoff = !nut.scope.onoff
+        box.update({color: 'red'})
+        box.set('onoff', !box.get().onoff)
       }
     }
   }
 
-  let store = createStore({
+  let box = boxes.createStore('simple', {
     color: 'green',
     another: 'another one',
     onoff: true
   })
 
   compile(schema, () => {
-    let el = schema.render(store)
-    t.is(el.localName, 'section')
-    t.is(el.getAttribute('title'), 'green')
-    t.is(el.getAttribute('alt'), 'alternative')
-    t.is(el.getAttribute('other'), 'other another one')
-    t.ok(el.hasAttribute('booleatt'))
-    t.is(control, 0)
+    let el = schema.render(box.get(), box)
+    t.is(el.localName, 'section', 'render localName')
+    t.is(el.getAttribute('alt'), 'alternative', 'render regular attribute')
+    t.is(el.getAttribute('title'), 'green', 'render scoped attribute')
+    t.is(el.getAttribute('other'), 'other another one', 'render complex attribute')
+    t.ok(el.hasAttribute('booleatt'), 'boolean attribute')
     el.click()
-    t.is(el.getAttribute('title'), 'red')
-    t.notOk(el.hasAttribute('booleatt'))
-    t.is(control, 1)
+    t.is(control, 1, 'regular subscribe')
+    t.is(el.getAttribute('title'), 'red', 'subscribe attribute')
+    t.notOk(el.hasAttribute('booleatt'), 'subscribe boolean attribute')
+    // precompile attributes
+    t.is(schema.booleans.booleatt, 'onoff')
+    boxes.remove('simple')
     t.end()
   })
 })
@@ -68,13 +70,13 @@ test('compile simple tag with children', function (t) {
     }]
   }
 
-  let store = createStore({})
+  let box = boxes.createStore({})
 
   compile(schema, () => {
-    let el = schema.render(store)
-    t.is(el.localName, 'ul')
-    t.ok(el.children.length)
-    t.is(el.children[0].localName, 'li')
+    let el = schema.render(box.get(), box)
+    t.is(el.localName, 'ul', 'parent localname')
+    t.ok(el.children.length, 'has children')
+    t.is(el.children[0].localName, 'li', 'child localname')
     t.end()
   })
 })
@@ -87,9 +89,9 @@ test('compile text nodes', function (t) {
     },
     type: 1,
     events: {
-      click: (e, nut) => {
-        nut.scope.color = 'other'
-        nut.scope.class = 'active'
+      click: (e, nut, box) => {
+        box.set('color', 'other')
+        box.set('class', 'active')
       }
     },
     children: [{
@@ -104,25 +106,26 @@ test('compile text nodes', function (t) {
     }]
   }
 
-  let store = createStore({
+  let box = boxes.createStore('textnodes', {
     color: 'rojo',
     class: ''
   })
 
   compile(schema, () => {
-    let el = schema.render(store)
-    t.is(el.localName, 'span')
-    t.ok(el.childNodes.length)
-    t.is(el.childNodes[0].nodeType, 3)
-    t.is(el.childNodes[0].data, 'hola')
-    t.is(el.childNodes[1].nodeType, 3)
-    t.is(el.childNodes[1].data, 'rojo')
-    t.is(el.childNodes[2].nodeType, 3)
-    t.is(el.childNodes[2].data, 'otro rojo')
+    let el = schema.render(box.get(), box)
+    t.is(el.localName, 'span', 'parent localname')
+    t.ok(el.childNodes.length, 'parent has children')
+    t.is(el.childNodes[0].nodeType, 3, 'child nodetype')
+    t.is(el.childNodes[0].data, 'hola', 'child text content')
+    t.is(el.childNodes[1].nodeType, 3, 'child nodetype')
+    t.is(el.childNodes[1].data, 'rojo', 'child scoped textcontent')
+    t.is(el.childNodes[2].nodeType, 3, 'child nodetype')
+    t.is(el.childNodes[2].data, 'otro rojo', 'child complex textcontent')
     el.click()
-    t.is(el.childNodes[1].data, 'other')
-    t.is(el.childNodes[2].data, 'otro other')
-    t.is(el.getAttribute('class'), 'active')
+    t.is(el.childNodes[1].data, 'other', 'subscribe scoped text content')
+    t.is(el.childNodes[2].data, 'otro other', 'subscribe complex text content')
+    t.is(el.getAttribute('class'), 'active', 'subscribe parent')
+    boxes.remove('textnodes')
     t.end()
   })
 })
@@ -133,8 +136,8 @@ test('compile element loops', function (t) {
     repeat: 'items',
     type: 1,
     events: {
-      click: (e, nut) => {
-        nut.scope.color = 'other'
+      click: (e, nut, box) => {
+        box.set('color', 'other')
       }
     },
     children: [{
@@ -143,7 +146,7 @@ test('compile element loops', function (t) {
     }]
   }
 
-  let store = createStore({
+  let box = boxes.createStore('loops', {
     items: [{
       color: 'azul'
     }, {
@@ -155,18 +158,19 @@ test('compile element loops', function (t) {
 
   compile(schema, () => {
     let el = document.createElement('div')
-    el.appendChild(schema.render(store))
-    t.is(el.childNodes[0].localName, 'li')
-    t.ok(el.childNodes[0].childNodes.length)
-    t.is(el.childNodes[0].nodeType, 1)
-    t.is(el.childNodes[0].childNodes[0].nodeType, 3)
-    t.is(el.childNodes[0].textContent, 'azul')
-    t.is(el.childNodes[1].nodeType, 1)
-    t.is(el.childNodes[1].textContent, 'rojo')
-    t.is(el.childNodes[2].nodeType, 1)
-    t.is(el.childNodes[2].textContent, 'verde')
+    el.appendChild(schema.render(box.get(), box))
+    t.is(el.childNodes[0].localName, 'li', 'localname')
+    t.is(el.childNodes.length, 3, 'render correct number of items')
+    t.is(el.childNodes[0].nodeType, 1, 'item nodetype')
+    t.is(el.childNodes[0].childNodes[0].nodeType, 3, 'children child nodetype')
+    t.is(el.childNodes[0].textContent, 'azul', 'item text content')
+    t.is(el.childNodes[1].nodeType, 1, 'item nodetype')
+    t.is(el.childNodes[1].textContent, 'rojo', 'item child nodetype')
+    t.is(el.childNodes[2].nodeType, 1, 'item nodetype')
+    t.is(el.childNodes[2].textContent, 'verde', 'item text content')
     el.childNodes[2].click()
-    t.is(el.childNodes[2].textContent, 'other')
+    t.is(el.childNodes[2].textContent, 'other', 'subscribe')
+    boxes.remove('loops')
     t.end()
   })
 })
@@ -206,13 +210,13 @@ test.skip('render elements just when its scopes exist', function (t) {
     }
   }
 
-  let store = createStore({
+  let box = boxes.createStore('ifscope', {
     span: {},
     state: true
   })
 
   compile(schema, () => {
-    let el = schema.render(store)
+    let el = schema.render(box.get(), box)
     window.el = el
     document.body.appendChild(el)
     t.is(el.localName, 'section')
@@ -221,6 +225,7 @@ test.skip('render elements just when its scopes exist', function (t) {
     el.click()
     t.is(el.childNodes[0].textContent, 'h1')
     t.notOk(el.childNodes[1])
+    boxes.remove('ifscope')
     t.end()
   })
 })
