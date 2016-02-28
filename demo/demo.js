@@ -3,30 +3,12 @@
 'use strict'
 
 nuts
-.addBehaviour('input-title', {
+.addBehaviour('new-task', {
   events: {
     keypress: function (e, nut, box) {
-      let key = e.which || e.keyCode
-      if (key === 13) { // 13 is enter
-        if (nut.element.value) {
-          box.set('variable', nut.element.value)
-          console.log(box.get())
-        }
+      if (e.which === 13) { // 13 is enter
+        box.set('variable', nut.el.value)
       }
-    }
-  }
-})
-.addBehaviour('custom-title', {
-  events: {
-    click: function (event, nut, box) {
-      if (box.get().variable === 'hola') {
-        box.set('variable', 'adios')
-        box.set('bool', true)
-      } else {
-        box.set('variable', 'hola')
-        box.set('bool', false)
-      }
-      console.log(box.get())
     }
   }
 })

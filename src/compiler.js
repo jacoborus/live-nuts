@@ -21,7 +21,8 @@ function compileStr (str) {
   let fns = parseStr(str)
   let reduce
   if (fns.length === 1) {
-    reduce = scope => fns[0](scope)
+    let fn = fns[0]
+    reduce = scope => fn(scope)
   } else {
     reduce = scope => fns.reduce((str, fn) => str + fn(scope), '')
   }
@@ -96,7 +97,7 @@ function compileEvents (events) {
 }
 
 function compileChildren (children) {
-  return (nut, box) => children.forEach(c => nut.el.appendChild(c.render(nut.scope, box)))
+  return (nut, box) => children.forEach(c => nut.el.appendChild(c.render(box.get(), box)))
 }
 
 function compileTag (schema, callback) {
@@ -132,11 +133,13 @@ function compileLoop (schema, callback) {
     let fragment = document.createDocumentFragment()
     let scope = scopeAtt ? outerScope[scopeAtt][repeat] : outerScope[repeat]
 
-    scope.forEach(item => {
-      let nut = { scope: item, el: document.createElement(schema.localName) }
-      stack.exec(nut, box.getBox(item))
-      fragment.appendChild(nut.el)
-    })
+    if (scope) {
+      scope.forEach(item => {
+        let nut = { scope: item, el: document.createElement(schema.localName) }
+        stack.exec(nut, box.getBox(item))
+        fragment.appendChild(nut.el)
+      })
+    }
     return fragment
   }
 

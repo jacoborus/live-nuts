@@ -1,18 +1,7 @@
 'use strict'
 
-//  Resolve document
-// - extract template tags from html document
-// - add templates into schemas archive
-// - add filters into filters archive
-// - add behaviours into behaviours archive
-// - set behaviours into templates
-// - make partials (with extend.js)
-// - register elements, create nuts tree and instantiate nuts
-
 import apiFactories from './api-factories.js'
 import makePartials from './partials.js'
-import registerTree from './register-tree.js'
-import instantiator from './instantiate.js'
 import compile from './compiler.js'
 import newCounter from './counter.js'
 import boxes from 'boxes'
@@ -24,7 +13,19 @@ let api = {},
     queue = []
 
 let store = boxes.createStore('main', {})
-let instantiate = instantiator(schemas, store)
+
+function instantiate (element, box, callback) {
+  let tagNuts = element.querySelectorAll('[data-nut]')
+  let instances = Array.from(tagNuts).filter(i => schemas.has(i.getAttribute('data-nut')))
+  console.log(schemas)
+  instances.forEach(i => {
+    i.parentNode.replaceChild(
+      schemas.get(i.getAttribute('data-nut')).render(store.get(), box),
+      i
+    )
+  })
+  callback()
+}
 
 function next () {
   if (queue.length) queue.shift()()
@@ -67,10 +68,7 @@ function resolveDocument (callback) {
   setBehaviours(function () {
     makePartials(schemas, () => {
       compileAll(() => {
-        registerTree(document.children[0], schemas)
-        .then(tree => {
-          instantiate(tree, store.get(), () => callback())
-        })
+        instantiate(document.children[0], store, () => callback())
       })
     })
   })

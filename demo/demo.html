@@ -2,24 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title data-nut="web-title">Task list</title>
+  <title>nuts demo</title>
 </head>
 <body>
-  <div data-nut="tunnel-div">
-    <h1 data-nut="custom-title">my title</h1>
-    <div data-nut="div-att" something="hello">00</div>
-  </div>
-  <ul>
-    <li data-nut='x-li'>1</li>
-  </ul>
-  <input type="text" data-nut="input-title">
+  <section data-nut="app"></section>
   <template nut-templates>
-    <div nut="tunnel-div" scope="tunnel"></div>
-    <h1 nut="custom-title">{{ variable }}</h1>
-    <title nut="web-title" scope="tunnel">{{ variable }}</title>
-    <input nut="input-title" scope="tunnel">
-    <div nut="div-att" something="{{variable}}" bool-="{{bool}}">00</div>
-    <li nut='x-li' repeat="items">{{ name }}</li>
+    <section nut="app">
+      <h1 nut="custom-title">{{ variable }}</h1>
+      <input as="new-task">
+      <ul>
+        <li repeat="items">{{ name }}</li>
+      </ul>
+    </section>
+    <input nut="new-task" value='new task'>
   </template>
   <script src="../dist/nuts.js"></script>
   <script src="demo.js"></script>

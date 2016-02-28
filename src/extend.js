@@ -22,16 +22,28 @@ export default function (src, extension, next) {
     }
   })
 
+  // ensure src has attribs prop if extension has it too
   if (!('attribs' in src) && 'attribs' in extension) {
     src.attribs = {}
   }
 
   if ('attribs' in extension) {
-    for (let i in extension['attribs']) {
+    for (let i in extension.attribs) {
       if (!(i in src.attribs)) {
         src.attribs[i] = extension.attribs[i]
       }
     }
+  }
+
+  // extend events
+  if ('events' in extension) {
+    // ensure src has events prop if extension has it too
+    src.events = src.events || {}
+    Object.keys(extension.events).forEach(eName => {
+      if (!src.events[eName]) {
+        src.events[eName] = extension.events[eName]
+      }
+    })
   }
 
   if (!src.children && extension.children) {
