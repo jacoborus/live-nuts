@@ -7,7 +7,8 @@ nuts
   events: {
     keypress: function (e, nut, box) {
       if (e.which === 13) { // 13 is enter
-        box.set('variable', nut.el.value)
+        box.get().variable = nut.el.value
+        box.save()
       }
     }
   }

@@ -35,6 +35,6 @@
     "testling": "^1.7.1"
   },
   "dependencies": {
-    "boxes": "^0.1.0"
+    "boxes": "^0.5.2"
   }
 }

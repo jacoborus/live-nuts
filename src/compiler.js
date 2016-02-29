@@ -26,9 +26,7 @@ function compileStr (str) {
   } else {
     reduce = scope => fns.reduce((str, fn) => str + fn(scope), '')
   }
-  let models = new Set()
-  str.replace(/{{(.*?)}}/g, (g0, g1) => models.add(g1.trim()))
-  return { reduce, models }
+  return reduce
 }
 
 function compileAttributes (schema) { // compile attributes
@@ -41,25 +39,28 @@ function compileAttributes (schema) { // compile attributes
       schema.booleans = schema.booleans || {}
       schema.booleans[att] = model
       return function (nut, box) {
-        let updateFn = () => {
-          if (box.get()[model]) {
+        let updateFn = scope => {
+          if (scope[model]) {
             nut.el.setAttribute(att, '')
           } else {
             nut.el.removeAttribute(att)
           }
         }
-        box.subscribe(nut.scope, model, updateFn)
-        updateFn()
+        box.onChange(updateFn)
+        updateFn(box.get())
       }
     } else {
       if (!value.match(matcher)) {
         return nut => nut.el.setAttribute(name, value)
       }
-      let { reduce, models } = compileStr(value)
+      let reduce = compileStr(value)
       return function (nut, box) {
-        let updateFn = () => nut.el.setAttribute(name, reduce(nut.scope))
-        models.forEach(model => box.subscribe(nut.scope, model, updateFn))
-        updateFn()
+        let updateFn = scope => {
+          let res = reduce(scope)
+          nut.el.setAttribute(name, res)
+        }
+        box.onChange(updateFn)
+        updateFn(box.get())
       }
     }
   })
@@ -69,11 +70,11 @@ function compileAttributes (schema) { // compile attributes
 function compileText (schema, callback) {
   let data = schema.data
   if (data.match(matcher)) {
-    let { reduce, models } = compileStr(data)
-    schema.render = function (scope, box) {
-      let el = document.createTextNode(reduce(scope))
-      let updateFn = () => el.textContent = reduce(scope)
-      models.forEach(model => box.subscribe(scope, model, updateFn))
+    let reduce = compileStr(data)
+    schema.render = function (box) {
+      let el = document.createTextNode(reduce(box.get()))
+      let updateFn = () => el.textContent = reduce(box.get())
+      box.onChange(updateFn)
       return el
     }
   } else {
@@ -97,7 +98,9 @@ function compileEvents (events) {
 }
 
 function compileChildren (children) {
-  return (nut, box) => children.forEach(c => nut.el.appendChild(c.render(box.get(), box)))
+  return (nut, box) => children.forEach(c => {
+    nut.el.appendChild(c.render(box))
+  })
 }
 
 function compileTag (schema, callback) {
@@ -105,11 +108,12 @@ function compileTag (schema, callback) {
   let scopeAtt = schema.scope
   let stack = createStack()
 
-  schema.render = (outerScope, box) => {
-    if (scopeAtt && !outerScope[scopeAtt]) return document.createDocumentFragment()
-    let scope = scopeAtt ? outerScope[scopeAtt] : outerScope,
+  schema.render = (box) => {
+    if (scopeAtt && !box.get()[scopeAtt]) return document.createDocumentFragment()
+    let scope = scopeAtt ? box.get()[scopeAtt] : box.get(),
         nut = { scope, el: document.createElement(schema.localName) }
-    stack.exec(nut, box.getBox(scope))
+    box = scopeAtt ? box.getBox(scope) : box
+    stack.exec(nut, box)
     return nut.el
   }
 
@@ -129,14 +133,21 @@ function compileLoop (schema, callback) {
   let scopeAtt = schema.scope
   let stack = createStack()
 
-  schema.render = (outerScope, box) => {
+  schema.render = (box) => {
     let fragment = document.createDocumentFragment()
-    let scope = scopeAtt ? outerScope[scopeAtt][repeat] : outerScope[repeat]
+    let scope
+    if (scopeAtt) {
+      scope = box.get()[scopeAtt][repeat]
+      box = box.getBox(scope)
+    } else {
+      scope = box.get()[repeat]
+    }
 
     if (scope) {
       scope.forEach(item => {
         let nut = { scope: item, el: document.createElement(schema.localName) }
-        stack.exec(nut, box.getBox(item))
+        let localBox = box.getBox(item)
+        stack.exec(nut, localBox)
         fragment.appendChild(nut.el)
       })
     }

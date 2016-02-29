@@ -12,17 +12,14 @@ let api = {},
     filtersArchive = new Map(),
     queue = []
 
-let store = boxes.createStore('main', {})
+let store = boxes({})
 
 function instantiate (element, box, callback) {
   let tagNuts = element.querySelectorAll('[data-nut]')
   let instances = Array.from(tagNuts).filter(i => schemas.has(i.getAttribute('data-nut')))
   console.log(schemas)
   instances.forEach(i => {
-    i.parentNode.replaceChild(
-      schemas.get(i.getAttribute('data-nut')).render(store.get(), box),
-      i
-    )
+    i.parentNode.replaceChild(schemas.get(i.getAttribute('data-nut')).render(store), i)
   })
   callback()
 }
