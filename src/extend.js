@@ -28,11 +28,11 @@ export default function (src, extension, next) {
   }
 
   if ('attribs' in extension) {
-    for (let i in extension.attribs) {
-      if (!(i in src.attribs)) {
-        src.attribs[i] = extension.attribs[i]
+    Object.keys(extension.attribs).forEach(att => {
+      if (!(att in src.attribs)) {
+        src.attribs[att] = extension.attribs[att]
       }
-    }
+    })
   }
 
   // extend events

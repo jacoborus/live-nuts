@@ -30,8 +30,8 @@ test('compile simple tag with attributes', function (t) {
     events: {
       click: (e, nut, box) => {
         control++
-        box.get().color = 'red'
-        box.get().onoff = !box.get().onoff
+        nut.scope.color = 'red'
+        nut.scope.onoff = !nut.scope.onoff
         box.save()
       }
     }
@@ -45,7 +45,7 @@ test('compile simple tag with attributes', function (t) {
   let box = boxes(scope)
 
   compile(schema, () => {
-    let el = schema.render(box)
+    let el = schema.render(scope, box)
     t.is(el.localName, 'section', 'render localName')
     t.is(el.getAttribute('alt'), 'alternative', 'render regular attribute')
     t.is(el.getAttribute('title'), 'green', 'render scoped attribute')
@@ -175,7 +175,7 @@ test('compile element loops', function (t) {
   })
 })
 
-test.skip('render elements just when its scopes exist', function (t) {
+test('render elements just when its scopes exist', function (t) {
   let schema = {
     type: 1,
     localName: 'section',

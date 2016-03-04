@@ -46,7 +46,7 @@ function compileAttributes (schema) { // compile attributes
             nut.el.removeAttribute(att)
           }
         }
-        box.onChange(updateFn)
+        box.subscribe(updateFn)
         updateFn(box.get())
       }
     } else {
@@ -59,7 +59,7 @@ function compileAttributes (schema) { // compile attributes
           let res = reduce(scope)
           nut.el.setAttribute(name, res)
         }
-        box.onChange(updateFn)
+        box.subscribe(updateFn)
         updateFn(box.get())
       }
     }
@@ -71,16 +71,30 @@ function compileText (schema, callback) {
   let data = schema.data
   if (data.match(matcher)) {
     let reduce = compileStr(data)
-    schema.render = function (box) {
+    schema.render = function (scope, box) {
       let el = document.createTextNode(reduce(box.get()))
       let updateFn = () => el.textContent = reduce(box.get())
-      box.onChange(updateFn)
+      box.subscribe(updateFn)
       return el
     }
   } else {
     schema.render = () => document.createTextNode(data)
   }
   callback()
+}
+
+function compileEvents (events) {
+  return (nut, box) => {
+    Object.keys(events).forEach(k => {
+      nut.el.addEventListener(k, e => events[k](e, nut, box))
+    })
+  }
+}
+
+function compileChildren (children) {
+  return (nut, box) => children.forEach(c => {
+    nut.el.appendChild(c.render(nut.scope, box))
+  })
 }
 
 function createStack () {
@@ -91,29 +105,19 @@ function createStack () {
   }
 }
 
-function compileEvents (events) {
-  return (nut, box) => {
-    Object.keys(events).forEach(k => nut.el.addEventListener(k, e => events[k](e, nut, box)))
-  }
-}
-
-function compileChildren (children) {
-  return (nut, box) => children.forEach(c => {
-    nut.el.appendChild(c.render(box))
-  })
-}
-
 function compileTag (schema, callback) {
   let { events, children, attribs } = schema
   let scopeAtt = schema.scope
   let stack = createStack()
 
-  schema.render = (box) => {
-    if (scopeAtt && !box.get()[scopeAtt]) return document.createDocumentFragment()
-    let scope = scopeAtt ? box.get()[scopeAtt] : box.get(),
-        nut = { scope, el: document.createElement(schema.localName) }
-    box = scopeAtt ? box.getBox(scope) : box
-    stack.exec(nut, box)
+  schema.render = (scope, box) => {
+    if (scopeAtt && !scope[scopeAtt]) return document.createDocumentFragment()
+    if (scopeAtt) {
+      scope = scope[scopeAtt]
+    }
+    let nut = { scope, el: document.createElement(schema.localName) }
+    let localBox = scopeAtt ? box.getBox(scope) : box
+    stack.exec(nut, localBox)
     return nut.el
   }
 
@@ -128,26 +132,27 @@ function compileTag (schema, callback) {
   }
 }
 
+function compileVirtualLoopTag () {}
+function compileVirtualLoopTag () {}
+function compileVirtualLoopTag () {}
+
 function compileLoop (schema, callback) {
   let { events, children, attribs, repeat } = schema
   let scopeAtt = schema.scope
   let stack = createStack()
 
-  schema.render = (box) => {
+  schema.render = (scope, box) => {
     let fragment = document.createDocumentFragment()
-    let scope
     if (scopeAtt) {
-      scope = box.get()[scopeAtt][repeat]
-      box = box.getBox(scope)
+      scope = scope[scopeAtt][repeat]
     } else {
-      scope = box.get()[repeat]
+      scope = scope[repeat]
     }
 
     if (scope) {
       scope.forEach(item => {
         let nut = { scope: item, el: document.createElement(schema.localName) }
-        let localBox = box.getBox(item)
-        stack.exec(nut, localBox)
+        stack.exec(nut, box)
         fragment.appendChild(nut.el)
       })
     }
