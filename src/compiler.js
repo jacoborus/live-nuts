@@ -34,33 +34,56 @@ function compileAttributes (schema) { // compile attributes
   let fns = Object.keys(atts).map(name => {
     let value = atts[name]
     if (name.endsWith('-')) {
+      // is boolean
       let att = name.slice(0, -1)
       let model = value.match(matcher)[1].trim()
       schema.booleans = schema.booleans || {}
       schema.booleans[att] = model
-      return function (nut, box) {
-        let updateFn = scope => {
-          if (scope[model]) {
-            nut.el.setAttribute(att, '')
+      let updateFn = (scope, cached, el) => {
+        let fresh = scope[model]
+        if (fresh !== cached) {
+          if (fresh) {
+            el.setAttribute(att, '')
           } else {
-            nut.el.removeAttribute(att)
+            el.removeAttribute(att)
           }
+          return fresh
+        } else {
+          return cached
         }
-        box.subscribe(updateFn)
-        updateFn(box.get())
+      }
+      return function (nut, box) {
+        let scope = nut.scope
+        let cached = scope[model]
+        let el = nut.el
+        box.subscribe(() => cached = updateFn(scope, cached, el), nut.scope)
+        if (cached) {
+          el.setAttribute(att, '')
+        } else {
+          el.removeAttribute(att)
+        }
       }
     } else {
+      // is regular
       if (!value.match(matcher)) {
         return nut => nut.el.setAttribute(name, value)
       }
+      // is scoped value
       let reduce = compileStr(value)
-      return function (nut, box) {
-        let updateFn = scope => {
-          let res = reduce(scope)
-          nut.el.setAttribute(name, res)
+      let updateFn = (scope, cached, el) => {
+        let fresh = reduce(scope)
+        if (fresh !== cached) {
+          el.setAttribute(name, fresh)
+          return fresh
         }
-        box.subscribe(updateFn)
-        updateFn(box.get())
+        return cached
+      }
+      return function (nut, box) {
+        let scope = nut.scope
+        let el = nut.el
+        let cached = reduce(scope)
+        box.subscribe(() => cached = updateFn(scope, cached, el), nut.scope)
+        el.setAttribute(name, cached)
       }
     }
   })
@@ -74,7 +97,7 @@ function compileText (schema, callback) {
     schema.render = function (scope, box) {
       let el = document.createTextNode(reduce(box.get()))
       let updateFn = () => el.textContent = reduce(box.get())
-      box.subscribe(updateFn)
+      box.subscribe(updateFn, scope)
       return el
     }
   } else {
@@ -116,8 +139,7 @@ function compileTag (schema, callback) {
       scope = scope[scopeAtt]
     }
     let nut = { scope, el: document.createElement(schema.localName) }
-    let localBox = scopeAtt ? box.getBox(scope) : box
-    stack.exec(nut, localBox)
+    stack.exec(nut, box)
     return nut.el
   }
 
@@ -132,8 +154,6 @@ function compileTag (schema, callback) {
   }
 }
 
-function compileVirtualLoopTag () {}
-function compileVirtualLoopTag () {}
 function compileVirtualLoopTag () {}
 
 function compileLoop (schema, callback) {

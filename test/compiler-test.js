@@ -90,8 +90,8 @@ test('compile text nodes', function (t) {
     type: 1,
     events: {
       click: (e, nut, box) => {
-        box.get().color = 'other'
-        box.get().class = 'active'
+        nut.scope.color = 'other'
+        nut.scope.class = 'active'
         box.save()
       }
     },
@@ -113,7 +113,7 @@ test('compile text nodes', function (t) {
   })
 
   compile(schema, () => {
-    let el = schema.render(box)
+    let el = schema.render(box.get(), box)
     t.is(el.localName, 'span', 'parent localname')
     t.ok(el.childNodes.length, 'parent has children')
     t.is(el.childNodes[0].nodeType, 3, 'child nodetype')
@@ -137,7 +137,7 @@ test('compile element loops', function (t) {
     type: 1,
     events: {
       click: (e, nut, box) => {
-        box.get().color = 'other'
+        nut.scope.color = 'other'
         box.save()
       }
     },
@@ -159,7 +159,7 @@ test('compile element loops', function (t) {
 
   compile(schema, () => {
     let el = document.createElement('div')
-    el.appendChild(schema.render(box))
+    el.appendChild(schema.render(box.get(), box))
     t.is(el.childNodes[0].localName, 'li', 'localname')
     t.is(el.childNodes.length, 3, 'render correct number of items')
     t.is(el.childNodes[0].nodeType, 1, 'item nodetype')
@@ -198,14 +198,14 @@ test('render elements just when its scopes exist', function (t) {
     }],
     events: {
       click: (e, nut, box) => {
-        if (box.get().state) {
-          delete box.get().span
-          box.get().h1 = {}
+        if (nut.scope.state) {
+          delete nut.scope.span
+          nut.scope.h1 = {}
         } else {
-          delete box.get().h1
-          box.get().span = {}
+          delete nut.scope.h1
+          nut.scope.span = {}
         }
-        box.get().state = !box.get().state
+        nut.scope.state = !nut.scope.state
         box.save()
       }
     }
@@ -217,7 +217,7 @@ test('render elements just when its scopes exist', function (t) {
   })
 
   compile(schema, () => {
-    let el = schema.render(box)
+    let el = schema.render(box.get(), box)
     window.el = el
     document.body.appendChild(el)
     t.is(el.localName, 'section')
