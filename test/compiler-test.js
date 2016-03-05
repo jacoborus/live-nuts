@@ -175,14 +175,14 @@ test('compile element loops', function (t) {
   })
 })
 
-test('render elements just when its scopes exist', function (t) {
+test('render elements just when its model exist', function (t) {
   let schema = {
     type: 1,
     localName: 'section',
     children: [{
       type: 1,
       localName: 'span',
-      scope: 'span',
+      model: 'span',
       children: [{
         type: 3,
         data: 'span'
@@ -190,7 +190,7 @@ test('render elements just when its scopes exist', function (t) {
     }, {
       type: 1,
       localName: 'h1',
-      scope: 'h1',
+      model: 'h1',
       children: [{
         type: 3,
         data: 'h1'

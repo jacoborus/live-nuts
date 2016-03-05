@@ -11,9 +11,9 @@ function parseStr (str) {
     let fns = parseStr(str.substring(st.index))
     return [() => out].concat(fns)
   } else {
-    let model = st[1].trim()
+    let prop = st[1].trim()
     let fns = parseStr(str.substring(st[0].length))
-    return [scope => scope[model] || ''].concat(fns)
+    return [scope => scope[prop] || ''].concat(fns)
   }
 }
 
@@ -36,11 +36,11 @@ function compileAttributes (schema) { // compile attributes
     if (name.endsWith('-')) {
       // is boolean
       let att = name.slice(0, -1)
-      let model = value.match(matcher)[1].trim()
+      let prop = value.match(matcher)[1].trim()
       schema.booleans = schema.booleans || {}
-      schema.booleans[att] = model
+      schema.booleans[att] = prop
       let updateFn = (scope, cached, el) => {
-        let fresh = scope[model]
+        let fresh = scope[prop]
         if (fresh !== cached) {
           if (fresh) {
             el.setAttribute(att, '')
@@ -54,7 +54,7 @@ function compileAttributes (schema) { // compile attributes
       }
       return function (nut, box) {
         let scope = nut.scope
-        let cached = scope[model]
+        let cached = scope[prop]
         let el = nut.el
         box.subscribe(() => cached = updateFn(scope, cached, el), nut.scope)
         if (cached) {
@@ -139,13 +139,12 @@ function createStack () {
 }
 
 function compileTag (schema, callback) {
-  let { events, children, attribs } = schema
-  let scopeAtt = schema.scope
+  let { events, children, attribs, model } = schema
   let stack = createStack()
 
   let getScope
-  if (scopeAtt) {
-    getScope = scope => scope[scopeAtt]
+  if (model) {
+    getScope = scope => scope[model]
   } else {
     getScope = scope => scope
   }
@@ -169,15 +168,16 @@ function compileTag (schema, callback) {
   }
 }
 
+function compileVirtualLoopTag () {}
+
 function compileLoop (schema, callback) {
-  let { events, children, attribs, repeat } = schema
-  let scopeAtt = schema.scope
+  let { events, children, attribs, repeat, model } = schema
   let stack = createStack()
 
   schema.render = (scope, box) => {
     let fragment = document.createDocumentFragment()
-    if (scopeAtt) {
-      scope = scope[scopeAtt][repeat]
+    if (model) {
+      scope = scope[model][repeat]
     } else {
       scope = scope[repeat]
     }
