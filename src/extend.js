@@ -5,7 +5,6 @@ const nuProps = [
   'type',
   'name',
   'data',
-  'scope',
   'model',
   'repeat',
   'if',

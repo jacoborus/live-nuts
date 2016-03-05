@@ -20,7 +20,6 @@ Schema
 - ref
 - type
 - properties:
-  - model
   - scope
   - repeat
   - if/unless

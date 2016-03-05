@@ -16,7 +16,7 @@ export default function parser (el, rawChildren) {
       delete atts.nut
     }
 
-    ['scope', 'repeat', 'if', 'unless', 'as'].forEach(prop => {
+    ['model', 'repeat', 'if', 'unless', 'as'].forEach(prop => {
       if (prop in atts) {
         src[prop] = atts[prop]
         delete atts[prop]

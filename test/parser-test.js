@@ -7,20 +7,12 @@ function parser (tmpl, rawChildren) {
   return getSource(document.createRange().createContextualFragment(tmpl).childNodes[0], rawChildren)
 }
 
-test('separate nuts attributes from regular ones', function (t) {
-  let src = parser('<span id="id" nu-att="nuid" nut="separateAtts">hello</span>')
-  t.is(src.type, 1)
-  t.is(src.attribs.id, 'id')
-  t.is(src.localName, 'span', 'localName')
-  t.end()
-})
-
 test('distribute attributes', function (t) {
   let tmpl = '<span ' +
         ' nut="specialNuts"' +
         ' class="{{class}}"' +
         // scopes
-        ' scope="scope"' +
+        ' model="model"' +
         // conditionals
         ' if="if"' +
         ' unless="unless"' +
@@ -40,8 +32,8 @@ test('distribute attributes', function (t) {
   t.is(src.localName, 'span')
   t.is(src.attribs.class, '{{class}}')
   // scope
-  t.is(src.scope, 'scope')
-  t.is(src.attribs.scope, undefined)
+  t.is(src.model, 'model')
+  t.is(src.attribs.model, undefined)
   // nuif
   t.is(src.if, 'if')
   t.is(src.attribs.if, undefined)
@@ -75,7 +67,7 @@ test('parse child elements', function (t) {
 })
 
 test('parse just parent element and send children as raw', function (t) {
-  let tmpl = '<ul nut="simpleTag"><li nu-model="sample">hola<span></span></li></ul>',
+  let tmpl = '<ul nut="simpleTag"><li>hola<span></span></li></ul>',
       src = parser(tmpl, true)
 
   t.notOk(src.children[0].model)

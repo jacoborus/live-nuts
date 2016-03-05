@@ -16,7 +16,7 @@ test('extend nuts', function (t) {
   })
   .set('newlist', {
     key: 'newlist',
-    scope: 'desc',
+    model: 'desc',
     as: 'list'
   })
 
@@ -26,7 +26,7 @@ test('extend nuts', function (t) {
   makePartials(schemas, function () {
     // extend target
     t.is(newlist.repeat, 'articles')
-    t.is(newlist.scope, 'desc')
+    t.is(newlist.model, 'desc')
     t.is(newlist.key, 'newlist')
     t.is(newlist.as, undefined)
     t.is(newlist.children[0].unless, 'mark')
@@ -34,7 +34,7 @@ test('extend nuts', function (t) {
     t.is(newlist.childrenFrom, 'list')
     // leave extension
     t.is(list.repeat, 'articles')
-    t.is(list.scope, undefined)
+    t.is(list.model, undefined)
     t.is(list.key, 'list')
     t.is(list.as, undefined)
     t.end()
@@ -54,7 +54,7 @@ test('extend nuts recursive', function (t) {
   })
   .set('newlist', {
     key: 'newlist',
-    scope: 'desc',
+    model: 'desc',
     as: 'list'
   })
   .set('relist', {
@@ -75,7 +75,7 @@ test('extend nuts recursive', function (t) {
   makePartials(schemas, function () {
     // top extend
     t.is(relist.repeat, 'articles')
-    t.is(relist.scope, 'desc')
+    t.is(relist.model, 'desc')
     t.is(relist.key, 'relist')
     t.is(relist.as, undefined)
     t.is(relist.class, 'reclass')
@@ -83,14 +83,14 @@ test('extend nuts recursive', function (t) {
     t.notOk(relist.children[1])
     // middle extend
     t.is(newlist.repeat, 'articles')
-    t.is(newlist.scope, 'desc')
+    t.is(newlist.model, 'desc')
     t.is(newlist.key, 'newlist')
     t.is(newlist.as, undefined)
     t.is(newlist.children[0].unless, 'mark')
     t.is(newlist.children[1].nuif, 'mark')
     // no extend
     t.is(list.repeat, 'articles')
-    t.is(list.scope, undefined)
+    t.is(list.model, undefined)
     t.is(list.key, 'list')
     t.is(list.as, undefined)
     t.end()
@@ -118,7 +118,7 @@ test('extend children of nuts recursive', function (t) {
   })
   .set('newlist', {
     key: 'newlist',
-    scope: 'desc',
+    model: 'desc',
     as: 'list'
   })
   .set('relist', {
@@ -138,7 +138,7 @@ test('extend children of nuts recursive', function (t) {
 
   makePartials(schemas, function () {
     t.is(relist.repeat, 'articles')
-    t.is(relist.scope, 'desc')
+    t.is(relist.model, 'desc')
     t.is(relist.key, 'relist')
     t.is(relist.as, undefined)
     t.is(relist.class, 'reclass')
@@ -146,20 +146,20 @@ test('extend children of nuts recursive', function (t) {
     t.notOk(relist.children[1])
 
     t.is(newlist.repeat, 'articles')
-    t.is(newlist.scope, 'desc')
+    t.is(newlist.model, 'desc')
     t.is(newlist.key, 'newlist')
     t.is(newlist.as, undefined)
     t.is(newlist.children[0].unless, 'mark')
     t.is(newlist.children[1].nuif, 'mark')
 
     t.is(list.repeat, 'articles')
-    t.is(list.scope, undefined)
+    t.is(list.model, undefined)
     t.is(list.key, 'list')
     t.is(list.as, undefined)
-    t.is(list.children[0].scope, 'desc')
+    t.is(list.children[0].model, 'desc')
     t.is(list.children[1].children[0].class, 'testclass')
     t.is(list.children[1].children[0].children[0].class, 'grandchildren')
-    t.is(list.children[1].children[0].children[0].scope, 'desc')
+    t.is(list.children[1].children[0].children[0].model, 'desc')
     t.end()
   })
 })
@@ -185,7 +185,7 @@ test('make circular partials', function (t) {
   })
   .set('newlist', {
     key: 'newlist',
-    scope: 'desc',
+    model: 'desc',
     as: 'list'
   })
   .set('relist', {
@@ -205,26 +205,26 @@ test('make circular partials', function (t) {
 
   makePartials(schemas, function () {
     t.is(relist.repeat, 'articles')
-    t.is(relist.scope, 'desc')
+    t.is(relist.model, 'desc')
     t.is(relist.key, 'relist')
     t.is(relist.as, undefined)
     t.is(relist.children[0].attribs.test, 'test')
     t.notOk(relist.children[1])
 
     t.is(newlist.repeat, 'articles')
-    t.is(newlist.scope, 'desc')
+    t.is(newlist.model, 'desc')
     t.is(newlist.key, 'newlist')
     t.is(newlist.as, undefined)
     t.is(newlist.children[0].unless, 'mark')
     t.is(newlist.children[1].if, 'mark')
 
     t.is(list.repeat, 'articles')
-    t.is(list.scope, undefined)
+    t.is(list.model, undefined)
     t.is(list.key, 'list')
     t.is(list.as, undefined)
-    t.is(list.children[0].scope, 'desc')
-    t.is(list.children[1].children[0].children[0].scope, 'desc')
-    t.is(list.children[1].children[0].children[0].children[0].children[0].scope, 'desc')
+    t.is(list.children[0].model, 'desc')
+    t.is(list.children[1].children[0].children[0].model, 'desc')
+    t.is(list.children[1].children[0].children[0].children[0].children[0].model, 'desc')
     t.end()
   })
 })
@@ -237,7 +237,7 @@ test('avoid circular extensions before crash', function (t) {
   })
   .set('newlist', {
     key: 'newlist',
-    scope: 'desc',
+    model: 'desc',
     as: 'list'
   })
 

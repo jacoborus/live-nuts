@@ -13,16 +13,16 @@ test('has same properties as source when no extension passed', function (t) {
 
 test('extend nut properties', function (t) {
   let sample = {
-        scope: 'test'
-      },
-      otherSample = {
-        scope: 'extension',
-        model: 'other'
-      }
+    model: 'test'
+  }
+  let otherSample = {
+    model: 'extension',
+    repeat: 'other'
+  }
 
   extend(sample, otherSample, function () {
-    t.is(sample.scope, 'test')
-    t.is(sample.model, 'other')
+    t.is(sample.model, 'test')
+    t.is(sample.repeat, 'other')
     t.end()
   })
 })
