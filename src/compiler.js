@@ -131,10 +131,10 @@ function compileChildren (children) {
 }
 
 function createStack () {
-  let pile = []
+  let renders = []
   return {
-    add: fn => pile.push(fn),
-    exec: (nut, box) => pile.forEach(fn => fn(nut, box))
+    add: fn => renders.push(fn),
+    exec: (nut, box) => renders.forEach(fn => fn(nut, box))
   }
 }
 
@@ -168,19 +168,20 @@ function compileTag (schema, callback) {
   }
 }
 
-function compileVirtualLoopTag () {}
-
 function compileLoop (schema, callback) {
   let { events, children, attribs, repeat, model } = schema
   let stack = createStack()
 
+  let getScope
+  if (model) {
+    getScope = scope => scope[model][repeat]
+  } else {
+    getScope = scope => scope[repeat]
+  }
+
   schema.render = (scope, box) => {
     let fragment = document.createDocumentFragment()
-    if (model) {
-      scope = scope[model][repeat]
-    } else {
-      scope = scope[repeat]
-    }
+    scope = getScope(scope)
 
     if (scope) {
       scope.forEach(item => {
