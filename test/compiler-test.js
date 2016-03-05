@@ -138,7 +138,7 @@ test('compile element loops', function (t) {
     events: {
       click: (e, nut, box) => {
         nut.scope.color = 'other'
-        box.save()
+        box.save(nut.scope)
       }
     },
     children: [{

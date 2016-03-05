@@ -143,11 +143,16 @@ function compileTag (schema, callback) {
   let scopeAtt = schema.scope
   let stack = createStack()
 
+  let getScope
+  if (scopeAtt) {
+    getScope = scope => scope[scopeAtt]
+  } else {
+    getScope = scope => scope
+  }
+
   schema.render = (scope, box) => {
-    if (scopeAtt && !scope[scopeAtt]) return document.createDocumentFragment()
-    if (scopeAtt) {
-      scope = scope[scopeAtt]
-    }
+    scope = getScope(scope)
+    if (!scope) return document.createDocumentFragment()
     let nut = { scope, el: document.createElement(schema.localName) }
     stack.exec(nut, box)
     return nut.el
@@ -163,8 +168,6 @@ function compileTag (schema, callback) {
     callback()
   }
 }
-
-function compileVirtualLoopTag () {}
 
 function compileLoop (schema, callback) {
   let { events, children, attribs, repeat } = schema
