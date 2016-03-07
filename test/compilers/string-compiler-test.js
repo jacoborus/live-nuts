@@ -3,13 +3,6 @@
 import test from 'tape'
 import compileStr from '../../src/compilers/string-compiler.js'
 
-test('parse simple string', function (t) {
-  let str = 'color red'
-  let reduce = compileStr(str)
-  t.is(reduce({color: 'blue', number: 34}), 'color red')
-  t.end()
-})
-
 test('parse scoped string', function (t) {
   let str = '{{ color }}'
   let reduce = compileStr(str)
