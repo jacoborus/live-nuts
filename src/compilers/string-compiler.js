@@ -13,7 +13,7 @@ function parseStr (str) {
   } else {
     let prop = st[1].trim()
     let fns = parseStr(str.substring(st[0].length))
-    return [scope => scope[prop] || ''].concat(fns)
+    return [scope => prop in scope ? scope[prop] : ''].concat(fns)
   }
 }
 
