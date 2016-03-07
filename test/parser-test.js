@@ -20,6 +20,10 @@ test('distribute attributes', function (t) {
         ' repeat="repeat"' +
         // layouts
         ' as="nuas"' +
+        // events
+        ' (keydown)="presskey"' +
+        // events
+        ' (click)="click"' +
         // regular attributes
         ' myatt="myatt"' +
         // variable attribute
@@ -51,6 +55,9 @@ test('distribute attributes', function (t) {
   t.is(src.tagName, 'specialNuts')
   // regular attributes
   t.is(src.attribs.myatt, 'myatt')
+  // events
+  t.is(src.events.click, 'click')
+  t.is(src.events.keydown, 'presskey')
   t.end()
 })
 

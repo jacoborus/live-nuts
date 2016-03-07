@@ -1,5 +1,7 @@
 'use strict'
 
+const props = new Set(['model', 'repeat', 'if', 'unless', 'as', 'hide', 'show'])
+
 export default function parser (el, rawChildren) {
   let atts = {}// attributes
   let src = {
@@ -8,20 +10,34 @@ export default function parser (el, rawChildren) {
     localName: el.localName,
     attribs: atts
   }
+  let events = {}
 
   if (el.attributes && el.hasAttributes()) {
+    // fill `atts` object with element attributes
     Array.prototype.forEach.call(el.attributes, i => atts[i.name] = i.value)
+    // extract nut name
     if (atts.nut) {
       src.tagName = atts.nut
       delete atts.nut
     }
 
-    ['model', 'repeat', 'if', 'unless', 'as'].forEach(prop => {
+    // extract custom nut properties
+    props.forEach(prop => {
       if (prop in atts) {
         src[prop] = atts[prop]
         delete atts[prop]
       }
     })
+
+    // extract events
+    // TODO: test this TODO
+    Object.keys(atts).forEach(k => {
+      if (k.startsWith('(') && k.endsWith(')')) {
+        events[k.slice(1, k.length - 1)] = atts[k]
+        delete atts[k]
+      }
+    })
+    if (Object.keys(events).length) src.events = events
   }
 
   if (rawChildren) {

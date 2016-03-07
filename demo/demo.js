@@ -3,14 +3,12 @@
 'use strict'
 
 nuts
-.addBehaviour('new-task', {
-  events: {
-    keypress: function (e, nut, box) {
-      if (e.which === 13) { // 13 is enter
-        nut.scope.variable = nut.el.value
-        nut.el.value = ''
-        box.save()
-      }
+.addBehaviour('app', {
+  addTask: function (e, nut) {
+    if (e.which === 13) { // 13 is enter
+      nut.scope.variable = nut.el.value
+      nut.el.value = ''
+      nut.save()
     }
   }
 })
