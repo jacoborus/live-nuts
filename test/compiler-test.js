@@ -130,7 +130,7 @@ test('compile text nodes', function (t) {
   })
 })
 
-test('compile element loops', function (t) {
+test.skip('compile element loops', function (t) {
   let schema = {
     localName: 'li',
     repeat: 'items',
