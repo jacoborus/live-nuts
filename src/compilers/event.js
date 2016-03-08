@@ -1,9 +1,9 @@
 'use strict'
 
 export default function (events) {
-  return (nut, box) => {
+  return (el, scope, nut) => {
     Object.keys(events).forEach(k => {
-      nut.el.addEventListener(k, e => events[k](e, nut, box))
+      el.addEventListener(k, e => events[k](e, nut))
     })
   }
 }

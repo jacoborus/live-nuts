@@ -30,7 +30,6 @@ export default function parser (el, rawChildren) {
     })
 
     // extract events
-    // TODO: test this TODO
     Object.keys(atts).forEach(k => {
       if (k.startsWith('(') && k.endsWith(')')) {
         events[k.slice(1, k.length - 1)] = atts[k]

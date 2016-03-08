@@ -1,7 +1,7 @@
 'use strict'
 
 import test from 'tape'
-import compileStr from '../../src/compilers/string-compiler.js'
+import compileStr from '../../src/compilers/string.js'
 
 test('parse scoped string', function (t) {
   let str = '{{ color }}'

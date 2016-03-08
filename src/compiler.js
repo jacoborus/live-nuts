@@ -1,8 +1,8 @@
 'use strict'
 
-import compileText from './compilers/text-compiler.js'
-import compileTag from './compilers/tag-compiler.js'
-import compileLoop from './compilers/loop-compiler.js'
+import compileText from './compilers/text.js'
+import compileTag from './compilers/tag.js'
+import compileLoop from './compilers/loop.js'
 
 export default function compile (schema, callback) {
   if (schema.type === 1) {

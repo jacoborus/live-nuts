@@ -1,9 +1,9 @@
 'use strict'
 
-import compileAttributes from './attribute-compiler.js'
+import compileAttributes from './attribute.js'
 import newCounter from '../counter.js'
-import compileEvents from './event-compiler.js'
-import compileChildren from './children-compiler.js'
+import compileEvents from './event.js'
+import compileChildren from './children.js'
 
 function createStack () {
   let renders = []
@@ -26,9 +26,24 @@ export default function (schema, compile, callback) {
 
   schema.render = (scope, box) => {
     scope = getScope(scope)
-    if (!scope) return document.createDocumentFragment()
-    let nut = { scope, el: document.createElement(schema.localName) }
-    stack.exec(nut, box)
+    let el
+    if (!scope) {
+      el = document.createDocumentFragment()
+    } else {
+      el = document.createElement(schema.localName)
+    }
+    let save = target => {
+      if (!target) {
+        target = scope
+      } else if (typeof target !== 'object') {
+        throw new Error('save requires a object an argument')
+      }
+      box.save(target)
+    }
+    let nut = { scope, el, save }
+    // render attrributes
+    let subscriptions = stack.exec(nut, box)
+    box.subscribe(() => subscriptions.forEach(update => update()), scope)
     return nut.el
   }
 

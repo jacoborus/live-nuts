@@ -1,7 +1,7 @@
 'use strict'
 
 import test from 'tape'
-import compileText from '../../src/compilers/text-compiler.js'
+import compileText from '../../src/compilers/text.js'
 import boxes from 'boxes'
 
 test('compile simple text node', function (t) {

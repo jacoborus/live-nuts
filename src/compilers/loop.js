@@ -1,9 +1,9 @@
 'use strict'
 
 import newCounter from '../counter.js'
-import compileAttributes from './attribute-compiler.js'
-import compileEvents from './event-compiler.js'
-import compileChildren from './children-compiler.js'
+import compileAttributes from './attribute.js'
+import compileEvents from './event.js'
+import compileChildren from './children.js'
 
 function createStack () {
   let renders = []

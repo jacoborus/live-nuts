@@ -1,7 +1,7 @@
 'use strict'
 
 const matcher = /{{([^}]*)}}/
-import compileStr from './string-compiler.js'
+import compileStr from './string.js'
 
 export default function (schema, callback) {
   let data = schema.data
