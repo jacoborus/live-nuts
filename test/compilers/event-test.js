@@ -14,7 +14,7 @@ test('event compiler', function (t) {
     click: 'clicked'
   }
   let compiled = compileEvents(events)
-  // t.is(typeof compiled, 'function')
+  t.is(typeof compiled, 'function')
 
   let el = document.createElement('span')
   let fakeNut = {
