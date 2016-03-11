@@ -8,7 +8,7 @@ import compileElement from './element.js'
 import createNut from '../nut.js'
 
 export default function (schema, compile, callback) {
-  let { tagName, events, children, attribs, model } = schema
+  let { tagName, events, children, attribs, model, methods, injected } = schema
   let renderAtts, fixedAtts, renderEvents, renderChildren
 
   let getScope
@@ -43,7 +43,7 @@ export default function (schema, compile, callback) {
       return document.createDocumentFragment()
     } else {
       el = createBaseTag()
-      let nut = createNut(scope, box)
+      let nut = createNut(scope, box, { methods, injected })
       // render attrributes
       if (renderAtts) {
         let subscriptions = renderAtts.map(r => r(el, scope))
