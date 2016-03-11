@@ -32,15 +32,19 @@ export default function (schema, compile, callback) {
     let scope = getScope(outerScope)
     let el
     if (!scope) {
-      let unsubscribe
+      let res = {
+        idRendered: false
+      }
       let updateElement = () => {
         if (outerScope[model] && typeof outerScope[model] === 'object') {
-          schema.render(outerScope, box, parentNut)
-          unsubscribe()
+          let tempRes = schema.render(outerScope, box, parentNut)
+          res.isRendered = true
+          res.element = tempRes.element
+          res.subscribe = tempRes.subscribe
         }
       }
-      unsubscribe = box.subscribe(updateElement, outerScope)
-      return document.createDocumentFragment()
+      res.subscribe = updateElement
+      return res
     } else {
       el = createBaseTag()
       let nut = createNut(scope, box, { methods, injected })
@@ -49,14 +53,27 @@ export default function (schema, compile, callback) {
         let subscriptions = renderAtts.map(r => r(el, scope))
         box.subscribe(() => subscriptions.forEach(update => update()), scope)
       }
-      if (renderChildren) {
-        renderChildren()
-      }
       if (renderEvents) {
         renderEvents(el, nut)
       }
-      return el
+      if (renderChildren) {
+        let vChildren = renderChildren(scope, box, nut)
+        vChildren.forEach(v => {
+          if (v.isRendered) {
+            el.appendChild(v.element)
+          }
+        })
+      }
+      return {
+        isRendered: true,
+        element: el,
+        subscribe: false
+      }
     }
+  }
+
+  schema.print = (scope, box) => {
+    return schema.render(scope, box).element || document.createDocumentFragment()
   }
 
   if (children) {

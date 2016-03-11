@@ -9,7 +9,7 @@
   <template nut-templates>
     <section nut="app">
       <h1 nut="custom-title">{{ variable }}</h1>
-      <input (keypress)="addTask" value="new task">
+      <input (keypress)="addTask" {value}="new_task">
       <ul>
         <li repeat="items">{{ name }}</li>
       </ul>

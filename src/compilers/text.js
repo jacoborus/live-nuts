@@ -20,11 +20,19 @@ export default function (schema, callback) {
       let cached = reduce(scope)
       let el = document.createTextNode(cached)
       box.subscribe(() => updateFn(scope, cached, el), scope)
-      return el
+      return {
+        element: el,
+        isRendered: true
+      }
     }
   } else {
     // is regular text node
-    schema.render = () => document.createTextNode(data)
+    schema.render = () => {
+      return {
+        element: document.createTextNode(data),
+        isRendered: true
+      }
+    }
   }
   callback()
 }
