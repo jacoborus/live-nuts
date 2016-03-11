@@ -4,18 +4,12 @@ import compileAttributes from './attribute.js'
 import newCounter from '../counter.js'
 import compileEvents from './event.js'
 import compileChildren from './children.js'
-
-function createStack () {
-  let renders = []
-  return {
-    add: fn => renders.push(fn),
-    exec: (nut, box) => renders.forEach(fn => fn(nut, box))
-  }
-}
+import compileElement from './element.js'
+import createNut from '../nut.js'
 
 export default function (schema, compile, callback) {
-  let { events, children, attribs, model } = schema
-  let stack = createStack()
+  let { tagName, events, children, attribs, model } = schema
+  let renderAtts, fixedAtts, renderEvents, renderChildren
 
   let getScope
   if (model) {
@@ -24,33 +18,49 @@ export default function (schema, compile, callback) {
     getScope = scope => scope
   }
 
-  schema.render = (scope, box) => {
-    scope = getScope(scope)
-    let el
-    if (!scope) {
-      el = document.createDocumentFragment()
-    } else {
-      el = document.createElement(schema.localName)
-    }
-    let save = target => {
-      if (!target) {
-        target = scope
-      } else if (typeof target !== 'object') {
-        throw new Error('save requires a object an argument')
-      }
-      box.save(target)
-    }
-    let nut = { scope, el, save }
-    // render attrributes
-    let subscriptions = stack.exec(nut, box)
-    box.subscribe(() => subscriptions.forEach(update => update()), scope)
-    return nut.el
+  if (attribs) {
+    let temp = compileAttributes(schema)
+    renderAtts = temp.renders
+    fixedAtts = temp.fixed
+  }
+  let createBaseTag = compileElement(tagName, fixedAtts)
+  if (events) {
+    renderEvents = compileEvents(events)
   }
 
-  if (attribs) stack.add(compileAttributes(schema))
-  if (events) stack.add(compileEvents(events))
+  schema.render = (outerScope, box, parentNut) => {
+    let scope = getScope(outerScope)
+    let el
+    if (!scope) {
+      let unsubscribe
+      let updateElement = () => {
+        if (outerScope[model] && typeof outerScope[model] === 'object') {
+          schema.render(outerScope, box, parentNut)
+          unsubscribe()
+        }
+      }
+      unsubscribe = box.subscribe(updateElement, outerScope)
+      return document.createDocumentFragment()
+    } else {
+      el = createBaseTag()
+      let nut = createNut(scope, box)
+      // render attrributes
+      if (renderAtts) {
+        let subscriptions = renderAtts.map(r => r(el, scope))
+        box.subscribe(() => subscriptions.forEach(update => update()), scope)
+      }
+      if (renderChildren) {
+        renderChildren()
+      }
+      if (renderEvents) {
+        renderEvents(el, nut)
+      }
+      return el
+    }
+  }
+
   if (children) {
-    stack.add(compileChildren(children))
+    renderChildren = compileChildren(children)
     let count = newCounter(children.length, callback)
     children.forEach(c => compile(c, count))
   } else {
