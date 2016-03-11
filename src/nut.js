@@ -1,7 +1,7 @@
 'use strict'
 
 export default function (scope, box, schema = {}) {
-  let { factories, methods, injected } = schema
+  let { methods, injected } = schema
   function save (target) {
     if (!target) {
       target = scope
@@ -12,10 +12,13 @@ export default function (scope, box, schema = {}) {
   }
   let nut = { save, scope }
   if (methods) {
-    Object.keys(methods).forEach(k => nut[k] = methods[k])
-  }
-  if (factories) {
-    Object.keys(factories).forEach(k => nut[k] = factories[k](nut))
+    Object.keys(methods).forEach(k => {
+      if (k.startsWith('_')) {
+        nut[k.slice(1)] = methods[k](nut)
+      } else {
+        nut[k] = methods[k]
+      }
+    })
   }
   if (injected) {
     Object.keys(injected).forEach(k => nut[k] = injected[k])
