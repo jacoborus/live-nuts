@@ -15,7 +15,7 @@ test('add regular methods', t => {
   let scope = {a: 1}
   let control = 0
   let nut = createNut(scope, {}, {
-    regular: {
+    methods: {
       one: (x) => {
         control = x
       },
@@ -35,7 +35,7 @@ test('add factory methods', t => {
   let scope = {a: 1}
   let control = 0
   let nut = createNut(scope, {}, {
-    factory: {
+    factories: {
       one: (nut) => {
         return x => control = nut.scope.a + x
       },
