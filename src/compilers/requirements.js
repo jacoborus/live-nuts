@@ -1,6 +1,6 @@
 'use strict'
 
-let reqs = {
+const reqs = {
   nuif (schema) {
     if ('nuif' in schema && 'unless' in schema) {
       let nuif = schema.nuif,
@@ -28,4 +28,18 @@ let reqs = {
   }
 }
 
-export default reqs
+export default function (schema) {
+  if ('model' in schema) {
+    if ('nuif' in schema || 'unless' in schema) {
+      return reqs.modelIf(schema)
+    } else {
+      return reqs.model(schema)
+    }
+  } else {
+    if ('nuif' in schema || 'unless' in schema) {
+      return reqs.nuif(schema)
+    } else {
+      return false
+    }
+  }
+}

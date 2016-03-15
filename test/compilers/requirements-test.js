@@ -7,14 +7,15 @@ test('compile requirements with just if or unless', t => {
   let schemaIf = {
     nuif: 't'
   }
-  let reqif = reqs.nuif(schemaIf)
+  let reqif = reqs(schemaIf)
+  console.log(reqif)
   t.ok(reqif({t: 1}), 'true nuif')
   t.notOk(reqif({t: 0}), 'false nuif')
 
   let schemaUnless = {
     unless: 't'
   }
-  let requnless = reqs.nuif(schemaUnless)
+  let requnless = reqs(schemaUnless)
   t.ok(requnless({t: 0}), 'true unless')
   t.notOk(requnless({t: 1}), 'false unless')
 
@@ -22,7 +23,7 @@ test('compile requirements with just if or unless', t => {
     unless: 'u',
     nuif: 'i'
   }
-  let reqall = reqs.nuif(schemaAll)
+  let reqall = reqs(schemaAll)
   t.ok(reqall({u: 0, i: 1}), 'true all')
   t.notOk(reqall({u: 1, i: 0}), 'false all')
   t.notOk(reqall({u: 0, i: 0}), 'false all')
@@ -35,7 +36,7 @@ test('compile requirements with just model condition', t => {
   let schema = {
     model: 'm'
   }
-  let req = reqs.model(schema)
+  let req = reqs(schema)
   t.ok(req({m: {}}), 'true nuif')
   t.notOk(req({m: 0}), 'false nuif')
 
@@ -47,7 +48,7 @@ test('compile requirements with nuif and model', t => {
     model: 'm',
     nuif: 'i'
   }
-  let req = reqs.modelIf(schema)
+  let req = reqs(schema)
   t.ok(req({m: {i: 1}}), 'true all')
   t.notOk(req({m: {}, i: 1}), 'false no nuif')
   t.notOk(req({m: 1, i: 0}), 'false no object as model')
