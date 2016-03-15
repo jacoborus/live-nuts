@@ -55,13 +55,13 @@ test('add injected methods', t => {
   let scope = {a: 1}
   let control = 0
   let nut = createNut(scope, {}, {
-    injected: {
-      one: (x) => {
-        control = x
-      },
-      two: (x) => {
-        control = x + 1
-      }
+    injected: ['one', 'two']
+  }, {
+    one: (x) => {
+      control = x
+    },
+    two: (x) => {
+      control = x + 1
     }
   })
   nut.one(2)

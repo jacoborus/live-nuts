@@ -1,6 +1,6 @@
 'use strict'
 
-export default function (scope, box, schema = {}) {
+export default function (scope, box, schema = {}, parentNut = {}) {
   let { methods, injected } = schema
   function save (target) {
     if (!target) {
@@ -21,7 +21,7 @@ export default function (scope, box, schema = {}) {
     })
   }
   if (injected) {
-    Object.keys(injected).forEach(k => nut[k] = injected[k])
+    injected.forEach(k => nut[k] = parentNut[k])
   }
   return nut
 }
