@@ -6,6 +6,7 @@ import compileEvents from './event.js'
 import compileChildren from './children.js'
 import compileElement from './element.js'
 import createNut from '../nut.js'
+import reqs from './requirements.js'
 
 export default function (schema, compile, callback) {
   let { tagName, events, children, attribs, model, methods, injected } = schema
@@ -30,50 +31,30 @@ export default function (schema, compile, callback) {
 
   schema.render = (outerScope, box, parentNut) => {
     let scope = getScope(outerScope)
-    let el
-    if (!scope) {
-      let res = {
-        idRendered: false
-      }
-      let updateElement = () => {
-        if (outerScope[model] && typeof outerScope[model] === 'object') {
-          let tempRes = schema.render(outerScope, box, parentNut)
-          res.isRendered = true
-          res.element = tempRes.element
-          res.subscribe = tempRes.subscribe
-        }
-      }
-      res.subscribe = updateElement
-      return res
-    } else {
-      el = createBaseTag()
-      let nut = createNut(scope, box, { methods, injected })
-      // render attrributes
-      if (renderAtts) {
-        let subscriptions = renderAtts.map(r => r(el, scope))
-        box.subscribe(() => subscriptions.forEach(update => update()), scope)
-      }
-      if (renderEvents) {
-        renderEvents(el, nut)
-      }
-      if (renderChildren) {
-        let vChildren = renderChildren(scope, box, nut)
-        vChildren.forEach(v => {
-          if (v.isRendered) {
-            el.appendChild(v.element)
-          }
-        })
-      }
-      return {
-        isRendered: true,
-        element: el,
-        subscribe: false
-      }
+    let el = createBaseTag()
+    let nut = createNut(scope, box, { methods, injected }, parentNut)
+    // render attrributes
+    if (renderAtts) {
+      let subscriptions = renderAtts.map(r => r(el, scope))
+      box.subscribe(() => subscriptions.forEach(update => update()), scope)
     }
+    if (renderEvents) {
+      renderEvents(el, nut)
+    }
+    if (renderChildren) {
+      renderChildren(scope, box, nut, el)
+    }
+    return el
   }
 
-  schema.print = (scope, box) => {
-    return schema.render(scope, box).element || document.createDocumentFragment()
+  schema.print = (scope, box, parentElement) => {
+    if (reqs(schema)(scope)) {
+      let el = schema.render(scope, box)
+      if (parentElement) parentElement.append(el)
+      return el
+    } else {
+      return document.createDocumentFragment()
+    }
   }
 
   if (children) {

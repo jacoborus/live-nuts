@@ -39,7 +39,7 @@ export default function (schema) {
     if ('nuif' in schema || 'unless' in schema) {
       return reqs.nuif(schema)
     } else {
-      return false
+      return () => true
     }
   }
 }

@@ -2,12 +2,12 @@
 
 import compileText from './compilers/text.js'
 import compileTag from './compilers/tag.js'
-import compileLoop from './compilers/loop.js'
+// import compileLoop from './compilers/loop.js'
 
 export default function compile (schema, callback) {
   if (schema.type === 1) {
     if ('repeat' in schema) {
-      compileLoop(schema, compile, callback)
+      // compileLoop(schema, compile, callback)
     } else {
       compileTag(schema, compile, callback)
     }

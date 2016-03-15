@@ -1,7 +1,7 @@
 'use strict'
 
 import compileTag from '../../src/compilers/tag.js'
-import compileText from '../../src/compilers/text.js'
+import compile from '../../src/compiler.js'
 import test from 'tape'
 import boxes from 'boxes'
 
@@ -56,7 +56,7 @@ test('compile simple tag with no scoped children', function (t) {
       data: 'hola'
     }]
   }
-  compileTag(schema, compileText, () => {
+  compileTag(schema, compile, () => {
     let el = schema.print(scope, box, null)
     t.is(el.textContent, 'hola', 'render simple text child')
     t.end()

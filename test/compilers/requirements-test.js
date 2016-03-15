@@ -8,7 +8,6 @@ test('compile requirements with just if or unless', t => {
     nuif: 't'
   }
   let reqif = reqs(schemaIf)
-  console.log(reqif)
   t.ok(reqif({t: 1}), 'true nuif')
   t.notOk(reqif({t: 0}), 'false nuif')
 
