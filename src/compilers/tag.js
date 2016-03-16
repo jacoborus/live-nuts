@@ -7,6 +7,7 @@ import compileChildren from './children.js'
 import compileElement from './element.js'
 import createNut from '../nut.js'
 import reqs from './requirements.js'
+import boxes from 'boxes'
 
 export default function (schema, compile, callback) {
   let { tagName, events, children, attribs, model, methods, injected } = schema
@@ -29,7 +30,7 @@ export default function (schema, compile, callback) {
     renderEvents = compileEvents(events)
   }
 
-  schema.render = (outerScope, box, parentNut) => {
+  schema.render = (outerScope, box = boxes(), parentNut = {}) => {
     let scope = getScope(outerScope)
     let el = createBaseTag()
     let nut = createNut(scope, box, { methods, injected }, parentNut)
@@ -47,10 +48,10 @@ export default function (schema, compile, callback) {
     return el
   }
 
-  schema.print = (scope, box, parentElement) => {
+  schema.print = (scope, parentElement, box = boxes()) => {
     if (reqs(schema)(scope)) {
       let el = schema.render(scope, box)
-      if (parentElement) parentElement.append(el)
+      if (parentElement) parentElement.appendChild(el)
       return el
     } else {
       return document.createDocumentFragment()

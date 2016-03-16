@@ -34,7 +34,7 @@ test('compile simple tag with attributes', function (t) {
     }
   }
   compileTag(schema, null, () => {
-    let el = schema.print(scope, box, null)
+    let el = schema.print(scope, null, box)
     t.is(el.getAttribute('alt'), 'alternative', 'render regular attributes')
     t.is(el.getAttribute('other'), 'another', 'render scoped attributes')
     el.click()
@@ -57,7 +57,7 @@ test('compile simple tag with no scoped children', function (t) {
     }]
   }
   compileTag(schema, compile, () => {
-    let el = schema.print(scope, box, null)
+    let el = schema.print(scope, null, box)
     t.is(el.textContent, 'hola', 'render simple text child')
     t.end()
   })
