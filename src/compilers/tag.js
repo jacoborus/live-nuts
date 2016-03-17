@@ -10,7 +10,7 @@ import reqs from './requirements.js'
 import boxes from 'boxes'
 
 export default function (schema, compile, callback) {
-  let { tagName, events, children, attribs, model, methods, injected } = schema
+  let { localName, events, children, attribs, model, methods } = schema
   let renderAtts, fixedAtts, renderEvents, renderChildren
 
   let getScope
@@ -25,7 +25,7 @@ export default function (schema, compile, callback) {
     renderAtts = temp.renders
     fixedAtts = temp.fixed
   }
-  let createBaseTag = compileElement(tagName, fixedAtts)
+  let createBaseTag = compileElement(localName, fixedAtts)
   if (events) {
     renderEvents = compileEvents(events)
   }
@@ -33,7 +33,7 @@ export default function (schema, compile, callback) {
   schema.render = (outerScope, box = boxes(), parentNut = {}) => {
     let scope = getScope(outerScope)
     let el = createBaseTag()
-    let nut = createNut(scope, box, { methods, injected }, parentNut)
+    let nut = createNut(scope, box, schema, parentNut)
     // render attrributes
     if (renderAtts) {
       let subscriptions = renderAtts.map(r => r(el, scope))
@@ -48,7 +48,8 @@ export default function (schema, compile, callback) {
     return el
   }
 
-  schema.print = (scope, parentElement, box = boxes()) => {
+  schema.print = (scope, parentElement, box) => {
+    box = box || boxes(scope)
     if (reqs(schema)(scope)) {
       let el = schema.render(scope, box)
       if (parentElement) parentElement.appendChild(el)

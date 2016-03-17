@@ -49,8 +49,19 @@ export default function (schemas, filtersArchive, behaviours, next) {
   function setBehaviours (callback = function () {}) {
     let counter = newCounter(behaviours.size, callback)
     behaviours.forEach((behaviour, key) => {
-      if (schemas.has(key) && behaviour.events) {
-        schemas.get(key).events = behaviour.events
+      let schema = schemas.get(key) || schemas.set(key, {}).get(key)
+      let clon = Object.assign({}, behaviour)
+      if (clon.events) {
+        schema.events = clon.events
+        delete clon.events
+      }
+      if (clon.init) {
+        schema.init = clon.init
+        delete clon.init
+      }
+      let keys = Object.keys(clon)
+      if (keys.length) {
+        schema.methods = clon
       }
       counter()
     })

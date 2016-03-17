@@ -5,7 +5,7 @@ import createNut from '../src/nut.js'
 
 test('create nut', t => {
   let scope = {a: 1}
-  let nut = createNut(scope, {})
+  let nut = createNut(scope, {}, {})
   t.is(typeof nut, 'object')
   t.is(nut.scope.a, 1)
   t.end()

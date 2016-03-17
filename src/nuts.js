@@ -18,7 +18,7 @@ function instantiate (element, box, callback) {
   let tagNuts = element.querySelectorAll('[data-nut]')
   let instances = Array.from(tagNuts).filter(i => schemas.has(i.getAttribute('data-nut')))
   instances.forEach(i => {
-    i.parentNode.replaceChild(schemas.get(i.getAttribute('data-nut')).render(store), i)
+    i.parentNode.replaceChild(schemas.get(i.getAttribute('data-nut')).print(store.get(), null), i)
   })
   callback()
 }

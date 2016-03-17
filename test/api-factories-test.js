@@ -1,7 +1,6 @@
 'use strict'
 
 import test from 'tape'
-
 import apiFactories from '../src/api-factories.js'
 
 test('add a template from an element into templates archive', function (t) {
@@ -87,19 +86,28 @@ test('add behaviour to archive', function (t) {
 
 test('set behaviours in schemas', (t) => {
   let behavioursArchive = new Map(),
-      schemas = new Map()
+      schemas = new Map(),
+      control
 
   schemas.set('uno', {})
   behavioursArchive.set('uno', {
     events: {
-      click: function () {}
+      click: 'clicked'
+    },
+    clicked (e, nut) {
+      control = { e, nut }
     }
   })
 
   let { setBehaviours } = apiFactories(schemas, null, behavioursArchive)
 
   setBehaviours(() => {
-    t.ok(typeof schemas.get('uno').behaviour, 'object')
+    t.is(typeof schemas.get('uno').events, 'object')
+    t.is(schemas.get('uno').events.click, 'clicked')
+    t.is(typeof schemas.get('uno').methods, 'object')
+    schemas.get('uno').methods.clicked(2, 3)
+    t.is(control.e, 2)
+    t.is(control.nut, 3)
     t.end()
   })
 })
