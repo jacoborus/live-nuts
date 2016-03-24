@@ -31,10 +31,10 @@
     "babelify": "^6.4.0",
     "browserify": "^11.2.0",
     "eslint": "^1.10.3",
-    "tape": "^4.2.1",
+    "tape": "^4.5.1",
     "testling": "^1.7.1"
   },
   "dependencies": {
-    "boxes": "^0.6.1"
+    "boxes": "^0.7.0"
   }
 }
