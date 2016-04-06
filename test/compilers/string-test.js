@@ -1,7 +1,7 @@
 'use strict'
 
-import test from 'tape'
-import compileStr from '../../src/compilers/string.js'
+const test = require('tape')
+const compileStr = require('../../src/compilers/string.js')
 
 test('parse scoped string', function (t) {
   let str = '{{ color }}'

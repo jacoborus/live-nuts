@@ -1,7 +1,7 @@
 'use strict'
 
-import test from 'tape'
-import reqs from '../../src/compilers/requirements.js'
+const test = require('tape')
+const reqs = require('../../src/compilers/requirements.js')
 
 test('compile requirements with just if or unless', t => {
   let schemaIf = {

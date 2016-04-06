@@ -1,8 +1,8 @@
 'use strict'
 
-import test from 'tape'
-import compile from '../src/compiler.js'
-import boxes from 'boxes'
+const test = require('tape')
+const compile = require('../src/compiler.js')
+const boxes = require('boxes')
 
 test('compile simple tag with attributes', function (t) {
   let control = 0

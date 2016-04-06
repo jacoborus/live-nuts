@@ -1,7 +1,7 @@
 'use strict'
 
-import test from 'tape'
-import apiFactories from '../src/api-factories.js'
+const test = require('tape')
+const apiFactories = require('../src/api-factories.js')
 
 test('add a template from an element into templates archive', function (t) {
   let schemas = new Map(),

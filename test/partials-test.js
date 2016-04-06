@@ -1,7 +1,7 @@
 'use strict'
 
-import makePartials from '../src/partials.js'
-import test from 'tape'
+const makePartials = require('../src/partials.js')
+const test = require('tape')
 
 test('extend nuts', function (t) {
   let schemas = new Map()

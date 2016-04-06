@@ -1,15 +1,15 @@
 'use strict'
 
-import compileAttributes from './attribute.js'
-import newCounter from '../counter.js'
-import compileEvents from './event.js'
-import compileChildren from './children.js'
-import compileElement from './element.js'
-import createNut from '../nut.js'
-import reqs from './requirements.js'
-import boxes from 'boxes'
+const compileAttributes = require('./attribute.js')
+const newCounter = require('../counter.js')
+const compileEvents = require('./event.js')
+const compileChildren = require('./children.js')
+const compileElement = require('./element.js')
+const createNut = require('../nut.js')
+const reqs = require('./requirements.js')
+const boxes = require('boxes')
 
-export default function (schema, compile, callback) {
+module.exports = function (schema, compile, callback) {
   let { localName, events, children, attribs, model, methods } = schema
   let renderAtts, fixedAtts, renderEvents, renderChildren
 

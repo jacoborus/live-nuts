@@ -1,8 +1,8 @@
 'use strict'
 
-import test from 'tape'
-import compileText from '../../src/compilers/text.js'
-import boxes from 'boxes'
+const test = require('tape')
+const compileText = require('../../src/compilers/text.js')
+const boxes = require('boxes')
 
 test('compile simple text node', function (t) {
   let schema = {

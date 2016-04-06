@@ -1,7 +1,7 @@
 'use strict'
 
-import parser from './parser.js'
-import newCounter from './counter.js'
+const parser = require('./parser.js')
+const newCounter = require('./counter.js')
 
 let createRange = document.createRange()
 
@@ -15,7 +15,7 @@ function getElements (template) {
   return template
 }
 
-export default function (schemas, filtersArchive, behaviours, next) {
+module.exports = function (schemas, filtersArchive, behaviours, next) {
   function addTemplates (template) {
     let elements = getElements(template)
 

@@ -1,9 +1,9 @@
 'use strict'
 
-import compileTag from '../../src/compilers/tag.js'
-import compile from '../../src/compiler.js'
-import test from 'tape'
-import boxes from 'boxes'
+const compileTag = require('../../src/compilers/tag.js')
+const compile = require('../../src/compiler.js')
+const test = require('tape')
+const boxes = require('boxes')
 
 test('compile simple tag with attributes', function (t) {
   let scope = {

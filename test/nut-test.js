@@ -1,7 +1,7 @@
 'use strict'
 
-import test from 'tape'
-import createNut from '../src/nut.js'
+const test = require('tape')
+const createNut = require('../src/nut.js')
 
 test('create nut', t => {
   let scope = {a: 1}

@@ -1,10 +1,10 @@
 'use strict'
 
-import apiFactories from './api-factories.js'
-import makePartials from './partials.js'
-import compile from './compiler.js'
-import newCounter from './counter.js'
-import boxes from 'boxes'
+const apiFactories = require('./api-factories.js')
+const makePartials = require('./partials.js')
+const compile = require('./compiler.js')
+const newCounter = require('./counter.js')
+const boxes = require('boxes')
 
 let api = {},
     schemas = new Map(),
@@ -82,4 +82,4 @@ api.filtersArchive = filtersArchive
 api.behaviours = behaviours
 
 export default api
-window.nuts = api
+module.exports = api

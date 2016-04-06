@@ -1,6 +1,6 @@
 'use strict'
-import test from 'tape'
+const test = require('tape')
 
-import compileChildren from '../../src/compilers/children.js'
+const compileChildren = require('../../src/compilers/children.js')
 
 test.skip('children compiler', function (t) {})

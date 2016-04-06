@@ -1,9 +1,9 @@
 'use strict'
 
 const matcher = /{{([^}]*)}}/
-import compileStr from './string.js'
+const compileStr = require('./string.js')
 
-export default function (schema) { // compile attributes
+module.exports = function (schema) { // compile attributes
   let atts = schema.attribs
   let renders = []
   let fixed = {}

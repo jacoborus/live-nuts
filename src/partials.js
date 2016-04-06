@@ -1,7 +1,7 @@
 'use strict'
 
-import extend from './extend.js'
-import newCounter from './counter.js'
+const extend = require('./extend.js')
+const newCounter = require('./counter.js')
 
 function extendInside (nut, schemas, next) {
   if (nut.childrenFrom || !nut.children || !nut.children.length) {
@@ -22,7 +22,7 @@ function hasCircular (arr, key, schemas) {
   return hasCircular(arr, schemas.get(key).as, schemas)
 }
 
-export default function (schemas, callback) {
+module.exports = function (schemas, callback) {
   let keys = [...schemas.keys()]
   // detect circular dependencies in all schemas
   if (keys.some(key => hasCircular([], key, schemas))) {

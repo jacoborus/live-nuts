@@ -1,11 +1,15 @@
 'use strict'
 
-import reqs from './requirements.js'
+const reqs = require('./requirements.js')
 
-export default function (children) {
+module.exports = function (children) {
   return (scope, box, nut, el) => {
+    let subscriptions = []
+    function update () {
+      subscriptions.forEach(s => s())
+    }
     let list = []
-    children.forEach(schema => {
+    children.forEach((schema, i) => {
       let req = reqs(schema)
       let subscription = () => 5
       list.push({
@@ -13,24 +17,18 @@ export default function (children) {
         schema,
         subscription,
         el: null,
-        render: schema.render
+        render: schema.render,
+        position: i
       })
-      /*
-       * {
-       *   isRendered: boolean,
-       *   element: DOMelement,
-       *   subscription: function
-       * }
-       */
     })
+
     list.forEach(v => {
       if (!v.req || v.req(scope)) {
         let elem = v.render(scope, box, nut)
         el.appendChild(elem)
-      }
-      if (v.subscribe) {
-        box.subscribe(v.subscription)
+        subscriptions.push(v.subscription)
       }
     })
+    box.subscribe(update, scope)
   }
 }

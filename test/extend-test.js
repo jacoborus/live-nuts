@@ -1,7 +1,7 @@
 'use strict'
 
-import extend from '../src/extend.js'
-import test from 'tape'
+const extend = require('../src/extend.js')
+const test = require('tape')
 
 test('has same properties as source when no extension passed', function (t) {
   let sample = {scope: 'test'}

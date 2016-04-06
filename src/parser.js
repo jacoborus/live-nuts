@@ -2,7 +2,7 @@
 
 const props = new Set(['model', 'repeat', 'if', 'unless', 'as', 'hide', 'show'])
 
-export default function parser (el, rawChildren) {
+module.exports = function parser (el, rawChildren) {
   let atts = {}// attributes
   let src = {
     type: el.nodeType,

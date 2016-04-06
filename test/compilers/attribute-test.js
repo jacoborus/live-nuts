@@ -1,7 +1,7 @@
 'use strict'
 
-import test from 'tape'
-import compileAttributes from '../../src/compilers/attribute.js'
+const test = require('tape')
+const compileAttributes = require('../../src/compilers/attribute.js')
 
 test('compile regular attributes', function (t) {
   let schema = {

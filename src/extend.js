@@ -12,7 +12,7 @@ const nuProps = [
   'attribs'
 ]
 
-export default function (src, extension, next) {
+module.exports = function (src, extension, next) {
   if (!extension) return next()
 
   nuProps.forEach(prop => {

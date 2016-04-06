@@ -1,10 +1,10 @@
 'use strict'
 
-import compileText from './compilers/text.js'
-import compileTag from './compilers/tag.js'
-// import compileLoop from './compilers/loop.js'
+const compileText = require('./compilers/text.js')
+const compileTag = require('./compilers/tag.js')
+// const compileLoop = require('./compilers/loop.js')
 
-export default function compile (schema, callback) {
+module.exports = function compile (schema, callback) {
   if (schema.type === 1) {
     if ('repeat' in schema) {
       // compileLoop(schema, compile, callback)

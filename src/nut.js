@@ -1,6 +1,6 @@
 'use strict'
 
-export default function (scope, box, schema, parentNut = {}) {
+module.exports = function (scope, box, schema, parentNut = {}) {
   let { methods, injected } = schema
   let nut = {
     scope,
@@ -11,6 +11,12 @@ export default function (scope, box, schema, parentNut = {}) {
         throw new Error('save requires a object an argument')
       }
       box.save(target)
+    },
+    subscribe (action, target) {
+      if (!target) {
+        target = scope
+      }
+      box.subscribe(action, target)
     }
   }
   if (methods) {

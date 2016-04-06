@@ -17,7 +17,7 @@ function parseStr (str) {
   }
 }
 
-export default function (str) {
+module.exports = function (str) {
   let fns = parseStr(str)
   let reduce
   if (fns.length === 1) {

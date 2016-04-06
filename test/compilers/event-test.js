@@ -1,7 +1,7 @@
 'use strict'
 
-import test from 'tape'
-import compileEvents from '../../src/compilers/event.js'
+const test = require('tape')
+const compileEvents = require('../../src/compilers/event.js')
 
 test('event compiler', function (t) {
   function clicked (e, nut) {

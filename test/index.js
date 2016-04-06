@@ -1,15 +1,16 @@
 'use strict'
-// import './compiler-test.js'
-import './parser-test.js'
-import './extend-test.js'
-import './partials-test.js'
-import './api-factories-test.js'
-import './compilers/attribute-test.js'
-import './compilers/string-test.js'
-import './compilers/attribute-test.js'
-import './compilers/element-test.js'
-import './compilers/event-test.js'
-import './compilers/tag-test.js'
-import './compilers/children-test.js'
-import './nut-test.js'
-import './compilers/requirements-test.js'
+// require('./compiler-test.js')
+require('./parser-test.js')
+require('./extend-test.js')
+require('./partials-test.js')
+require('./api-factories-test.js')
+require('./compilers/attribute-test.js')
+require('./compilers/string-test.js')
+require('./compilers/attribute-test.js')
+require('./compilers/element-test.js')
+require('./compilers/event-test.js')
+require('./compilers/tag-test.js')
+require('./compilers/text-test.js')
+require('./compilers/children-test.js')
+require('./nut-test.js')
+require('./compilers/requirements-test.js')

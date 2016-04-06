@@ -1,9 +1,9 @@
 'use strict'
 
 const matcher = /{{([^}]*)}}/
-import compileStr from './string.js'
+const compileStr = require('./string.js')
 
-export default function (schema, callback) {
+module.exports = function (schema, callback) {
   let data = schema.data
   if (data.match(matcher)) {
     // text node has scoped content

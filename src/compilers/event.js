@@ -1,6 +1,6 @@
 'use strict'
 
-export default function (events) {
+module.exports = function (events) {
   return (el, nut) => {
     Object.keys(events).forEach(k => {
       let fnName = events[k]

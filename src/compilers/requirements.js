@@ -28,7 +28,7 @@ const reqs = {
   }
 }
 
-export default function (schema) {
+module.exports = function (schema) {
   if ('model' in schema) {
     if ('nuif' in schema || 'unless' in schema) {
       return reqs.modelIf(schema)

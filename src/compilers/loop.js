@@ -1,51 +1,31 @@
 'use strict'
 
-import newCounter from '../counter.js'
-import compileAttributes from './attribute.js'
-import compileEvents from './event.js'
-import compileChildren from './children.js'
+const newCounter = require('../counter.js')
+const compileTag = require('./tag.js')
+const createNut = require('../nut.js')
 
-function createStack () {
-  let renders = []
-  return {
-    add: fn => renders.push(fn),
-    exec: (nut, box) => renders.forEach(fn => fn(nut, box))
-  }
-}
-
-export default function (schema, compile, callback) {
-  let { events, children, attribs, repeat, model } = schema
-  let stack = createStack()
-
-  let getScope
-  if (model) {
-    getScope = scope => scope[model][repeat]
-  } else {
-    getScope = scope => scope[repeat]
-  }
-
-  schema.render = (scope, box) => {
-    let fragment = document.createDocumentFragment()
-    scope = getScope(scope)
-
-    if (scope) {
-      scope.forEach(item => {
-        let nut = { scope: item, el: document.createElement(schema.localName) }
-        stack.exec(nut, box)
-        fragment.appendChild(nut.el)
-      })
+module.exports = function (schema, callback) {
+  let { repeat } = schema
+  schema.loop = (outerScope, box, parentNut) => {
+    let scope = outerScope[repeat]
+    let res = {}
+    if (!scope || !scope.length) {
+      res.isRendered = false
+      res.subscription = () => {
+        scope = outerScope[repeat]
+        if (scope && scope.length) {
+          // render loop
+        }
+      }
+      return res
+    } else {
+      let nut = createNut(scope, box, schema)
+      return {
+        isRendered: true,
+        element: document.createDocumentFragment(),
+        subscription
+      }
     }
-    return fragment
   }
-
-  if (attribs) stack.add(compileAttributes(schema))
-  if (events) stack.add(compileEvents(events))
-  if (children) {
-    stack.add(compileChildren(children))
-    let count = newCounter(children.length, callback)
-    children.forEach(c => compile(c, count))
-  } else {
-    callback()
-  }
+  compileTag(schema, callback)
 }
-

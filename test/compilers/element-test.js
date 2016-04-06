@@ -1,7 +1,7 @@
 'use strict'
 
-import test from 'tape'
-import compileElement from '../../src/compilers/element.js'
+const test = require('tape')
+const compileElement = require('../../src/compilers/element.js')
 
 test('compile simple tag with attributes', function (t) {
   let render = compileElement('tag', {

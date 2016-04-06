@@ -1,7 +1,7 @@
 'use strict'
 
-import getSource from '../src/parser.js'
-import test from 'tape'
+const getSource = require('../src/parser.js')
+const test = require('tape')
 
 function parser (tmpl, rawChildren) {
   return getSource(document.createRange().createContextualFragment(tmpl).childNodes[0], rawChildren)
