@@ -14,7 +14,7 @@ module.exports = function parser (el, rawChildren) {
 
   if (el.attributes && el.hasAttributes()) {
     // fill `atts` object with element attributes
-    Array.prototype.forEach.call(el.attributes, i => atts[i.name] = i.value)
+    Array.prototype.forEach.call(el.attributes, i => {atts[i.name] = i.value})
     // extract nut name
     if (atts.nut) {
       src.tagName = atts.nut

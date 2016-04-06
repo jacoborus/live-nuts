@@ -35,7 +35,7 @@ module.exports = function (schema) { // compile attributes
         } else {
           el.removeAttribute(att)
         }
-        return () => cached = updater(scope, cached, el)
+        return () => {cached = updater(scope, cached, el)}
       })
     } else if (!value.match(matcher)) {
       // is fixed
@@ -54,7 +54,7 @@ module.exports = function (schema) { // compile attributes
       renders.push(function (el, scope) {
         let cached = reduce(scope)
         el.setAttribute(name, cached)
-        return () => cached = updater(scope, cached, el)
+        return () => {cached = updater(scope, cached, el)}
       })
     }
   })

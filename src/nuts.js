@@ -81,5 +81,4 @@ api.store = store
 api.filtersArchive = filtersArchive
 api.behaviours = behaviours
 
-export default api
 module.exports = api

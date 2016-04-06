@@ -29,7 +29,7 @@ module.exports = function (scope, box, schema, parentNut = {}) {
     })
   }
   if (injected) {
-    injected.forEach(k => nut[k] = parentNut[k])
+    injected.forEach(k => {nut[k] = parentNut[k]})
   }
   return nut
 }

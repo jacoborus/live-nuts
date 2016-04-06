@@ -1,6 +1,6 @@
 'use strict'
 const test = require('tape')
 
-const compileChildren = require('../../src/compilers/children.js')
+// const compileChildren = require('../../src/compilers/children.js')
 
-test.skip('children compiler', function (t) {})
+test.skip('children compiler', function () {})

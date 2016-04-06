@@ -37,10 +37,10 @@ test('add factory methods', t => {
   let nut = createNut(scope, {}, {
     methods: {
       _one: (nut) => {
-        return x => control = nut.scope.a + x
+        return x => {control = nut.scope.a + x}
       },
       _two: (nut) => {
-        return x => control = nut.scope.a - x
+        return x => {control = nut.scope.a - x}
       }
     }
   })

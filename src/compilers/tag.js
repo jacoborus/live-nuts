@@ -10,7 +10,7 @@ const reqs = require('./requirements.js')
 const boxes = require('boxes')
 
 module.exports = function (schema, compile, callback) {
-  let { localName, events, children, attribs, model, methods } = schema
+  let { localName, events, children, attribs, model } = schema
   let renderAtts, fixedAtts, renderEvents, renderChildren
 
   let getScope
