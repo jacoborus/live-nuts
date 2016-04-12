@@ -8,7 +8,7 @@
     "test": "npm run build-tests && cat dist/tests.js | testling",
     "build": "npm run build-src && npm run build-tests",
     "build-src": "mkdir -p dist && browserify src/nuts.js -o dist/nuts.js",
-    "build-tests": "mkdir -p dist && browserify test/index.js -o dist/tests.js"
+    "build-tests": "mkdir -p dist && browserify test/index.js -o dist/tests.js -d"
   },
   "repository": {
     "type": "git",
