@@ -81,7 +81,7 @@ function parseChild (el) {
     if (Object.keys(events).length) src.events = events
   }
 
-  src.attribs = atts
+  if (Object.keys(atts).length) src.attribs = atts
   // parse children dom elements
   if (el.childNodes && el.childNodes.length) {
     src.children = map.call(el.childNodes, child => parseChild(child))
@@ -108,10 +108,13 @@ module.exports = function (el) {
   const src = {
     type: 1,
     localName: el.localName,
-    tagName,
-    attribs: atts,
-    props: extractProps(atts, nutProps)
+    tagName
   }
+
+  if (Object.keys(atts).length) src.attribs = atts
+
+  const props = extractProps(atts, nutProps)
+  if (Object.keys(props).length) src.props = props
 
   // extract events
   const events = extractEvents(atts)

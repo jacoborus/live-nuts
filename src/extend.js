@@ -17,9 +17,13 @@ module.exports = function (src, extension, next) {
   src.localName = extension.localName
 
   // extend attribs
-  extendGroup(src.attribs, extension.attribs)
+  if ('attribs' in extension) {
+    src.attribs = src.attribs || {}
+    extendGroup(src.attribs, extension.attribs)
+  }
+
   // extend `if` prop
-  if ('if' in extension.props && !('if' in src.props)) {
+  if (extension.props && 'if' in extension.props && !('if' in src.props)) {
     src.props.if = extension.props.if
   }
 
@@ -32,7 +36,7 @@ module.exports = function (src, extension, next) {
 
   // extend children
   if (extension.children) {
-    src.childrenFrom = extension.key
+    src.childrenFrom = extension.tagName
     src.children = extension.children
   } else {
     // ensure there are no children from src tag
