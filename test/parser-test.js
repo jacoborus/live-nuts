@@ -13,7 +13,6 @@ test('distribute attributes in template', function (t) {
     class="{{class}}"
     model="model"
     if="if"
-    unless="unless"
     repeat="repeat"
     (keydown)="presskey"
     (click)="click"
@@ -31,9 +30,6 @@ test('distribute attributes in template', function (t) {
   // nuif
   t.is(src.props.if, 'if')
   t.is(src.attribs.if, undefined)
-  // unless
-  t.is(src.props.unless, 'unless')
-  t.is(src.attribs.unless, undefined)
   // repeat
   t.notOk(src.props.repeat)
   t.is(src.attribs.repeat, 'repeat')
@@ -54,7 +50,6 @@ test('distribute attributes in children', function (t) {
     class="{{class}}"
     model="model"
     if="if"
-    unless="unless"
     repeat="repeat"
     (keydown)="presskey"
     (click)="click"
@@ -63,7 +58,6 @@ test('distribute attributes in children', function (t) {
       class="{{class}}"
       model="model"
       if="if"
-      unless="unless"
       repeat="repeat"
       (keydown)="presskey"
       (click)="click"
@@ -72,7 +66,6 @@ test('distribute attributes in children', function (t) {
           class="{{class}}"
           model="model"
           if="if"
-          unless="unless"
           repeat="repeat"
           (keydown)="presskey"
           (click)="click"
@@ -81,7 +74,6 @@ test('distribute attributes in children', function (t) {
       class="{{class}}"
       model="model"
       if="if"
-      unless="unless"
       repeat="repeat"
       (keydown)="presskey"
       (click)="click"
@@ -98,9 +90,6 @@ test('distribute attributes in children', function (t) {
   // nuif
   t.is(src.props.if, 'if', 'if')
   t.is(src.attribs.if, undefined, 'if')
-  // unless
-  t.is(src.props.unless, 'unless', 'unless')
-  t.is(src.attribs.unless, undefined, 'unless')
   // repeat
   t.is(src.props.repeat, 'repeat', 'repeat')
   t.is(src.attribs.repeat, undefined, 'repeat')
@@ -125,9 +114,6 @@ test('distribute attributes in children', function (t) {
   // nuif
   t.is(child.props.if, 'if')
   t.is(child.attribs.if, undefined)
-  // unless
-  t.is(child.props.unless, 'unless')
-  t.is(child.attribs.unless, undefined)
   // repeat
   t.is(child.props.repeat, 'repeat')
   t.is(child.attribs.repeat, undefined)

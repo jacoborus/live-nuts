@@ -21,8 +21,8 @@
  */
 
 // template property key names
-const nutProps = new Set(['if', 'unless', 'hide', 'show'])
-const childProps = new Set(['model', 'repeat', 'if', 'unless', 'hide', 'show'])
+const nutProps = new Set(['if'])
+const childProps = new Set(['model', 'repeat', 'if', 'whether'])
 // array methods
 const reduce = Array.prototype.reduce
 const map = Array.prototype.map
