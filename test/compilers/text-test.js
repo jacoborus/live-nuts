@@ -2,7 +2,6 @@
 
 const test = require('tape')
 const compileText = require('../../src/compilers/text.js')
-const boxes = require('boxes')
 
 test('compile simple text node', function (t) {
   let schema = {
@@ -11,8 +10,9 @@ test('compile simple text node', function (t) {
   }
   compileText(schema, () => {
     t.is(typeof schema.render, 'function', 'set render as a function')
-    let rendered = schema.render({})
-    t.is(rendered.textContent, 'hola')
+    let { el, unsubscribe } = schema.render({})
+    t.is(el.textContent, 'hola')
+    t.notOk(unsubscribe)
     t.end()
   })
 })
@@ -25,14 +25,14 @@ test('compile scoped text node', function (t) {
   let scope = {
     donde: 'mundo!'
   }
-  let box = boxes(scope)
   compileText(schema, () => {
     t.is(typeof schema.render, 'function', 'set render as a function')
-    let rendered = schema.render(scope, box)
-    t.is(rendered.textContent, 'hola mundo!')
-    scope.donde = 'internet!'
-    box.save()
-    t.is(rendered.textContent, 'hola internet!')
+    let { el, subscription } = schema.render(scope)
+    t.is(el.textContent, 'hola mundo!')
+    t.is(typeof subscription, 'function')
+    scope.donde = 'here!'
+    subscription()
+    t.is(el.textContent, 'hola here!')
     t.end()
   })
 })

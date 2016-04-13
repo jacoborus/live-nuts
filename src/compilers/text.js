@@ -4,29 +4,27 @@ const matcher = /{{([^}]*)}}/
 const compileStr = require('./string.js')
 
 module.exports = function (schema, callback) {
-  let data = schema.data
+  const data = schema.data
   if (data.match(matcher)) {
     // text node has scoped content
-    let reduce = compileStr(data)
-    let updateFn = (scope, cached, el) => {
-      let fresh = reduce(scope)
+    const reduce = compileStr(data)
+    const updateFn = (scope, cached, el) => {
+      const fresh = reduce(scope)
       if (fresh !== cached) {
         el.textContent = fresh
         return fresh
       }
       return cached
     }
-    schema.render = function (scope, box) {
+    schema.render = function (scope) {
       let cached = reduce(scope)
-      let el = document.createTextNode(cached)
-      box.subscribe(() => updateFn(scope, cached, el), scope)
-      return el
+      const el = document.createTextNode(cached)
+      const subscription = () => updateFn(scope, cached, el)
+      return { el, subscription }
     }
   } else {
     // is regular text node
-    schema.render = () => {
-      return document.createTextNode(data)
-    }
+    schema.render = () => ({el: document.createTextNode(data)})
   }
   callback()
 }
