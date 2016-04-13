@@ -17,12 +17,12 @@
  * - `children` *array*: children schemas
  *
  * Children can have all properties but `tagName`.
- * Nut templates can have all properties but `model`, `repeat` and `as`
+ * Nut templates can have all properties but `model` and `repeat`
  */
 
 // template property key names
 const nutProps = new Set(['if', 'unless', 'hide', 'show'])
-const childProps = new Set(['model', 'repeat', 'as', 'if', 'unless', 'hide', 'show'])
+const childProps = new Set(['model', 'repeat', 'if', 'unless', 'hide', 'show'])
 // array methods
 const reduce = Array.prototype.reduce
 const map = Array.prototype.map
@@ -59,10 +59,43 @@ function extractEvents (atts) {
 
 /**
  * @param {DOM node} el template tag
+ * @returns {object} parsed tag
+ */
+function parseChild (el) {
+  let atts = {} // attributes
+
+  let src = {
+    type: el.nodeType,
+    data: el.data,
+    localName: el.localName
+  }
+
+  if (el.attributes && el.hasAttributes()) {
+    // fill `atts` object with element attributes
+    atts = parseAttributes(el)
+
+    // extract custom nut properties
+    src.props = extractProps(atts, childProps)
+
+    const events = extractEvents(atts)
+    if (Object.keys(events).length) src.events = events
+  }
+
+  src.attribs = atts
+  // parse children dom elements
+  if (el.childNodes && el.childNodes.length) {
+    src.children = map.call(el.childNodes, child => parseChild(child))
+  }
+
+  return src
+}
+
+/**
+ * @param {DOM node} el template tag
  * @param {boolean} rawChildren indicates whether parse children tags. `false` by default
  * @returns {object} parsed tag
  */
-function parseTemplate (el, rawChildren) {
+module.exports = function (el) {
   const atts = parseAttributes(el)
 
   // extract nut name
@@ -84,49 +117,10 @@ function parseTemplate (el, rawChildren) {
   const events = extractEvents(atts)
   if (Object.keys(events).length) src.events = events
 
-  if (rawChildren) {
-    src.children = el.childNodes
-  } else {
-    // parse children dom elements
-    if (el.childNodes && el.childNodes.length) {
-      src.children = map.call(el.childNodes, child => parseChild(child))
-    }
-  }
-  return src
-}
-
-/**
- * @param {DOM node} el template tag
- * @returns {object} parsed tag
- */
-function parseChild (el) {
-  let atts = {}, // attributes
-      props = {}
-
-  let src = {
-    type: el.nodeType,
-    data: el.data,
-    localName: el.localName
-  }
-
-  if (el.attributes && el.hasAttributes()) {
-    // fill `atts` object with element attributes
-    atts = parseAttributes(el)
-
-    // extract custom nut properties
-    src.props = props = extractProps(atts, childProps)
-
-    const events = extractEvents(atts)
-    if (Object.keys(events).length) src.events = events
-  }
-
-  src.attribs = atts
   // parse children dom elements
-  if (el.childNodes && el.childNodes.length && !props.as) {
+  if (el.childNodes && el.childNodes.length) {
     src.children = map.call(el.childNodes, child => parseChild(child))
   }
 
   return src
 }
-
-module.exports = parseTemplate

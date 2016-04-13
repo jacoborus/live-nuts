@@ -15,7 +15,6 @@ test('distribute attributes in template', function (t) {
     if="if"
     unless="unless"
     repeat="repeat"
-    as="nuas"
     (keydown)="presskey"
     (click)="click"
     myatt="myatt">
@@ -38,9 +37,6 @@ test('distribute attributes in template', function (t) {
   // repeat
   t.notOk(src.props.repeat)
   t.is(src.attribs.repeat, 'repeat')
-  // as
-  t.notOk(src.props.as)
-  t.is(src.attribs.as, 'nuas')
   // nut keyname
   t.is(src.attribs.nut, undefined)
   t.is(src.tagName, 'specialNuts')
@@ -60,7 +56,6 @@ test('distribute attributes in children', function (t) {
     if="if"
     unless="unless"
     repeat="repeat"
-    as="nuas"
     (keydown)="presskey"
     (click)="click"
     myatt="myatt"><span
@@ -79,7 +74,6 @@ test('distribute attributes in children', function (t) {
           if="if"
           unless="unless"
           repeat="repeat"
-          as="nuas"
           (keydown)="presskey"
           (click)="click"
           myatt="myatt">hello</span></span><span
@@ -89,7 +83,6 @@ test('distribute attributes in children', function (t) {
       if="if"
       unless="unless"
       repeat="repeat"
-      as="nuas"
       (keydown)="presskey"
       (click)="click"
       myatt="myatt">hello</span></span>`
@@ -129,9 +122,6 @@ test('distribute attributes in children', function (t) {
   // scope
   t.is(child.props.model, 'model')
   t.is(child.attribs.model, undefined)
-  // as
-  t.is(child.props.as, 'nuas')
-  t.notOk(child.attribs.as, 'nuas')
   // nuif
   t.is(child.props.if, 'if')
   t.is(child.attribs.if, undefined)
@@ -162,21 +152,5 @@ test('parse child elements', function (t) {
   t.is(src.children[0].children[0].type, 3)
   t.is(src.children[0].children[1].type, 1)
   t.is(src.children[0].children[1].localName, 'span')
-  t.end()
-})
-
-test('parse just parent element and send children as raw', function (t) {
-  let tmpl = '<ul nut="simpleTag"><li>hola<span></span></li></ul>',
-      src = parser(tmpl, true)
-
-  t.notOk(src.children[0].model)
-  t.end()
-})
-
-test('omit children when tag has `as` attribute', function (t) {
-  let tmpl = '<ul nut="simpleTag"><li as="nuas">hola<span></span></li></ul>',
-      src = parser(tmpl).children[0]
-
-  t.notOk(src.children)
   t.end()
 })
