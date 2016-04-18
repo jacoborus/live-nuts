@@ -2,14 +2,16 @@
 
 const test = require('tape')
 const createNut = require('../src/nut.js')
+const emitter = require('arbitrary-emitter')()
 
 test('create nut', t => {
   const scope = {a: 1}
   const schema = {
     tagName: 'tagTest'
   }
-  const nut = createNut(scope, schema, {})
+  const nut = createNut(scope, schema, emitter, {})
   t.is(typeof nut, 'object')
+  t.is(typeof nut.emit, 'function')
   t.is(nut.scope.a, 1)
   t.end()
 })
@@ -27,7 +29,7 @@ test('add regular methods', t => {
         control = x + 1
       }
     }
-  })
+  }, emitter)
   nut.one(2)
   t.is(control, 2)
   nut.two(99)
@@ -48,7 +50,7 @@ test('add factory methods', t => {
         return x => {control = nut.scope.a - x}
       }
     }
-  })
+  }, emitter)
   nut.one(2)
   t.is(control, 3)
   nut.two(99)
@@ -64,6 +66,7 @@ test('add injected methods', t => {
     {
       injected: ['one', 'two']
     },
+    emitter,
     {
       one: (x) => {
         control = x

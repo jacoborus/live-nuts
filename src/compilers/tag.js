@@ -1,17 +1,17 @@
 'use strict'
 
-const compileAttributes = require('./attribute.js')
-const newCounter = require('../counter.js')
-const compileEvents = require('./event.js')
-const compileChildren = require('./children.js')
+// const newCounter = require('../counter.js')
 const compileElement = require('./element.js')
-const createNut = require('../nut.js')
-const reqs = require('./requirements.js')
-const boxes = require('boxes')
+const compileAttributes = require('./attribute.js')
+const compileEvents = require('./event.js')
+const getNut = require('../nut.js')
+// const compileChildren = require('./children.js')
+// const reqs = require('./requirements.js')
 
-module.exports = function (schema, compile, callback) {
-  let { localName, events, children, attribs, model } = schema
-  let renderAtts, fixedAtts, renderEvents, renderChildren
+module.exports = function (schema, callback) {
+  let { tagName, events, model } = schema
+  // let { children } = schema
+  // let renderChildren
 
   let getScope
   if (model) {
@@ -20,50 +20,38 @@ module.exports = function (schema, compile, callback) {
     getScope = scope => scope
   }
 
-  if (attribs) {
-    let temp = compileAttributes(schema)
-    renderAtts = temp.renders
-    fixedAtts = temp.fixed
-  }
-  let createBaseTag = compileElement(localName, fixedAtts)
-  if (events) {
-    renderEvents = compileEvents(events)
-  }
+  let { renders, fixed } = compileAttributes(schema)
+  let createBaseTag = compileElement(tagName, fixed)
+  const renderEvents = compileEvents(events)
 
-  schema.render = (outerScope, box = boxes(), parentNut = {}) => {
-    let scope = getScope(outerScope)
-    let el = createBaseTag()
-    let nut = createNut(scope, box, schema, parentNut)
+  schema.render = (outerScope, emitter, parentNut) => {
+    const scope = getScope(outerScope)
+    const el = createBaseTag()
+    const subscriptions = []
+    const updater = () => subscriptions.forEach(update => update())
+
+    emitter.on(scope, updater)
+    let nut = getNut(scope, schema, emitter, parentNut)
     // render attrributes
-    if (renderAtts) {
-      let subscriptions = renderAtts.map(r => r(el, scope))
-      box.subscribe(() => subscriptions.forEach(update => update()), scope)
+    if (renders.length) {
+      subscriptions.push(...renders.map(r => r(el, scope)))
     }
     if (renderEvents) {
       renderEvents(el, nut)
     }
-    if (renderChildren) {
-      renderChildren(scope, box, nut, el)
-    }
+    // if (renderChildren) {
+    //   renderChildren(scope, box, nut, el)
+    // }
+    // subscribe(updater, scope)
     return el
   }
 
-  schema.print = (scope, parentElement, box) => {
-    box = box || boxes(scope)
-    if (reqs(schema)(scope)) {
-      let el = schema.render(scope, box)
-      if (parentElement) parentElement.appendChild(el)
-      return el
-    } else {
-      return document.createDocumentFragment()
-    }
-  }
-
-  if (children) {
-    renderChildren = compileChildren(children)
-    let count = newCounter(children.length, callback)
-    children.forEach(c => compile(c, count))
-  } else {
-    callback()
-  }
+//   if (children) {
+//     renderChildren = compileChildren(children)
+//     let count = newCounter(children.length, callback)
+//     children.forEach(c => compile(c, count))
+//   } else {
+//     callback()
+//   }
+  callback()
 }

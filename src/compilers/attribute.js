@@ -7,6 +7,7 @@ module.exports = function (schema) { // compile attributes
   const atts = schema.attribs
   const renders = []
   const fixed = {}
+  if (!atts) return { fixed, renders }
   Object.keys(atts).map(name => {
     const value = atts[name]
     if (name.endsWith('-')) {

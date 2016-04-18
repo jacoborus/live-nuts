@@ -1,9 +1,9 @@
 'use strict'
 
-module.exports = function (scope, schema, parentNut) {
+module.exports = function (scope, schema, emitter, parentNut) {
   if (!schema.tagName) return parentNut
   let { methods, injected } = schema
-  let nut = { scope }
+  let nut = { scope, emit: emitter.emit }
 
   // add methods
   if (methods) {
