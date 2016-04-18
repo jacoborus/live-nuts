@@ -4,17 +4,21 @@ const test = require('tape')
 const createNut = require('../src/nut.js')
 
 test('create nut', t => {
-  let scope = {a: 1}
-  let nut = createNut(scope, {}, {})
+  const scope = {a: 1}
+  const schema = {
+    tagName: 'tagTest'
+  }
+  const nut = createNut(scope, schema, {})
   t.is(typeof nut, 'object')
   t.is(nut.scope.a, 1)
   t.end()
 })
 
 test('add regular methods', t => {
-  let scope = {a: 1}
+  const scope = {a: 1}
   let control = 0
-  let nut = createNut(scope, {}, {
+  const nut = createNut(scope, {
+    tagName: 'test',
     methods: {
       one: (x) => {
         control = x
@@ -32,9 +36,10 @@ test('add regular methods', t => {
 })
 
 test('add factory methods', t => {
-  let scope = {a: 1}
+  const scope = {a: 1}
   let control = 0
-  let nut = createNut(scope, {}, {
+  const nut = createNut(scope, {
+    tagName: 'test',
     methods: {
       _one: (nut) => {
         return x => {control = nut.scope.a + x}
@@ -52,18 +57,22 @@ test('add factory methods', t => {
 })
 
 test('add injected methods', t => {
-  let scope = {a: 1}
+  const scope = {a: 1}
   let control = 0
-  let nut = createNut(scope, {}, {
-    injected: ['one', 'two']
-  }, {
-    one: (x) => {
-      control = x
+  const nut = createNut(
+    scope,
+    {
+      injected: ['one', 'two']
     },
-    two: (x) => {
-      control = x + 1
+    {
+      one: (x) => {
+        control = x
+      },
+      two: (x) => {
+        control = x + 1
+      }
     }
-  })
+  )
   nut.one(2)
   t.is(control, 2)
   nut.two(99)

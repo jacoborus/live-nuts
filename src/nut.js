@@ -1,29 +1,18 @@
 'use strict'
 
-module.exports = function (scope, box, schema, parentNut = {}) {
+module.exports = function (scope, schema, parentNut) {
+  if (!schema.tagName) return parentNut
   let { methods, injected } = schema
-  let nut = {
-    scope,
-    save (target) {
-      if (!target) {
-        target = scope
-      } else if (typeof target !== 'object') {
-        throw new Error('save requires a object an argument')
-      }
-      box.save(target)
-    },
-    subscribe (action, target) {
-      if (!target) {
-        target = scope
-      }
-      box.subscribe(action, target)
-    }
-  }
+  let nut = { scope }
+
+  // add methods
   if (methods) {
     Object.keys(methods).forEach(k => {
       if (k.startsWith('_')) {
+        // factory methods
         nut[k.slice(1)] = methods[k](nut)
       } else {
+        // regular methods
         nut[k] = methods[k]
       }
     })
