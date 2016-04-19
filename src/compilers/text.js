@@ -3,7 +3,7 @@
 const matcher = /{{([^}]*)}}/
 const compileStr = require('./string.js')
 
-module.exports = function (schema, callback) {
+module.exports = function (schema) {
   const data = schema.data
   if (data.match(matcher)) {
     // text node has scoped content
@@ -16,15 +16,15 @@ module.exports = function (schema, callback) {
       }
       return cached
     }
-    schema.render = function (scope) {
+    schema.render = function (scope, emitter) {
       let cached = reduce(scope)
       const el = document.createTextNode(cached)
       const subscription = () => updateFn(scope, cached, el)
-      return { el, subscription }
+      emitter.on(scope, subscription)
+      return el
     }
   } else {
     // is regular text node
-    schema.render = () => ({el: document.createTextNode(data)})
+    schema.render = () => document.createTextNode(data)
   }
-  callback()
 }

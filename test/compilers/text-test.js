@@ -2,19 +2,18 @@
 
 const test = require('tape')
 const compileText = require('../../src/compilers/text.js')
+const emitter = require('arbitrary-emitter')()
 
 test('compile simple text node', function (t) {
   let schema = {
     type: 3,
     data: 'hola'
   }
-  compileText(schema, () => {
-    t.is(typeof schema.render, 'function', 'set render as a function')
-    let { el, unsubscribe } = schema.render({})
-    t.is(el.textContent, 'hola')
-    t.notOk(unsubscribe)
-    t.end()
-  })
+  compileText(schema)
+  t.is(typeof schema.render, 'function', 'set render as a function')
+  let el = schema.render({}, emitter)
+  t.is(el.textContent, 'hola')
+  t.end()
 })
 
 test('compile scoped text node', function (t) {
@@ -25,15 +24,13 @@ test('compile scoped text node', function (t) {
   let scope = {
     donde: 'mundo!'
   }
-  compileText(schema, () => {
-    t.is(typeof schema.render, 'function', 'set render as a function')
-    let { el, subscription } = schema.render(scope)
-    t.is(el.textContent, 'hola mundo!')
-    t.is(typeof subscription, 'function')
-    scope.donde = 'here!'
-    subscription()
-    t.is(el.textContent, 'hola here!')
-    t.end()
-  })
+  compileText(schema)
+  t.is(typeof schema.render, 'function', 'set render as a function')
+  let el = schema.render(scope, emitter)
+  t.is(el.textContent, 'hola mundo!')
+  scope.donde = 'here!'
+  emitter.emit(scope)
+  t.is(el.textContent, 'hola here!')
+  t.end()
 })
 

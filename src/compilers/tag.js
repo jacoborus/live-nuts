@@ -1,17 +1,14 @@
 'use strict'
 
-// const newCounter = require('../counter.js')
 const compileElement = require('./element.js')
 const compileAttributes = require('./attribute.js')
 const compileEvents = require('./event.js')
 const getNut = require('../nut.js')
-// const compileChildren = require('./children.js')
-// const reqs = require('./requirements.js')
+const compileChildren = require('./children.js')
 
-module.exports = function (schema, callback) {
-  let { tagName, events, model } = schema
-  // let { children } = schema
-  // let renderChildren
+module.exports = function (schema) {
+  let { tagName, events, model, children } = schema
+  let renderChildren
 
   let getScope
   if (model) {
@@ -23,6 +20,10 @@ module.exports = function (schema, callback) {
   let { renders, fixed } = compileAttributes(schema)
   let createBaseTag = compileElement(tagName, fixed)
   const renderEvents = compileEvents(events)
+
+  if (children) {
+    renderChildren = compileChildren(children)
+  }
 
   schema.render = (outerScope, emitter, parentNut) => {
     const scope = getScope(outerScope)
@@ -39,19 +40,9 @@ module.exports = function (schema, callback) {
     if (renderEvents) {
       renderEvents(el, nut)
     }
-    // if (renderChildren) {
-    //   renderChildren(scope, box, nut, el)
-    // }
-    // subscribe(updater, scope)
+    if (renderChildren) {
+      renderChildren(scope, emitter, nut, el)
+    }
     return el
   }
-
-//   if (children) {
-//     renderChildren = compileChildren(children)
-//     let count = newCounter(children.length, callback)
-//     children.forEach(c => compile(c, count))
-//   } else {
-//     callback()
-//   }
-  callback()
 }
