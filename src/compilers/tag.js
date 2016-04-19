@@ -6,7 +6,7 @@ const compileEvents = require('./event.js')
 const getNut = require('../nut.js')
 const compileChildren = require('./children.js')
 
-module.exports = function (schema) {
+module.exports = function (schema, compile) {
   let { tagName, events, model, children } = schema
   let renderChildren
 
@@ -22,7 +22,7 @@ module.exports = function (schema) {
   const renderEvents = compileEvents(events)
 
   if (children) {
-    renderChildren = compileChildren(children)
+    renderChildren = compileChildren(children, compile)
   }
 
   schema.render = (outerScope, emitter, parentNut) => {

@@ -3,6 +3,7 @@
 const compileTag = require('../../src/compilers/tag.js')
 const test = require('tape')
 const emitter = require('arbitrary-emitter')()
+const compile = require('../../src/compiler.js')
 
 test('compile simple tag with attributes', function (t) {
   let scope = {
@@ -32,7 +33,7 @@ test('compile simple tag with attributes', function (t) {
       }
     }
   }
-  compileTag(schema)
+  compileTag(schema, compile)
   let el = schema.render(scope, emitter, null)
   t.is(el.getAttribute('alt'), 'alternative', 'render regular attributes')
   t.is(el.getAttribute('other'), 'another', 'render scoped attributes')
@@ -52,10 +53,14 @@ test('compile simple tag with no scoped children', function (t) {
     children: [{
       type: 3,
       data: 'hola'
+    }, {
+      type: 1,
+      localname: 'span'
     }]
   }
-  compileTag(schema)
+  compileTag(schema, compile)
   let el = schema.render(scope, emitter)
   t.is(el.textContent, 'hola', 'render simple text child')
+  console.log(el)
   t.end()
 })
