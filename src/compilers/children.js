@@ -11,27 +11,28 @@ function insertInPos (last, parent, child) {
 }
 
 module.exports = function (children, compile) {
-  children.forEach((schema, i) => {
+  children.forEach((schema) => {
     compile(schema)
     schema.req = reqs(schema)
-    schema.pos = i
   })
   return (scope, emitter, nut, el) => {
     let list = []
     function updater () {
       let last = ''
       children.forEach((c, i) => {
-        let elem = list[i - 1]
+        let elem = list[i]
         if (c.req(scope)) {
           if (!elem) {
             let elem = c.render(scope, emitter, nut)
             insertInPos(last, el, elem)
-            list[i - 1] = elem
+            list[i] = elem
+            last = elem
+          } else {
             last = elem
           }
         } else if (elem) {
-          el.removechild[elem]
-          delete list[i - 1]
+          el.removeChild(elem)
+          delete list[i]
         }
       })
     }
