@@ -68,7 +68,8 @@ test('compile simple tag with no scoped children', function (t) {
 test('compile simple tag with scoped children', function (t) {
   let scope = {
     saludo: 'hello',
-    alt: 'alternative'
+    alt: 'alternative',
+    booleano: true
   }
   let schema = {
     type: 1,
@@ -79,6 +80,7 @@ test('compile simple tag with scoped children', function (t) {
         let scope = nut.scope
         scope.saludo = scope.saludo + '1'
         scope.alt = scope.alt + '1'
+        scope.booleano = !scope.booleano
         nut.emit(scope)
       }
     },
@@ -90,7 +92,8 @@ test('compile simple tag with scoped children', function (t) {
       localName: 'span',
       attribs: {
         title: 'title',
-        alt: '{{ alt }}'
+        alt: '{{ alt }}',
+        'bool-': 'booleano'
       },
       events: {
         click: 'addOne'
@@ -102,11 +105,14 @@ test('compile simple tag with scoped children', function (t) {
   t.is(el.textContent, 'hello', 'render simple text child')
   t.is(el.childNodes[1].localName, 'span')
   t.is(el.childNodes[1].getAttribute('alt'), 'alternative')
+  t.ok(el.childNodes[1].hasAttribute('bool'), 'booleans')
   el.childNodes[1].click()
   t.is(el.textContent, 'hello1', 'render simple text child')
   t.is(el.childNodes[1].getAttribute('alt'), 'alternative1')
+  t.notOk(el.childNodes[1].hasAttribute('bool'), 'booleans')
   el.childNodes[1].click()
   t.is(el.textContent, 'hello11', 'render simple text child')
   t.is(el.childNodes[1].getAttribute('alt'), 'alternative11')
+  t.ok(el.childNodes[1].hasAttribute('bool'), 'booleans')
   t.end()
 })

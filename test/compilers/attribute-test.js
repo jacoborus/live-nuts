@@ -54,7 +54,7 @@ test('compile boolean attributes', function (t) {
   let schema = {
     attribs: {
       alt: 'alternative',
-      'other-': '{{ otherVal }}'
+      'other-': 'otherVal'
     }
   }
   let scope = {

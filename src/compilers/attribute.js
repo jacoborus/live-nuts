@@ -13,7 +13,7 @@ module.exports = function (schema) { // compile attributes
     if (name.endsWith('-')) {
       // is boolean
       const att = name.slice(0, -1)
-      const prop = value.match(matcher)[1].trim()
+      const prop = value.trim()
       schema.booleans = schema.booleans || {}
       schema.booleans[att] = prop
       const updater = (scope, cached, el) => {
