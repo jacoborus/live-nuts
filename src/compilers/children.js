@@ -31,7 +31,7 @@ module.exports = function (children, compile) {
           }
         } else if (elem) {
           el.removechild[elem]
-          delete list[i]
+          delete list[i - 1]
         }
       })
     }
