@@ -21,12 +21,12 @@ module.exports = function (children, compile) {
     function updater () {
       let last = ''
       children.forEach((c, i) => {
-        let elem = list[i]
+        let elem = list[i - 1]
         if (c.req(scope)) {
           if (!elem) {
             let elem = c.render(scope, emitter, nut)
             insertInPos(last, el, elem)
-            list[i] = i
+            list[i - 1] = elem
             last = elem
           }
         } else if (elem) {

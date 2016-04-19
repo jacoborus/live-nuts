@@ -61,6 +61,52 @@ test('compile simple tag with no scoped children', function (t) {
   compileTag(schema, compile)
   let el = schema.render(scope, emitter)
   t.is(el.textContent, 'hola', 'render simple text child')
-  console.log(el)
+  t.is(el.childNodes[1].localName, 'span')
+  t.end()
+})
+
+test('compile simple tag with scoped children', function (t) {
+  let scope = {
+    saludo: 'hello',
+    alt: 'alternative'
+  }
+  let schema = {
+    type: 1,
+    tagName: 'test',
+    localName: 'span',
+    methods: {
+      addOne (e, nut) {
+        let scope = nut.scope
+        scope.saludo = scope.saludo + '1'
+        scope.alt = scope.alt + '1'
+        nut.emit(scope)
+      }
+    },
+    children: [{
+      type: 3,
+      data: '{{ saludo }}'
+    }, {
+      type: 1,
+      localName: 'span',
+      attribs: {
+        title: 'title',
+        alt: '{{ alt }}'
+      },
+      events: {
+        click: 'addOne'
+      }
+    }]
+  }
+  compileTag(schema, compile)
+  let el = schema.render(scope, emitter)
+  t.is(el.textContent, 'hello', 'render simple text child')
+  t.is(el.childNodes[1].localName, 'span')
+  t.is(el.childNodes[1].getAttribute('alt'), 'alternative')
+  el.childNodes[1].click()
+  t.is(el.textContent, 'hello1', 'render simple text child')
+  t.is(el.childNodes[1].getAttribute('alt'), 'alternative1')
+  el.childNodes[1].click()
+  t.is(el.textContent, 'hello11', 'render simple text child')
+  t.is(el.childNodes[1].getAttribute('alt'), 'alternative11')
   t.end()
 })
