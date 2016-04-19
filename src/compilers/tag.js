@@ -7,7 +7,7 @@ const getNut = require('../nut.js')
 const compileChildren = require('./children.js')
 
 module.exports = function (schema, compile) {
-  let { tagName, events, model, children } = schema
+  let { localName, events, model, children } = schema
   let renderChildren
 
   let getScope
@@ -18,7 +18,7 @@ module.exports = function (schema, compile) {
   }
 
   let { renders, fixed } = compileAttributes(schema)
-  let createBaseTag = compileElement(tagName, fixed)
+  let createBaseTag = compileElement(localName, fixed)
   const renderEvents = compileEvents(events)
 
   if (children) {

@@ -55,7 +55,7 @@ test('compile simple tag with no scoped children', function (t) {
       data: 'hola'
     }, {
       type: 1,
-      localname: 'span'
+      localName: 'span'
     }]
   }
   compileTag(schema, compile)
