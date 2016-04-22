@@ -3,37 +3,25 @@
 const extend = require('../src/extend.js')
 const test = require('tape')
 
-test('has same properties as source when no extension passed', function (t) {
-  let sample = {scope: 'test'}
-  extend(sample, null, function () {
-    t.is(sample.scope, 'test')
+test('extend localName properties', function (t) {
+  let src = {localName: 'srcLocal', props: {}}
+  let ext = {localName: 'extLocal', props: {}}
+
+  extend(src, ext, function () {
+    t.is(src.localName, 'extLocal')
     t.end()
   })
 })
 
-test('extend nut properties', function (t) {
+test('extend tag attributes', function (t) {
   let sample = {
-    model: 'test'
+    attribs: { other: 'src' },
+    props: {}
   }
   let otherSample = {
-    model: 'extension',
-    repeat: 'other'
+    attribs: { id: 'ext', other: 'ext' },
+    props: {}
   }
-
-  extend(sample, otherSample, function () {
-    t.is(sample.model, 'test')
-    t.is(sample.repeat, 'other')
-    t.end()
-  })
-})
-
-test('extend attributes and variable attributes', function (t) {
-  let sample = {
-        attribs: { other: 'src' }
-      },
-      otherSample = {
-        attribs: { id: 'ext', other: 'ext' }
-      }
 
   extend(sample, otherSample, function () {
     t.is(sample.attribs.id, 'ext')
@@ -42,16 +30,41 @@ test('extend attributes and variable attributes', function (t) {
   })
 })
 
-test('extend formatters', function (t) {
-  let sample = {
-        formatters: ['test']
-      },
-      otherSample = {
-        formatters: ['other']
-      }
+test('extend "if" property', function (t) {
+  let src = {props: {}}
+  let ext = {props: {
+    if: 'test'
+  }}
 
-  extend(sample, otherSample, function () {
-    t.is(sample.formatters[0], 'test')
+  extend(src, ext, function () {
+    t.is(src.props.if, 'test')
+    let src2 = {props: {
+      if: 'no'
+    }}
+    let ext2 = {props: {
+      if: 'test'
+    }}
+
+    extend(src2, ext2, function () {
+      t.is(src2.props.if, 'no')
+      t.end()
+    })
+  })
+})
+
+test('extend events', function (t) {
+  let src = {
+    events: { click: 'src' },
+    props: {}
+  }
+  let ext = {
+    events: { click: 'ext', other: 'ext' },
+    props: {}
+  }
+
+  extend(src, ext, function () {
+    t.is(src.events.click, 'src')
+    t.is(src.events.other, 'ext')
     t.end()
   })
 })

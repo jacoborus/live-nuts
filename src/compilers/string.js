@@ -1,4 +1,3 @@
-
 'use strict'
 
 const matcher = /{{([^}]*)}}/
@@ -28,4 +27,3 @@ module.exports = function (str) {
   }
   return reduce
 }
-

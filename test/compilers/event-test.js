@@ -6,7 +6,7 @@ const compileEvents = require('../../src/compilers/event.js')
 test('event compiler', function (t) {
   function clicked (e, nut) {
     t.is(e.type, 'click')
-    t.is(nut.a, 99)
+    t.is(nut.scope.a, 99)
     t.end()
   }
 
@@ -19,7 +19,9 @@ test('event compiler', function (t) {
   let el = document.createElement('span')
   let fakeNut = {
     clicked,
-    a: 99
+    scope: {
+      a: 99
+    }
   }
   compiled(el, fakeNut)
   el.click()

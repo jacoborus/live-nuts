@@ -3,56 +3,94 @@
 const test = require('tape')
 const reqs = require('../../src/compilers/requirements.js')
 
-test('compile requirements with just if or unless', t => {
-  let schemaIf = {
-    nuif: 't'
-  }
-  let reqif = reqs(schemaIf)
-  t.ok(reqif({t: 1}), 'true nuif')
-  t.notOk(reqif({t: 0}), 'false nuif')
-
-  let schemaUnless = {
-    unless: 't'
-  }
-  let requnless = reqs(schemaUnless)
-  t.ok(requnless({t: 0}), 'true unless')
-  t.notOk(requnless({t: 1}), 'false unless')
-
-  let schemaAll = {
-    unless: 'u',
-    nuif: 'i'
-  }
-  let reqall = reqs(schemaAll)
-  t.ok(reqall({u: 0, i: 1}), 'true all')
-  t.notOk(reqall({u: 1, i: 0}), 'false all')
-  t.notOk(reqall({u: 0, i: 0}), 'false all')
-  t.notOk(reqall({u: 1, i: 1}), 'false all')
-
+test('always return true if no conditions', t => {
+  let schema = {}
+  let req = reqs(schema)
+  t.is(req(), true)
   t.end()
 })
 
-test('compile requirements with just model condition', t => {
+test('whether', t => {
   let schema = {
-    model: 'm'
+    whether: 'tt'
   }
   let req = reqs(schema)
-  t.ok(req({m: {}}), 'true nuif')
-  t.notOk(req({m: 0}), 'false nuif')
-
+  t.ok(req({tt: true}))
+  t.notOk(req({tt: false}))
   t.end()
 })
 
-test('compile requirements with nuif and model', t => {
+test('model', t => {
   let schema = {
-    model: 'm',
-    nuif: 'i'
+    model: 'tt'
   }
   let req = reqs(schema)
-  t.ok(req({m: {i: 1}}), 'true all')
-  t.notOk(req({m: {}, i: 1}), 'false no nuif')
-  t.notOk(req({m: 1, i: 0}), 'false no object as model')
-  t.notOk(req({m: 0, i: 1}), 'false no model')
-  t.notOk(req({m: 0}), 'false no model no huif')
+  t.ok(req({tt: {}}))
+  t.notOk(req({}))
+  t.end()
+})
 
+test('if', t => {
+  let schema = {
+    if: 'tt'
+  }
+  let req = reqs(schema)
+  t.ok(req({tt: true}))
+  t.notOk(req({tt: false}))
+  t.notOk(req({}))
+  t.end()
+})
+
+test('whether model', t => {
+  let schema = {
+    whether: 'ww',
+    model: 'mm'
+  }
+  let req = reqs(schema)
+  t.ok(req({ww: true, mm: {}}))
+  t.notOk(req({ww: false, mm: {}}))
+  t.notOk(req({mm: {}}))
+  t.notOk(req({ww: true, mm: false}))
+  t.notOk(req({}))
+  t.end()
+})
+
+test('whether if', t => {
+  let schema = {
+    whether: 'ww',
+    if: 'ii'
+  }
+  let req = reqs(schema)
+  t.ok(req({ww: true, ii: {}}))
+  t.notOk(req({ww: false, ii: {}}))
+  t.notOk(req({ii: {}}))
+  t.notOk(req({ww: true, ii: false}))
+  t.notOk(req({}))
+  t.end()
+})
+
+test('model if', t => {
+  let schema = {
+    model: 'mm',
+    if: 'ii'
+  }
+  let req = reqs(schema)
+  t.ok(req({mm: {}}))
+  t.notOk(req({}))
+  t.end()
+})
+
+test('whether model if', t => {
+  let schema = {
+    model: 'mm',
+    if: 'ii',
+    whether: 'ww'
+  }
+  let req = reqs(schema)
+  t.ok(req({ww: true, mm: {}}))
+  t.notOk(req({ww: false, mm: {}}))
+  t.notOk(req({mm: {}}))
+  t.notOk(req({ww: true, mm: false}))
+  t.notOk(req({}))
   t.end()
 })

@@ -3,30 +3,36 @@
 const matcher = /{{([^}]*)}}/
 const compileStr = require('./string.js')
 
-module.exports = function (schema, callback) {
-  let data = schema.data
+module.exports = function (schema) {
+  const data = schema.data
   if (data.match(matcher)) {
     // text node has scoped content
-    let reduce = compileStr(data)
-    let updateFn = (scope, cached, el) => {
-      let fresh = reduce(scope)
+    const reduce = compileStr(data)
+    const updateFn = (scope, cached, el) => {
+      const fresh = reduce(scope)
       if (fresh !== cached) {
         el.textContent = fresh
         return fresh
       }
       return cached
     }
-    schema.render = function (scope, box) {
+    schema.render = function (scope, emitter) {
       let cached = reduce(scope)
-      let el = document.createTextNode(cached)
-      box.subscribe(() => updateFn(scope, cached, el), scope)
+      const el = document.createTextNode(cached)
+      const subscription = () => updateFn(scope, cached, el)
+      emitter.on(scope, subscription)
       return el
     }
   } else {
     // is regular text node
-    schema.render = () => {
-      return document.createTextNode(data)
+    schema.render = () => document.createTextNode(data)
+  }
+
+  schema.print = function (scope, emitter, nut, item) {
+    if (!item.elem) {
+      item.elem = schema.render(scope, emitter, nut)
+      item.printed = true
+      item.needUpdate = true
     }
   }
-  callback()
 }

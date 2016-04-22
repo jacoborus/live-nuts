@@ -1,45 +1,49 @@
 'use strict'
 
 const reqs = {
-  nuif (schema) {
-    if ('nuif' in schema && 'unless' in schema) {
-      let nuif = schema.nuif,
-          unless = schema.unless
-      return scope => scope[nuif] && !scope[unless]
-    } else if ('nuif' in schema) {
-      let model = schema.nuif
-      return scope => scope[model] ? true : false
-    } else {
-      let model = schema.unless
-      return scope => !scope[model]
-    }
+  // if, model, whether
+  '111' (schema) {
+    const checkWhether = reqs['100'](schema)
+    const checkModel = reqs['010'](schema)
+    return scope => checkWhether(scope) && checkModel(scope)
   },
-
-  model (schema) {
+  // model if
+  '011' (schema) {
+    return reqs['010'](schema)
+  },
+  // whether if
+  '101' (schema) {
+    const checkWhether = reqs['100'](schema)
+    const checkIf = reqs['001'](schema)
+    return scope => checkWhether(scope) && checkIf(scope)
+  },
+  // whether model
+  '110' (schema) {
+    const checkModel = reqs['010'](schema)
+    const checkWhether = reqs['100'](schema)
+    return scope => checkModel(scope) && checkWhether(scope)
+  },
+  // if
+  '001' (schema) {
+    let nuif = schema.if
+    return scope => scope[nuif]
+  },
+  // model
+  '010' (schema) {
     let { model } = schema
     return scope => scope[model] && typeof scope[model] === 'object'
   },
-
-  modelIf (schema) {
-    let model = schema.model
-    let fn = reqs.model(schema)
-    let fn2 = reqs.nuif(schema)
-    return scope => fn(scope) && fn2(scope[model])
-  }
+  // whether
+  '100' (schema) {
+    let { whether } = schema
+    return scope => scope[whether]
+  },
+  '000': () => () => true
 }
 
 module.exports = function (schema) {
-  if ('model' in schema) {
-    if ('nuif' in schema || 'unless' in schema) {
-      return reqs.modelIf(schema)
-    } else {
-      return reqs.model(schema)
-    }
-  } else {
-    if ('nuif' in schema || 'unless' in schema) {
-      return reqs.nuif(schema)
-    } else {
-      return () => true
-    }
-  }
+  let res = 'whether' in schema ? '1' : '0'
+  res += 'model' in schema ? '1' : '0'
+  res += 'if' in schema ? '1' : '0'
+  return reqs[res](schema)
 }

@@ -1,55 +1,47 @@
 'use strict'
 
-const nuProps = [
-  'voidElement',
-  'type',
-  'name',
-  'data',
-  'model',
-  'repeat',
-  'if',
-  'unless',
-  'attribs'
-]
+function extendGroup (src, ext) {
+  if (ext) {
+    Object.keys(ext).forEach(att => {
+      if (!(att in src)) {
+        src[att] = ext[att]
+      }
+    })
+  }
+}
 
 module.exports = function (src, extension, next) {
   if (!extension) return next()
 
-  nuProps.forEach(prop => {
-    if (!(prop in src) && prop in extension) {
-      src[prop] = extension[prop]
-    }
-  })
+  // extend localName element props
+  src.localName = extension.localName
 
-  // ensure src has attribs prop if extension has it too
-  if (!('attribs' in src) && 'attribs' in extension) {
-    src.attribs = {}
+  // extend attribs
+  if ('attribs' in extension) {
+    src.attribs = src.attribs || {}
+    extendGroup(src.attribs, extension.attribs)
   }
 
-  if ('attribs' in extension) {
-    Object.keys(extension.attribs).forEach(att => {
-      if (!(att in src.attribs)) {
-        src.attribs[att] = extension.attribs[att]
-      }
-    })
+  // extend `if` prop
+  if (extension.props && 'if' in extension.props && !('if' in src.props)) {
+    src.props.if = extension.props.if
   }
 
   // extend events
   if ('events' in extension) {
     // ensure src has events prop if extension has it too
     src.events = src.events || {}
-    Object.keys(extension.events).forEach(eName => {
-      if (!src.events[eName]) {
-        src.events[eName] = extension.events[eName]
-      }
-    })
+    extendGroup(src.events, extension.events)
   }
 
-  if (!src.children && extension.children) {
-    src.childrenFrom = extension.key
+  // extend children
+  if (extension.children) {
+    src.childrenFrom = extension.tagName
     src.children = extension.children
+  } else {
+    // ensure there are no children from src tag
+    delete src.children
   }
-  delete src.as
 
   next()
 }

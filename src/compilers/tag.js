@@ -1,17 +1,15 @@
 'use strict'
 
-const compileAttributes = require('./attribute.js')
-const newCounter = require('../counter.js')
-const compileEvents = require('./event.js')
-const compileChildren = require('./children.js')
-const compileElement = require('./element.js')
-const createNut = require('../nut.js')
 const reqs = require('./requirements.js')
-const boxes = require('boxes')
+const compileElement = require('./element.js')
+const compileAttributes = require('./attribute.js')
+const compileEvents = require('./event.js')
+const getNut = require('../nut.js')
+const compileChildren = require('./children.js')
 
-module.exports = function (schema, compile, callback) {
-  let { localName, events, children, attribs, model } = schema
-  let renderAtts, fixedAtts, renderEvents, renderChildren
+module.exports = function (schema, compile) {
+  let { localName, events, model, children } = schema
+  let renderChildren
 
   let getScope
   if (model) {
@@ -20,50 +18,83 @@ module.exports = function (schema, compile, callback) {
     getScope = scope => scope
   }
 
-  if (attribs) {
-    let temp = compileAttributes(schema)
-    renderAtts = temp.renders
-    fixedAtts = temp.fixed
-  }
-  let createBaseTag = compileElement(localName, fixedAtts)
-  if (events) {
-    renderEvents = compileEvents(events)
+  let { renders, fixed } = compileAttributes(schema)
+  let createBaseTag = compileElement(localName, fixed)
+  const renderEvents = compileEvents(events)
+
+  if (children) {
+    renderChildren = compileChildren(children, compile)
   }
 
-  schema.render = (outerScope, box = boxes(), parentNut = {}) => {
-    let scope = getScope(outerScope)
-    let el = createBaseTag()
-    let nut = createNut(scope, box, schema, parentNut)
+  schema.render = (outerScope, emitter, parentNut) => {
+    const scope = getScope(outerScope)
+    const el = createBaseTag()
+    const subscriptions = []
+    const updater = () => subscriptions.forEach(update => update())
+
+    emitter.on(scope, updater)
+    let nut = getNut(scope, schema, emitter, parentNut)
     // render attrributes
-    if (renderAtts) {
-      let subscriptions = renderAtts.map(r => r(el, scope))
-      box.subscribe(() => subscriptions.forEach(update => update()), scope)
+    if (renders.length) {
+      subscriptions.push(...renders.map(r => r(el, scope)))
     }
     if (renderEvents) {
       renderEvents(el, nut)
     }
     if (renderChildren) {
-      renderChildren(scope, box, nut, el)
+      renderChildren(scope, emitter, nut, el)
     }
     return el
   }
 
-  schema.print = (scope, parentElement, box) => {
-    box = box || boxes(scope)
-    if (reqs(schema)(scope)) {
-      let el = schema.render(scope, box)
-      if (parentElement) parentElement.appendChild(el)
-      return el
-    } else {
-      return document.createDocumentFragment()
+  let regulator = reqs(schema)
+  let checker
+  if ('if' in schema && 'model' in schema) {
+    let nuif = schema.if
+    checker = function (scope) {
+      return Boolean(scope[model][nuif])
     }
+  } else {
+    checker = false
   }
 
-  if (children) {
-    renderChildren = compileChildren(children)
-    let count = newCounter(children.length, callback)
-    children.forEach(c => compile(c, count))
+  if (!regulator && !checker) {
+    schema.print = function (scope, emitter, nut, item) {
+      if (!item.elem) {
+        item.elem = schema.render(scope, emitter, nut)
+        item.printed = true
+        item.needUpdate = true
+      }
+    }
+  } else if (regulator && !checker) {
+    schema.print = function (scope, emitter, nut, item) {
+      let pass = regulator(scope)
+      if (pass && !item.elem) {
+        item.elem = schema.render(scope, emitter, nut)
+        item.printed = true
+        item.needUpdate = true
+      } else {
+        item.printed = false
+        item.needUpdate = true
+      }
+    }
   } else {
-    callback()
+    schema.print = function (scope, emitter, nut, item) {
+      let pass = regulator(scope)
+      let check
+      if (pass) {
+        check = checker(scope)
+      }
+      if (pass && check) {
+        if (!item.elem) {
+          item.elem = schema.render(scope, emitter, nut)
+          item.printed = true
+          item.needUpdate = true
+        }
+      } else if (item.elem) {
+        item.printed = false
+        item.needUpdate = true
+      }
+    }
   }
 }

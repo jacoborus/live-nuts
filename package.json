@@ -34,6 +34,7 @@
     "testling": "^1.7.1"
   },
   "dependencies": {
+    "arbitrary-emitter": "^0.7.6",
     "boxes": "^0.13.0"
   }
 }
