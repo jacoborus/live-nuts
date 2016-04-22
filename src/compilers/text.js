@@ -27,4 +27,12 @@ module.exports = function (schema) {
     // is regular text node
     schema.render = () => document.createTextNode(data)
   }
+
+  schema.print = function (scope, emitter, nut, item) {
+    if (!item.elem) {
+      item.elem = schema.render(scope, emitter, nut)
+      item.printed = true
+      item.needUpdate = true
+    }
+  }
 }

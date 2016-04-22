@@ -3,18 +3,13 @@
 const reqs = {
   // if, model, whether
   '111' (schema) {
-    const model = schema.model
     const checkWhether = reqs['100'](schema)
     const checkModel = reqs['010'](schema)
-    const checkIf = reqs['001'](schema)
-    return scope => checkWhether(scope) && checkModel(scope) && checkIf(scope[model])
+    return scope => checkWhether(scope) && checkModel(scope)
   },
   // model if
   '011' (schema) {
-    const model = schema.model
-    const checkModel = reqs['010'](schema)
-    const checkIf = reqs['001'](schema)
-    return scope => checkModel(scope) && checkIf(scope[model])
+    return reqs['010'](schema)
   },
   // whether if
   '101' (schema) {

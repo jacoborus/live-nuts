@@ -75,10 +75,8 @@ test('model if', t => {
     if: 'ii'
   }
   let req = reqs(schema)
-  t.ok(req({mm: {ii: true}}))
-  t.notOk(req({mm: {ii: false}}))
-  t.notOk(req({mm: {}}))
-  t.notOk(req({ii: {mm: true}}))
+  t.ok(req({mm: {}}))
+  t.notOk(req({}))
   t.end()
 })
 
@@ -89,15 +87,10 @@ test('whether model if', t => {
     whether: 'ww'
   }
   let req = reqs(schema)
-  t.ok(req({
-    ww: true,
-    mm: {
-      ii: true
-    }
-  }))
-  t.notOk(req({mm: {ii: false}, ww: true}))
-  t.notOk(req({mm: {ii: true}, ww: false}))
-  t.notOk(req({mm: {}, ww: true}))
-  t.notOk(req({mm: {ii: true}}))
+  t.ok(req({ww: true, mm: {}}))
+  t.notOk(req({ww: false, mm: {}}))
+  t.notOk(req({mm: {}}))
+  t.notOk(req({ww: true, mm: false}))
+  t.notOk(req({}))
   t.end()
 })

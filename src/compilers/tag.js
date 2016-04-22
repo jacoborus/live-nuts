@@ -1,5 +1,6 @@
 'use strict'
 
+const reqs = require('./requirements.js')
 const compileElement = require('./element.js')
 const compileAttributes = require('./attribute.js')
 const compileEvents = require('./event.js')
@@ -44,5 +45,56 @@ module.exports = function (schema, compile) {
       renderChildren(scope, emitter, nut, el)
     }
     return el
+  }
+
+  let regulator = reqs(schema)
+  let checker
+  if ('if' in schema && 'model' in schema) {
+    let nuif = schema.if
+    checker = function (scope) {
+      return Boolean(scope[model][nuif])
+    }
+  } else {
+    checker = false
+  }
+
+  if (!regulator && !checker) {
+    schema.print = function (scope, emitter, nut, item) {
+      if (!item.elem) {
+        item.elem = schema.render(scope, emitter, nut)
+        item.printed = true
+        item.needUpdate = true
+      }
+    }
+  } else if (regulator && !checker) {
+    schema.print = function (scope, emitter, nut, item) {
+      let pass = regulator(scope)
+      if (pass && !item.elem) {
+        item.elem = schema.render(scope, emitter, nut)
+        item.printed = true
+        item.needUpdate = true
+      } else {
+        item.printed = false
+        item.needUpdate = true
+      }
+    }
+  } else {
+    schema.print = function (scope, emitter, nut, item) {
+      let pass = regulator(scope)
+      let check
+      if (pass) {
+        check = checker(scope)
+      }
+      if (pass && check) {
+        if (!item.elem) {
+          item.elem = schema.render(scope, emitter, nut)
+          item.printed = true
+          item.needUpdate = true
+        }
+      } else if (item.elem) {
+        item.printed = false
+        item.needUpdate = true
+      }
+    }
   }
 }
